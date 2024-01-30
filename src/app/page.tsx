@@ -4,7 +4,7 @@
 
 import { auth } from "../auth"
 import BarrelCreateForm from "@/components/barrels/barrel-create-form";
-import { fetchAllBarrels } from "@/db/queries/barrels";
+import { fetchBarrelsFromUser, fetchPublicBarrels } from "@/db/queries/barrels";
 import { UsersList } from "@/components/users/users-list";
 import { fetchAllUsers } from "@/db/queries/users";
 import { AccountsList } from "@/components/users/account-list";
@@ -26,7 +26,7 @@ export default async function Home() {
           </div>
           <div className="col-span-10 h-full">
             <Suspense fallback={loader}>
-              <BarrelsGrid fetchData={fetchAllBarrels} />
+              <BarrelsGrid fetchPublicData={fetchPublicBarrels} fetchPrivateData={fetchBarrelsFromUser} />
             </Suspense>
           </div>
         </div>

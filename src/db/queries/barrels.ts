@@ -19,6 +19,34 @@ export async function fetchAllBarrels() : Promise<BarrelWithUser[]> {
   });
 }
 
+export async function fetchPublicBarrels() : Promise<BarrelWithUser[]> {
+  return db.barrel.findMany({
+    where: {
+      isPublic : true
+    },
+    orderBy: { 
+      updatedAt : "desc"
+    },
+    include: {
+      user: { select: { name: true, image: true } },
+    },
+  });
+}
+
+export async function fetchBarrelsFromUser(userId : string) : Promise<BarrelWithUser[]> {
+  return db.barrel.findMany({
+    where:{
+      userId : userId
+    },
+    orderBy: { 
+      updatedAt : "desc"
+    },
+    include: {
+      user: { select: { name: true, image: true } },
+    },
+  });
+}
+
 export async function fetchOneBarrelById(id:string) : Promise<BarrelWithUser | null> {
   return db.barrel.findFirst({
     where: {
