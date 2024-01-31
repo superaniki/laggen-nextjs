@@ -9,7 +9,21 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useSession } from "next-auth/react";
 import LoadingString from "../common/loading-string";
 
-export default function BarrelCard({ barrel, color }: { barrel: BarrelWithUser, color?: string }) {
+export enum BarrelType {
+  public,
+  private
+}
+
+interface BarrelCardProps {
+  barrel: BarrelWithUser,
+  color?: string,
+  type: BarrelType
+}
+
+const PUBLIC_BARREL_COLOR = "bg-gradient-to-t from-green-100 to-blue-100";
+const PRIVATE_BARREL_COLOR = "bg-gradient-to-t from-pink-100 to-blue-100";
+
+export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
   const [isDeleted, setIsDeleted] = useState(false);
   const [isPending, setIsPending] = useState<boolean | string>(false);
   const session = useSession();
@@ -40,10 +54,7 @@ export default function BarrelCard({ barrel, color }: { barrel: BarrelWithUser, 
         return response.json();
       })
         .then(data => {
-          //toast("Barrel " + barrel.name + "is deleted!");
           toast.success("Barrel " + barrel.name + "is deleted!", { position: 'bottom-center' })
-
-          console.log("delete success!")
           setIsPending(false);
           setIsDeleted(true);
         })
@@ -61,12 +72,16 @@ export default function BarrelCard({ barrel, color }: { barrel: BarrelWithUser, 
       author = barrel.user.name;
   }
 
+  let barrelColor = PUBLIC_BARREL_COLOR;
+  if (type === BarrelType.private)
+    barrelColor = PRIVATE_BARREL_COLOR;
+
   return <>
     {isPending && <div className="loading">{isPending}<span></span></div>}
     {!isDeleted && !isPending &&
       <Card isHoverable={false} className="card mx-5 mb-10 pb-4">
         <Link href={paths.barrelEdit(barrel.slug)}>
-          <CardBody className="overflow-hidden py-2 h-48 w-full bg-gradient-to-t from-green-100 to-blue-100">
+          <CardBody className={`overflow-hidden py-2 h-48 w-full ${barrelColor}`}>
             <BarrelPreviewCanvas barrel={barrel} color={"#707070"} />
           </CardBody>
         </Link>

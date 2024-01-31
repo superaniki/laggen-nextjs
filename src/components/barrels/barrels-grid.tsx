@@ -1,6 +1,6 @@
 "use client"
 import type { BarrelWithUser } from "@/db/queries/barrels";
-import BarrelCard from "./barrel-card";
+import BarrelCard, { BarrelType } from "./barrel-card";
 import { Pagination } from "@nextui-org/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -99,7 +99,7 @@ export default function BarrelsGrid({ publicBarrels, privateBarrels }: BarrelsLi
       <div className="mx-5 mb-5 text-xl">Private Barrels</div>
       <div className="grid grid-cols-4 gap-0">
         {getBarrelsForPrivatePage().map((barrel) => (
-          <BarrelCard key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
+          <BarrelCard type={BarrelType.private} key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
         ))}
       </div>
 
@@ -111,7 +111,7 @@ export default function BarrelsGrid({ publicBarrels, privateBarrels }: BarrelsLi
     <div className="mx-5 mb-5 text-xl">Public Barrels</div>
     <div className="grid grid-cols-4 gap-0">
       {getBarrelsForPublicPage().map((barrel) => (
-        <BarrelCard key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
+        <BarrelCard type={BarrelType.public} key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
       ))}
     </div>
 
