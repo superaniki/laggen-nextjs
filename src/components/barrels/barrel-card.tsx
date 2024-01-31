@@ -79,7 +79,7 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
   return <>
     {isPending && <div className="loading">{isPending}<span></span></div>}
     {!isDeleted && !isPending &&
-      <Card isHoverable={false} className="card mx-5 mb-10 pb-4">
+      <Card isHoverable={false} className="card mx-5 mb-10 pb-4 fadeIn-animation">
         <Link href={paths.barrelEdit(barrel.slug)}>
           <CardBody className={`overflow-hidden py-2 h-48 w-full ${barrelColor}`}>
             <BarrelPreviewCanvas barrel={barrel} color={"#707070"} />

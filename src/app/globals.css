@@ -11,6 +11,21 @@
 }
 
 @layer utilities {
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      scale: 0.9;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+  
+  .fadeIn-animation {
+    animation: 0.4s fadeIn;
+  }
+
   .loading span:before {
     animation: dots 1s linear infinite;
     content: '';
