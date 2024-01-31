@@ -1,10 +1,9 @@
 
 
 "use server";
-
 import { auth } from "../auth"
 import BarrelCreateForm from "@/components/barrels/barrel-create-form";
-import { fetchBarrelsFromUser, fetchPublicBarrels } from "@/db/queries/barrels";
+import { BarrelWithUser, fetchBarrelsFromUser, fetchPublicBarrels } from "@/db/queries/barrels";
 import { UsersList } from "@/components/users/users-list";
 import { fetchAllUsers } from "@/db/queries/users";
 import { AccountsList } from "@/components/users/account-list";
@@ -14,6 +13,17 @@ import { Suspense } from "react";
 import { CircularProgress } from "@nextui-org/react";
 
 export default async function Home() {
+
+  const session = await auth();
+  let publicBarrels = await fetchPublicBarrels();
+  let privateBarrels: BarrelWithUser[] = [];
+
+  if (session) {
+    if (session.user?.id)
+      privateBarrels = await fetchBarrelsFromUser(session.user?.id);
+    publicBarrels = publicBarrels.filter(barrel => barrel.userId !== session.user?.id)
+  }
+
   const loader = <div className="h-full flex items-center justify-center">
     <CircularProgress color="primary" aria-label="Loading..." /> </div>;
 
@@ -26,7 +36,7 @@ export default async function Home() {
           </div>
           <div className="col-span-10 h-full">
             <Suspense fallback={loader}>
-              <BarrelsGrid fetchPublicData={fetchPublicBarrels} fetchPrivateData={fetchBarrelsFromUser} />
+              <BarrelsGrid publicBarrels={publicBarrels} privateBarrels={privateBarrels} />
             </Suspense>
           </div>
         </div>
