@@ -4,9 +4,9 @@ import Grid from '../commons/grid';
 import { useState, useEffect, useRef } from 'react';
 import { A4, a4size } from '../commons/A4';
 import PlaningTool from './types/planing-tool';
-import StaveTemplate from './types/stave-front';
 import StaveEnds from './types/stave-end';
 import { Barrel } from '@prisma/client';
+import StaveFront from './types/stave-front';
 type PrintOuts = {
 	barrel: Barrel,
 	worldX: number;
@@ -15,7 +15,7 @@ type PrintOuts = {
 	modifyScale: number;
 	resetModifyScale: () => void;
 };
-const PrintOuts = ({ barrel, worldX, worldY, dimensions, modifyScale, resetModifyScale }: PrintOuts) => {
+const PrintOutsMulti = ({ barrel, worldX, worldY, dimensions, modifyScale, resetModifyScale }: PrintOuts) => {
 
 	const pixelsPerCm = 40;
 	const pixelsPerMm = pixelsPerCm * 0.1;
@@ -42,7 +42,7 @@ const PrintOuts = ({ barrel, worldX, worldY, dimensions, modifyScale, resetModif
 		return (
 			<Group x={0} y={0}>
 				<A4 x={-250}>
-					<StaveTemplate
+					<StaveFront
 						onClick={() => setStaveTemplateRotation(!staveTemplateRotation)}
 						maxArea={maxArea}
 						rotate={staveTemplateRotation}
@@ -80,4 +80,4 @@ const PrintOuts = ({ barrel, worldX, worldY, dimensions, modifyScale, resetModif
 	);
 };
 
-export default PrintOuts;
+export default PrintOutsMulti;

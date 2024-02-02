@@ -1,6 +1,6 @@
-import Cross from "./Cross";
 import useImage from "use-image";
 import { Line, Image, Group } from "react-konva";
+import Cross from "../../commons/cross";
 
 function BarrelSide({ cross = false, angle, height, visible, inColor = true, bottomDiameter, x, y, staveTopThickness,
     staveBottomThickness, bottomThickness, bottomMargin, scale, thickStroke = false }) {
