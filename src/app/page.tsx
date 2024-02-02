@@ -31,10 +31,14 @@ export default async function Home() {
     <div className="w-full bg-white pt-5">
       <div className="container relative border-gray-500 mb-5 mx-auto px-10">
         <div className="grid grid-cols-12 gap-6 h-full min-h-[800px]">
-          <div className="col-span-2 grid content-start gap-2">
+          <div className="hidden md:visible md:grid col-span-2 content-start gap-2">
             <BarrelCreateForm />
           </div>
-          <div className="col-span-10 h-full">
+          <div className="col-span-12 md:col-span-10 h-full mb-16">
+            <div className="md:hidden flex mx-5 mb-5 text-xl">
+              <BarrelCreateForm />
+            </div>
+
             <Suspense fallback={loader}>
               <BarrelsGrid publicBarrels={publicBarrels} privateBarrels={privateBarrels} />
             </Suspense>

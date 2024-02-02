@@ -44,12 +44,12 @@ export default function BarrelCreateForm() {
   return (
     <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)} placement="left">
       <PopoverTrigger>
-        <Button color="primary">Create a Barrel</Button>
+        <Button className="flex flex-auto" color="default">New Barrel</Button>
       </PopoverTrigger>
       <PopoverContent>
         <form action={action}>
           <div className="flex flex-col gap-4 p-4 w-80">
-            <h3 className="text-lg">Create a Barrel</h3>
+            <h3 className="text-lg">New Barrel</h3>
 
             <Input
               isInvalid={!!formState?.errors.name}

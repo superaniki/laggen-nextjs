@@ -1,9 +1,8 @@
 "use client";
 import { Barrel } from "@prisma/client";
 import BarrelCanvas from "../canvas/barrel-canvas";
-import Head from "next/head";
 import { ChangeEvent, useState } from "react";
-import { Button, Card, CardBody, Checkbox, Divider } from "@nextui-org/react";
+import { Button, Card, CardBody, Divider } from "@nextui-org/react";
 import {
   applyBarrelHeight, applyBarrelTopDiameter, applyBarrelAngle,
   applyBarrelBottomDiameter, applyBarrelStaveLength
@@ -14,22 +13,29 @@ import FormInput from "../common/form-input";
 import { useSession } from "next-auth/react";
 import { BarrelWithUser } from "@/db/queries/barrels";
 import FormCheckBox from "../common/form-checkbutton";
-import { PrintoutsCanvas } from "../canvas/printouts-canvas";
+import { PrintoutsCanvas } from "../canvas/printouts/printouts-canvas";
 import LoadingString from "../common/loading-string";
+import OnPaper, { BarrelTool } from "../canvas/printouts/on-paper";
 
-
-enum ViewState {
+enum View {
   Barrel,
-  Printouts,
+  Tools,
   View3d
+}
+
+enum StaveToolView {
+  Inside,
+  Front,
+  End
 }
 
 export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelWithUser }) {
   const { user, ...barrel } = { ...barrelWithUser };
-  const [viewToggleState, setViewToggleState] = useState(ViewState.Barrel);
+  const [viewState, setViewState] = useState(View.Barrel);
+  const [staveToolViewState, setStaveToolViewState] = useState(StaveToolView.Inside);
+
   const [editedBarrel, setEditedBarrel] = useState<Barrel>(barrel);
   const session = useSession();
-
 
   if (barrelWithUser === undefined)
     return <LoadingString />;
@@ -89,22 +95,54 @@ export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelW
     enableSaveButton = true;
   }
 
+
+  function ViewButton({ buttonType, label }: { buttonType: View, label: string }) {
+    return <Button disableRipple color="default" variant={viewState === buttonType ? "solid" : "faded"} className="row-span-1" onClick={() => setViewState(buttonType)}>{label}</Button>
+  }
+
+  function StaveToolButton({ buttonType, label }: { buttonType: StaveToolView, label: string }) {
+    return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" isDisabled={viewState !== View.Tools} disableRipple color="default" variant={staveToolViewState === buttonType ? "solid" : "faded"} onClick={() => setStaveToolViewState(buttonType)}>{label}</Button>
+  }
+
   return (
     <>
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-1 grid content-start gap-2">
-          <Button color="default" variant={viewToggleState === ViewState.Barrel ? "solid" : "faded"} className="row-span-1" onClick={() => setViewToggleState(ViewState.Barrel)}>Barrel</Button>
-          <Button color="default" variant={viewToggleState === ViewState.Printouts ? "solid" : "faded"} className="row-span-1" onClick={() => setViewToggleState(ViewState.Printouts)}>Printouts</Button>
-          <Button color="default" variant={viewToggleState === ViewState.View3d ? "solid" : "faded"} className="row-span-1" onClick={() => setViewToggleState(ViewState.View3d)}>View </Button>
+        <div className="col-span-2 grid content-start gap-2">
+          <ViewButton buttonType={View.Barrel} label="Barrel" />
+          <ViewButton buttonType={View.View3d} label="3dView" />
+          <ViewButton buttonType={View.Tools} label="Tools" />
+
+          <Divider className="box-content my-4 mx-2 w-auto" />
+
+          <div className={`${viewState !== View.Tools && "opacity-disabled"} flex flex-col items-center text-sm`}>templates for stave</div>
+          <div className="xl:flex xl:flex-row self-center justify-center">
+            <StaveToolButton buttonType={StaveToolView.Inside} label="inside" />
+            <StaveToolButton buttonType={StaveToolView.Front} label="front" />
+            <StaveToolButton buttonType={StaveToolView.End} label="end" />
+          </div>
+
+          <Divider className="box-content my-4 mx-2 w-auto" />
         </div>
 
-        <div className="col-span-9">
-          <Card className="py-4 bg-gradient-to-t from-green-100 to-blue-100 ">
-            <CardBody className="">
-              {viewToggleState === ViewState.Barrel && <BarrelCanvas barrel={editedBarrel} />}
-              {viewToggleState === ViewState.Printouts && <PrintoutsCanvas barrel={editedBarrel} />}
-              {viewToggleState === ViewState.View3d && <PrintoutsCanvas barrel={editedBarrel} />}
-            </CardBody>
+        <div className="col-span-8">
+          <Card className="py-4 bg-gradient-to-t from-green-100 to-blue-100 items-center p-0">
+            {viewState === View.Barrel && <BarrelCanvas barrel={editedBarrel} />}
+            {viewState === View.Tools && (
+              <>
+                {
+                  staveToolViewState === StaveToolView.Inside &&
+                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.PlaningTool} /></div>
+                }
+                {
+                  staveToolViewState === StaveToolView.Front &&
+                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveFront} /></div>
+                }
+                {
+                  staveToolViewState === StaveToolView.End &&
+                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveEnds} /></div>}
+              </>
+            )}
+            {viewState === View.View3d && <>3d view</>}
           </Card>
         </div>
         <div className="col-span-2">

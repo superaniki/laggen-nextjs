@@ -11,6 +11,22 @@
 }
 
 @layer utilities {
+
+  @keyframes fadeAndRoll {
+    0% {
+      transform: translateY(-200%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+  }
+  
+  .fadeAndRoll-animation {
+    animation: 0.5s fadeAndRoll;
+  }
+    
   @keyframes fadeIn {
     0% {
       opacity: 0;

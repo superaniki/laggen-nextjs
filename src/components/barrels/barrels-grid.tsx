@@ -97,7 +97,7 @@ export default function BarrelsGrid({ publicBarrels, privateBarrels }: BarrelsLi
   return <>
     {status === "authenticated" && <>
       <div className="mx-5 mb-5 text-xl">Private Barrels</div>
-      <div className="grid grid-cols-4 gap-0">
+      <div className="grid gap-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {getBarrelsForPrivatePage().map((barrel) => (
           <BarrelCard type={BarrelType.private} key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
         ))}
@@ -109,7 +109,7 @@ export default function BarrelsGrid({ publicBarrels, privateBarrels }: BarrelsLi
     </>}
 
     <div className="mx-5 mb-5 text-xl">Public Barrels</div>
-    <div className="grid grid-cols-4 gap-0">
+    <div className="grid gap-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {getBarrelsForPublicPage().map((barrel) => (
         <BarrelCard type={BarrelType.public} key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
       ))}

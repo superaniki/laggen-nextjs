@@ -1,7 +1,8 @@
 import { Stage, Layer } from 'react-konva';
 import { useEffect, useRef, useState } from 'react';
 import { Barrel } from '@prisma/client';
-import PrintOuts from './printouts/printouts';
+import PrintOuts from './printouts-multi';
+import PrintOutsMulti from './printouts-multi';
 
 function PrintoutsCanvas({
 	barrel,
@@ -51,7 +52,7 @@ function PrintoutsCanvas({
 		<div ref={ref} className="h-[800px] w-full" tabIndex={0}>
 			<Stage width={dimensions.width} height={dimensions.height}>
 				<Layer>
-					<PrintOuts
+					<PrintOutsMulti
 						barrel={barrel}
 						worldX={worldX}
 						worldY={worldY}

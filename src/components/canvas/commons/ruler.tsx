@@ -2,14 +2,14 @@ import React from 'react';
 import { Group, Line, Rect, Text } from 'react-konva';
 
 type RulerProps = {
-	scale: number;
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-	margin: number;
-	xLength: number | string;
-	yLength: number | string;
+	scale?: number;
+	x?: number;
+	y?: number;
+	width?: number;
+	height?: number;
+	margin?: number;
+	xLength?: number | string;
+	yLength?: number | string;
 };
 
 function Ruler({

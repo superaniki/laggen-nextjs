@@ -88,7 +88,7 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
           <div className="flex w-full justify-between">
             <div>
-              <h4 className="font-bold text-large">{barrel.name}</h4>
+              <h4 className="font-bold text-large overflow-hidden text-ellipsis">{barrel.name}</h4>
               <small className="text-default-500">by {author}</small>
             </div>
             <div>
