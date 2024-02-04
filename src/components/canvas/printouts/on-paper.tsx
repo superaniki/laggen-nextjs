@@ -11,6 +11,13 @@ import { Barrel } from "@prisma/client";
 interface OnPaperProps {
   barrel: Barrel
   tool: BarrelTool
+  paperType?: Paper
+}
+
+
+export enum Paper {
+  A3,
+  A4,
 }
 
 export enum BarrelTool {
@@ -19,16 +26,30 @@ export enum BarrelTool {
   StaveEnds
 }
 
-export default function OnPaper({ barrel, tool = BarrelTool.PlaningTool }: OnPaperProps) {
+export default function OnPaper({ barrel, tool = BarrelTool.PlaningTool, paperType = Paper.A4 }: OnPaperProps) {
   const { height, topDiameter, staveLength, angle, bottomDiameter } = { ...barrel };
   const [staveTemplateRotation, setStaveTemplateRotation] = useState(false);
-
   const cross = false;
   const visible = true;
-  const a4 = { width: 210, height: 297 }
+  let paperSize = { width: 0, height: 0 }
+
+  switch (paperType) {
+    case Paper.A3:
+      paperSize = { width: 297, height: 420 }
+      break;
+    case Paper.A4:
+      paperSize = { width: 210, height: 297 }
+      break;
+    default:
+      paperSize = { width: 210, height: 297 }
+  }
+  // Fixa så att val av papersize ger mig rätt mått
+  console.log("paperSize:", paperSize)
+
+
   const scale = 2.5; //f.d printScale 1.8
   const margins = 15;
-  let maxArea = { width: a4.width - margins, height: a4.height - margins };
+  let maxArea = { width: paperSize.width - margins, height: paperSize.height - margins };
 
   let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
     "  Stave length: " + staveLength + "  Angle: " + angle;
@@ -36,7 +57,7 @@ export default function OnPaper({ barrel, tool = BarrelTool.PlaningTool }: OnPap
   let page = 0;
 
 
-  return <Stage visible={visible} /*ref={printRef}*/ width={a4.width * scale} height={a4.height * scale}>
+  return <Stage visible={visible} /*ref={printRef}*/ width={paperSize.width * scale} height={paperSize.height * scale}>
     <Layer >
       <Rect fill={"white"} x={-5000} y={-5000} width={10000} height={10000} />
 
@@ -44,16 +65,16 @@ export default function OnPaper({ barrel, tool = BarrelTool.PlaningTool }: OnPap
         <PlaningTool cross={cross} scale={scale} x={30 * scale} y={270 * scale} barrel={barrel} />
       }
       {tool === BarrelTool.StaveFront &&
-        <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} maxArea={maxArea} rotate={staveTemplateRotation} x={a4.width * scale * 0.5} y={margins * scale} barrel={barrel} scale={scale} />
+        <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} maxArea={maxArea} rotate={staveTemplateRotation} x={paperSize.width * scale * 0.5} y={margins * scale} barrel={barrel} scale={scale} />
       }
       {tool === BarrelTool.StaveEnds &&
-        <StaveEnds scale={scale} x={a4.width * scale * 0.5} y={a4.height} {...barrel} />
+        <StaveEnds scale={scale} x={paperSize.width * scale * 0.5} y={paperSize.height} {...barrel} />
       }
 
-      <BarrelSide visible={true} inColor={false} x={a4.width * scale - margins * scale} y={a4.height * scale - margins * scale}
+      <BarrelSide visible={true} inColor={false} x={paperSize.width * scale - margins * scale} y={paperSize.height * scale - margins * scale}
         {...barrel} thickStroke={true} scale={0.07 * scale} />
-      <Ruler scale={scale * 10} y={a4.height * scale - margins * scale} x={margins * scale - 15} xLength={6} yLength={0} />
-      <Text x={margins * scale} rotation={270} y={a4.height * scale - 25 * scale} text={staveTemplateInfoText} fontFamily="courier" fontSize={3 * scale} fill={"black"} />
+      <Ruler scale={scale * 10} y={paperSize.height * scale - margins * scale} x={margins * scale - 15} xLength={6} yLength={0} />
+      <Text x={margins * scale} rotation={270} y={paperSize.height * scale - 25 * scale} text={staveTemplateInfoText} fontFamily="courier" fontSize={3 * scale} fill={"black"} />
     </Layer>
   </Stage>
 

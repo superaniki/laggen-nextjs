@@ -16,6 +16,7 @@ import FormCheckBox from "../common/form-checkbutton";
 import { PrintoutsCanvas } from "../canvas/printouts/printouts-canvas";
 import LoadingString from "../common/loading-string";
 import OnPaper, { BarrelTool } from "../canvas/printouts/on-paper";
+import { Paper } from "../canvas/printouts/on-paper";
 
 enum View {
   Barrel,
@@ -33,6 +34,8 @@ export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelW
   const { user, ...barrel } = { ...barrelWithUser };
   const [viewState, setViewState] = useState(View.Barrel);
   const [staveToolViewState, setStaveToolViewState] = useState(StaveToolView.Inside);
+  const [paperState, setPaperState] = useState(Paper.A4);
+
 
   const [editedBarrel, setEditedBarrel] = useState<Barrel>(barrel);
   const session = useSession();
@@ -104,6 +107,8 @@ export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelW
     return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" isDisabled={viewState !== View.Tools} disableRipple color="default" variant={staveToolViewState === buttonType ? "solid" : "faded"} onClick={() => setStaveToolViewState(buttonType)}>{label}</Button>
   }
 
+  console.log(paperState);
+
   return (
     <>
       <div className="grid grid-cols-12 gap-6">
@@ -121,6 +126,11 @@ export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelW
             <StaveToolButton buttonType={StaveToolView.End} label="end" />
           </div>
 
+          <div className="flex flex-row self-center justify-center">
+            <Button variant={paperState === Paper.A3 ? "solid" : "faded"} disableRipple onClick={() => setPaperState(Paper.A3)} isDisabled={viewState !== View.Tools}>A3</Button>
+            <Button variant={paperState === Paper.A4 ? "solid" : "faded"} disableRipple onClick={() => setPaperState(Paper.A4)} isDisabled={viewState !== View.Tools}>A4</Button>
+          </div>
+
           <Divider className="box-content my-4 mx-2 w-auto" />
         </div>
 
@@ -131,15 +141,15 @@ export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelW
               <>
                 {
                   staveToolViewState === StaveToolView.Inside &&
-                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.PlaningTool} /></div>
+                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.PlaningTool} paperType={paperState} /></div>
                 }
                 {
                   staveToolViewState === StaveToolView.Front &&
-                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveFront} /></div>
+                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveFront} paperType={paperState} /></div>
                 }
                 {
                   staveToolViewState === StaveToolView.End &&
-                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveEnds} /></div>}
+                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveEnds} paperType={paperState} /></div>}
               </>
             )}
             {viewState === View.View3d && <>3d view</>}
