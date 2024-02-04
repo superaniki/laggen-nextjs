@@ -6,7 +6,7 @@ function BarrelSide({ cross = false, angle, height, visible, inColor = true, bot
     staveBottomThickness, bottomThickness, bottomMargin, scale, thickStroke = false }) {
     const barrelColor = inColor ? "#F4D279" : "white";
     const stroke = thickStroke ? 4 : 1;
-    const url = 'apple.png';
+    const url = '/apple.png';
     const [image, imageStatus] = useImage(url);
 
     const tan = parseFloat(Math.tan(angle * Math.PI / 180));
