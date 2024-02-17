@@ -95,14 +95,15 @@ onUpdate ramlar in! Nu skall den uppdateras med ny data när jag pillar på nåt
 	const adjustedTopOuterPoints = createCurveMaxWidth(adjustedTopOuterDiameter, 90, 180, maxStaveWidth);
 	const adjustedTopInnerPoints = createCurveMaxWidth(adjustedTopInnerDiameter, 90, 180, maxStaveWidth);
 
+	const curveXpos = rectX + rectWidth;
 
 	return (
-		<Group onClick={() => console.log("Hej")} x={posX} y={posY} scale={{ x: scale, y: scale }}>
-			<Curve id={"InnerTop"} x={innerTopX} y={innerTopY} points={adjustedTopInnerPoints} title={'Top, inner!'} />
-			<Curve id={"OuterTop"} x={outerTopX} y={outerTopY} points={adjustedTopOuterPoints} title={'Top, outer'} />
-			<Curve id={"InnerBottom"} x={innerBottomX} y={innerBottomY} points={adjustedBottomInnerPoints} title={'Bottom, inner'} />
-			<Curve id={"OuterBottom"} x={outerBottomX} y={outerBottomY} points={adjustedBottomOuterPoints} title={'Bottom, outer'} />
-			<Rect id="rect" draggable stroke={'black'} strokeWidth={1} fill="white" x={rectX} y={rectY} width={rectWidth} height={rectHeight} />
+		<Group onClick={() => console.log("Hej")} x={posX} y={posY} draggable scale={{ x: scale, y: scale }}>
+			<Curve id={"InnerTop"} x={curveXpos} y={innerTopY} points={adjustedTopInnerPoints} title={'Top, inner!'} />
+			<Curve id={"OuterTop"} x={curveXpos} y={outerTopY} points={adjustedTopOuterPoints} title={'Top, outer'} />
+			<Curve id={"InnerBottom"} x={curveXpos} y={innerBottomY} points={adjustedBottomInnerPoints} title={'Bottom, inner'} />
+			<Curve id={"OuterBottom"} x={curveXpos} y={outerBottomY} points={adjustedBottomOuterPoints} title={'Bottom, outer'} />
+			<Rect id="rect" stroke={'black'} strokeWidth={1} fill="white" x={rectX} y={rectY} width={rectWidth} height={rectHeight} />
 			<Cross visible={cross} color="green" />
 		</Group>
 	);
