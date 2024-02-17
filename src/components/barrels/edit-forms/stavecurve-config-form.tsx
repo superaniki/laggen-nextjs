@@ -18,5 +18,24 @@ export function StaveCurveConfigForm({ config, handleUpdate }: StaveCurveConfigF
   return <>
     <FormInput callback={handleUpdate} name={"posX"} value={configDetails.posX.toString()} type={"number"} />
     <FormInput callback={handleUpdate} name={"posY"} value={configDetails.posY.toString()} type={"number"} />
+    <FormInput callback={handleUpdate} name={"innerTopY"} value={configDetails.innerTopY.toString()} type={"number"} />
+    <FormInput callback={handleUpdate} name={"outerTopY"} value={configDetails.outerTopY.toString()} type={"number"} />
+    <FormInput callback={handleUpdate} name={"innerBottomY"} value={configDetails.innerBottomY.toString()} type={"number"} />
+    <FormInput callback={handleUpdate} name={"outerBottomY"} value={configDetails.outerBottomY.toString()} type={"number"} />
+    <FormInput callback={handleUpdate} name={"rectHeight"} value={configDetails.rectHeight.toString()} type={"number"} />
+    <FormInput callback={handleUpdate} name={"rectWidth"} value={configDetails.rectWidth.toString()} type={"number"} />
   </>
 }
+
+/*
+id: string;
+    paperType: string;
+    rotatePaper: boolean;
+    posX: number;
+    posY: number;
+    innerTopX: number;
+    innerTopY: number;
+    outerTopX: number;
+    outerTopY: number;
+    innerBottomX: number;
+    */

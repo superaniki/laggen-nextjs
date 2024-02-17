@@ -1,12 +1,12 @@
-import React from 'react';
+/*import React from 'react';
 import { Group } from 'react-konva';
-import Grid from '../commons/grid';
+import Grid from '../../commons/grid';
 import { useState, useEffect, useRef } from 'react';
-import { A4, a4size } from '../commons/A4';
-import PlaningTool from './types/stave-curve';
-import StaveEnds from './types/stave-end';
+import { A4, a4size } from '../../commons/A4';
+import PlaningTool from '../types/stave-curve';
+import StaveEnds from '../types/stave-end';
 import { Barrel } from '@prisma/client';
-import StaveFront from './types/stave-front';
+import StaveFront from '../types/stave-front';
 type PrintOuts = {
 	barrel: Barrel,
 	worldX: number;
@@ -81,3 +81,4 @@ const PrintOutsMulti = ({ barrel, worldX, worldY, dimensions, modifyScale, reset
 };
 
 export default PrintOutsMulti;
+*/

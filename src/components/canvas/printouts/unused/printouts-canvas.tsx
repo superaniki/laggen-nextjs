@@ -1,4 +1,4 @@
-import { Stage, Layer } from 'react-konva';
+/*import { Stage, Layer } from 'react-konva';
 import { useEffect, useRef, useState } from 'react';
 import { Barrel } from '@prisma/client';
 import PrintOuts from './printouts-multi';
@@ -68,6 +68,7 @@ function PrintoutsCanvas({
 }
 
 export { PrintoutsCanvas };
+*/
 
 /*
 

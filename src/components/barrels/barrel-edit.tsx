@@ -28,7 +28,6 @@ enum View {
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails, staveCurveConfig, ...onlyBarrel } = { ...barrel };
   const { configDetails, ...onlyStaveCurveConfig } = { ...staveCurveConfig }
-  //const [paperState, setPaperState] = useState(barrel.staveCurveConfig.defaultPaperType);
 
   const [editedBarrelDetails, setEditedBarrelDetails] = useState<BarrelDetails>(barrelDetails);
   const [editedStaveCurveConfig, setEditedStaveCurveConfig] = useState<StaveCurveConfigWithData>(staveCurveConfig);
@@ -52,12 +51,10 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     }
   }
   const paperState = getCurrentPaperState();
-  console.log("byte paperstate : ", paperState);
   const session = useSession();
 
   if (barrel === undefined)
     return <LoadingString />;
-
 
   function updateNumber(event: ChangeEvent<HTMLInputElement>) {
     const { value, name } = event.target;
@@ -110,7 +107,9 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   }
 
   function StaveToolButton({ buttonType, label }: { buttonType: BarrelTool, label: string }) {
-    return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" /*isDisabled={viewState !== View.Tools}*/ disableRipple color="default" variant={barrelToolState === buttonType ? "solid" : "faded"} onClick={() => setbarrelToolState(buttonType)}>{label}</Button>
+    return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" disableRipple color="default"
+      variant={barrelToolState === buttonType ? "solid" : "faded"}
+      onClick={() => setbarrelToolState(buttonType)}>{label}</Button>
   }
 
   //const sessionUserId = session.data?.user?.id ? session.data?.user?.id : "loggedOut";
@@ -143,8 +142,6 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     configDetailsArray[index] = { ...updatedConfigDetails }
     const updatedConfig = { ...editedStaveCurveConfig, configDetails: configDetailsArray }
     setEditedStaveCurveConfig(updatedConfig);
-    //setEditedBarrel((prevBarrel): BarrelWithData => ({ ...prevBarrel, staveCurveConfig: updatedConfig }));
-    //}
   }
 
 
@@ -180,8 +177,10 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
               <StaveToolButton buttonType={BarrelTool.StaveEnd} label="end" />
             </div>
             <div className="flex flex-row self-center justify-center">
-              <Button variant={paperState === Paper.A3 ? "solid" : "faded"} disableRipple onClick={() => changePaperState(Paper.A3)} /*isDisabled={viewState !== View.Tools}*/>A3</Button>
-              <Button variant={paperState === Paper.A4 ? "solid" : "faded"} disableRipple onClick={() => changePaperState(Paper.A4)} /*isDisabled={viewState !== View.Tools}*/>A4</Button>
+              <Button variant={paperState === Paper.A3 ? "solid" : "faded"} disableRipple
+                onClick={() => changePaperState(Paper.A3)} >A3</Button>
+              <Button variant={paperState === Paper.A4 ? "solid" : "faded"} disableRipple
+                onClick={() => changePaperState(Paper.A4)} >A4</Button>
             </div>
             {viewState !== View.Tools && <div className="absolute inset-0 bg-white opacity-50" onClick={() => setViewState(View.Tools)}></div>}
           </div>
