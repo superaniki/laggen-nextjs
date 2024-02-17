@@ -61,7 +61,38 @@ CREATE TABLE "Barrel" (
     "isExample" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Barrel_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "Barrel_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "StaveCurveConfig" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "defaultPaperType" TEXT NOT NULL,
+    "barrelId" TEXT NOT NULL,
+    CONSTRAINT "StaveCurveConfig_barrelId_fkey" FOREIGN KEY ("barrelId") REFERENCES "Barrel" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "StaveCurveConfigDetails" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "paperType" TEXT NOT NULL,
+    "rotatePaper" BOOLEAN NOT NULL,
+    "posX" REAL NOT NULL,
+    "posY" REAL NOT NULL,
+    "innerTopX" REAL NOT NULL,
+    "innerTopY" REAL NOT NULL,
+    "outerTopX" REAL NOT NULL,
+    "outerTopY" REAL NOT NULL,
+    "innerBottomX" REAL NOT NULL,
+    "innerBottomY" REAL NOT NULL,
+    "outerBottomX" REAL NOT NULL,
+    "outerBottomy" REAL NOT NULL,
+    "rectX" REAL NOT NULL,
+    "rectY" REAL NOT NULL,
+    "rectWidth" REAL NOT NULL,
+    "rectHeight" REAL NOT NULL,
+    "staveCurveConfigId" TEXT NOT NULL,
+    CONSTRAINT "StaveCurveConfigDetails_staveCurveConfigId_fkey" FOREIGN KEY ("staveCurveConfigId") REFERENCES "StaveCurveConfig" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
@@ -84,3 +115,6 @@ CREATE UNIQUE INDEX "Barrel_slug_key" ON "Barrel"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Barrel_name_key" ON "Barrel"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "StaveCurveConfig_barrelId_key" ON "StaveCurveConfig"("barrelId");

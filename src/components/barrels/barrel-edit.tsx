@@ -1,8 +1,7 @@
 "use client";
-import { Barrel } from "@prisma/client";
 import BarrelCanvas from "../canvas/barrel-canvas";
 import { ChangeEvent, useState } from "react";
-import { Button, Card, CardBody, Divider } from "@nextui-org/react";
+import { Button, Card, Divider } from "@nextui-org/react";
 import {
   applyBarrelHeight, applyBarrelTopDiameter, applyBarrelAngle,
   applyBarrelBottomDiameter, applyBarrelStaveLength
@@ -11,12 +10,14 @@ import { updateBarrel } from "@/actions";
 import FormButton from "../common/form-button";
 import FormInput from "../common/form-input";
 import { useSession } from "next-auth/react";
-import { BarrelWithUser } from "@/db/queries/barrels";
+import { BarrelWithData, StaveCurveConfigWithData } from "@/db/queries/barrels";
 import FormCheckBox from "../common/form-checkbutton";
-import { PrintoutsCanvas } from "../canvas/printouts/printouts-canvas";
 import LoadingString from "../common/loading-string";
 import OnPaper, { BarrelTool } from "../canvas/printouts/on-paper";
 import { Paper } from "../canvas/printouts/on-paper";
+import { Barrel, BarrelDetails, StaveCurveConfig } from "@prisma/client";
+import { BarrelDetailForm } from "./edit-forms/barrel-detail-form";
+import { StaveCurveConfigForm } from "./edit-forms/stavecurve-config-form";
 
 enum View {
   Barrel,
@@ -24,32 +25,39 @@ enum View {
   View3d
 }
 
-enum StaveToolView {
-  Inside,
-  Front,
-  End
-}
+export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
+  const { user, barrelDetails, staveCurveConfig, ...onlyBarrel } = { ...barrel };
+  const { configDetails, ...onlyStaveCurveConfig } = { ...staveCurveConfig }
+  //const [paperState, setPaperState] = useState(barrel.staveCurveConfig.defaultPaperType);
 
-export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelWithUser }) {
-  const { user, ...barrel } = { ...barrelWithUser };
+  const [editedBarrelDetails, setEditedBarrelDetails] = useState<BarrelDetails>(barrelDetails);
+  const [editedStaveCurveConfig, setEditedStaveCurveConfig] = useState<StaveCurveConfigWithData>(staveCurveConfig);
+
   const [viewState, setViewState] = useState(View.Barrel);
-  const [staveToolViewState, setStaveToolViewState] = useState(StaveToolView.Inside);
-  const [paperState, setPaperState] = useState(Paper.A4);
+  const [barrelToolState, setbarrelToolState] = useState<BarrelTool>(BarrelTool.StaveFront);
 
-
-  const [editedBarrel, setEditedBarrel] = useState<Barrel>(barrel);
+  // FIXA! blir fel med byta av A3 / A4
+  function getCurrentPaperState() {
+    switch (barrelToolState) {
+      case BarrelTool.StaveCurve:
+        return editedStaveCurveConfig.defaultPaperType
+      /* **********  Fyll på  ******************
+      case BarrelTool.StaveEnd:
+      return
+      case BarrelTool.StaveFront:
+      return 
+      */
+      default:
+        return ""
+    }
+  }
+  const paperState = getCurrentPaperState();
+  console.log("byte paperstate : ", paperState);
   const session = useSession();
 
-  if (barrelWithUser === undefined)
+  if (barrel === undefined)
     return <LoadingString />;
 
-  let author: string | React.ReactNode = <LoadingString />;
-  if (session.status !== "loading") {
-    if (session.data?.user?.id === barrel.userId)
-      author = "You";
-    else
-      author = user?.name;
-  }
 
   function updateNumber(event: ChangeEvent<HTMLInputElement>) {
     const { value, name } = event.target;
@@ -57,34 +65,33 @@ export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelW
     const numberValue = parseFloat(value);
     switch (name.toLowerCase()) {
       case "height":
-        setEditedBarrel((prevBarrel): Barrel => ({ ...applyBarrelHeight(numberValue, prevBarrel) }));
+        setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...applyBarrelHeight(numberValue, prevBarrel) }));
         break;
       case "topdiameter":
-        setEditedBarrel((prevBarrel): Barrel => ({ ...applyBarrelTopDiameter(numberValue, prevBarrel) }));
+        setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...applyBarrelTopDiameter(numberValue, prevBarrel) }));
         break;
       case "angle":
-        setEditedBarrel((prevBarrel): Barrel => ({ ...applyBarrelAngle(numberValue, prevBarrel) }));
+        setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...applyBarrelAngle(numberValue, prevBarrel) }));
         break;
       case "bottomdiameter":
-        setEditedBarrel((prevBarrel): Barrel => ({ ...applyBarrelBottomDiameter(numberValue, prevBarrel) }));
+        setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...applyBarrelBottomDiameter(numberValue, prevBarrel) }));
         break;
       case "stavelength":
-        setEditedBarrel((prevBarrel): Barrel => ({ ...applyBarrelStaveLength(numberValue, prevBarrel) }));
+        setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...applyBarrelStaveLength(numberValue, prevBarrel) }));
         break;
       default:
-        setEditedBarrel((prevBarrel): Barrel => ({ ...prevBarrel, [name]: numberValue }));
+        setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...prevBarrel, [name]: numberValue }));
     }
   }
 
   function updateString(event: ChangeEvent<HTMLInputElement>) {
     const { value, name } = event.target;
-    setEditedBarrel((prevBarrel): Barrel => ({ ...prevBarrel, [name]: value }));
+    setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...prevBarrel, [name]: value }));
   }
 
   function updateCheckmark(event: ChangeEvent<HTMLInputElement>) {
     const { checked, name } = event.target;
-    console.log("checked: " + name + " " + checked);
-    setEditedBarrel((prevBarrel): Barrel => ({ ...prevBarrel, [name]: checked }));
+    setEditedBarrelDetails((prevBarrel): BarrelDetails => ({ ...prevBarrel, [name]: checked }));
   }
 
   function dateString(milliSeconds: number) {
@@ -94,91 +101,121 @@ export default function BarrelEdit({ barrelWithUser }: { barrelWithUser: BarrelW
   }
 
   let enableSaveButton = false;
-  if (JSON.stringify({ ...barrel, updatedAt: '' }) !== JSON.stringify({ ...editedBarrel, updatedAt: '' })) {
+  if (JSON.stringify({ ...barrel, updatedAt: '' }) !== JSON.stringify({ ...onlyBarrel, updatedAt: '' })) {
     enableSaveButton = true;
   }
-
 
   function ViewButton({ buttonType, label }: { buttonType: View, label: string }) {
     return <Button disableRipple color="default" variant={viewState === buttonType ? "solid" : "faded"} className="row-span-1" onClick={() => setViewState(buttonType)}>{label}</Button>
   }
 
-  function StaveToolButton({ buttonType, label }: { buttonType: StaveToolView, label: string }) {
-    return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" isDisabled={viewState !== View.Tools} disableRipple color="default" variant={staveToolViewState === buttonType ? "solid" : "faded"} onClick={() => setStaveToolViewState(buttonType)}>{label}</Button>
+  function StaveToolButton({ buttonType, label }: { buttonType: BarrelTool, label: string }) {
+    return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" /*isDisabled={viewState !== View.Tools}*/ disableRipple color="default" variant={barrelToolState === buttonType ? "solid" : "faded"} onClick={() => setbarrelToolState(buttonType)}>{label}</Button>
   }
 
-  console.log(paperState);
+  //const sessionUserId = session.data?.user?.id ? session.data?.user?.id : "loggedOut";
+
+
+  function getStaveCurveConfigDetails() {
+    const configDetailsDataArray = editedStaveCurveConfig.configDetails;
+    return configDetailsDataArray.find(item => (item.paperType === paperState));
+  }
+
+  function getStaveCurveConfigDetailsIndex() {
+    const configDetailsDataArray = editedStaveCurveConfig.configDetails;
+    return configDetailsDataArray.findIndex(item => (item.paperType === paperState));
+  }
+
+  function handleStaveCurveUpdate(event: ChangeEvent<HTMLInputElement>) {
+    const { value, name } = event.target;
+    const numberValue = parseFloat(value);
+
+    //if (barrelToolState === BarrelTool.StaveCurve) {
+
+    const configDetails = getStaveCurveConfigDetails();
+    if (configDetails === undefined)
+      return;
+
+    //klyddigt och komplext att uppdatera en array i en json.
+    const index = getStaveCurveConfigDetailsIndex();
+    const updatedConfigDetails = { ...configDetails, [name]: numberValue };
+    let configDetailsArray = editedStaveCurveConfig.configDetails;
+    configDetailsArray[index] = { ...updatedConfigDetails }
+    const updatedConfig = { ...editedStaveCurveConfig, configDetails: configDetailsArray }
+    setEditedStaveCurveConfig(updatedConfig);
+    //setEditedBarrel((prevBarrel): BarrelWithData => ({ ...prevBarrel, staveCurveConfig: updatedConfig }));
+    //}
+  }
+
+
+  function changePaperState(newPaperState: string) {
+    console.log()
+    switch (barrelToolState) {
+      case BarrelTool.StaveCurve:
+        const updatedConfig = { ...editedStaveCurveConfig, defaultPaperType: newPaperState }
+        console.log("updatedConfig:" + JSON.stringify(updatedConfig));
+        setEditedStaveCurveConfig(updatedConfig);
+        //return editedBarrel.staveCurveConfig.defaultPaperType;
+        break;
+      default:
+        break;
+    }
+  }
 
   return (
     <>
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-2 grid content-start gap-2">
+        <div className="col-span-2 grid content-start gap-2 relative">
           <ViewButton buttonType={View.Barrel} label="Barrel" />
           <ViewButton buttonType={View.View3d} label="3dView" />
           <ViewButton buttonType={View.Tools} label="Tools" />
 
           <Divider className="box-content my-4 mx-2 w-auto" />
 
-          <div className={`${viewState !== View.Tools && "opacity-disabled"} flex flex-col items-center text-sm`}>templates for stave</div>
-          <div className="xl:flex xl:flex-row self-center justify-center">
-            <StaveToolButton buttonType={StaveToolView.Inside} label="inside" />
-            <StaveToolButton buttonType={StaveToolView.Front} label="front" />
-            <StaveToolButton buttonType={StaveToolView.End} label="end" />
-          </div>
-
-          <div className="flex flex-row self-center justify-center">
-            <Button variant={paperState === Paper.A3 ? "solid" : "faded"} disableRipple onClick={() => setPaperState(Paper.A3)} isDisabled={viewState !== View.Tools}>A3</Button>
-            <Button variant={paperState === Paper.A4 ? "solid" : "faded"} disableRipple onClick={() => setPaperState(Paper.A4)} isDisabled={viewState !== View.Tools}>A4</Button>
+          <div className="grid gap-2 relative">
+            <div className={`${viewState !== View.Tools && "opacity-disabled"} flex flex-col items-center text-sm`}>templates for stave</div>
+            <div className="xl:flex xl:flex-row self-center justify-center">
+              <StaveToolButton buttonType={BarrelTool.StaveCurve} label="inside" />
+              <StaveToolButton buttonType={BarrelTool.StaveFront} label="front" />
+              <StaveToolButton buttonType={BarrelTool.StaveEnd} label="end" />
+            </div>
+            <div className="flex flex-row self-center justify-center">
+              <Button variant={paperState === Paper.A3 ? "solid" : "faded"} disableRipple onClick={() => changePaperState(Paper.A3)} /*isDisabled={viewState !== View.Tools}*/>A3</Button>
+              <Button variant={paperState === Paper.A4 ? "solid" : "faded"} disableRipple onClick={() => changePaperState(Paper.A4)} /*isDisabled={viewState !== View.Tools}*/>A4</Button>
+            </div>
+            {viewState !== View.Tools && <div className="absolute inset-0 bg-white opacity-50" onClick={() => setViewState(View.Tools)}></div>}
           </div>
 
           <Divider className="box-content my-4 mx-2 w-auto" />
+          <div className="grid gap-2 relative">
+            {barrelToolState === BarrelTool.StaveCurve && (
+              <StaveCurveConfigForm config={editedStaveCurveConfig} handleUpdate={handleStaveCurveUpdate} />
+            )}
+          </div>
         </div>
 
         <div className="col-span-8">
           <Card className="py-4 bg-gradient-to-t from-green-100 to-blue-100 items-center p-0">
-            {viewState === View.Barrel && <BarrelCanvas barrel={editedBarrel} />}
+            {viewState === View.Barrel && <BarrelCanvas barrel={editedBarrelDetails} />}
             {viewState === View.Tools && (
-              <>
-                {
-                  staveToolViewState === StaveToolView.Inside &&
-                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.PlaningTool} paperType={paperState} /></div>
-                }
-                {
-                  staveToolViewState === StaveToolView.Front &&
-                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveFront} paperType={paperState} /></div>
-                }
-                {
-                  staveToolViewState === StaveToolView.End &&
-                  <div className="shadow-medium"><OnPaper barrel={editedBarrel} tool={BarrelTool.StaveEnds} paperType={paperState} /></div>}
-              </>
+              <div className="shadow-medium">
+                <OnPaper barrelDetails={editedBarrelDetails} staveCurveConfig={editedStaveCurveConfig} tool={barrelToolState} paper={paperState} />
+              </div>
             )}
             {viewState === View.View3d && <>3d view</>}
           </Card>
         </div>
+
         <div className="col-span-2">
-          <form action={() => updateBarrel(editedBarrel.id, editedBarrel)}>
-            <FormInput callback={updateString} name={"name"} value={editedBarrel.name} type={"string"} />
-            <FormInput callback={updateString} name={"notes"} value={editedBarrel.notes} type={"string"} />
-            <div className="text-tiny mt-4 text-gray-500">Author: {author}</div>
-            <Divider className="my-4" />
-            <FormInput callback={updateNumber} name={"height"} value={editedBarrel.height.toString()} type={"number"} />
-            <FormInput callback={updateNumber} name={"bottomDiameter"} value={editedBarrel.bottomDiameter.toString()} type={"number"} />
-            <FormInput callback={updateNumber} name={"topDiameter"} value={editedBarrel.topDiameter.toString()} type={"number"} />
-            <FormInput callback={updateNumber} name={"staveLength"} value={editedBarrel.staveLength.toString()} type={"number"} />
-            <FormInput callback={updateNumber} name={"angle"} value={editedBarrel.angle.toString()} type={"number"} />
-            <Divider className="my-4" />
-            <FormInput callback={updateNumber} name={"staveBottomThickness"} value={editedBarrel.staveBottomThickness.toString()} type={"number"} />
-            <FormInput callback={updateNumber} name={"staveTopThickness"} value={editedBarrel.staveTopThickness.toString()} type={"number"} />
-            <FormInput callback={updateNumber} name={"bottomThickness"} value={editedBarrel.bottomThickness.toString()} type={"number"} />
-            <FormInput callback={updateNumber} name={"bottomMargin"} value={editedBarrel.bottomMargin.toString()} type={"number"} />
-            <Divider className="my-4" />
-            <FormCheckBox callback={updateCheckmark} name={"isPublic"} value={editedBarrel.isPublic} />
-            <FormCheckBox callback={updateCheckmark} name={"isExample"} value={editedBarrel.isExample} />
-            <Divider className="my-4" />
+          <BarrelDetailForm barrel={barrel} barrelDetails={editedBarrelDetails} updateNumber={updateNumber}
+            updateString={updateString} updateCheckmark={updateCheckmark} />
+          <Divider className="my-4" />
+          <form action={() => updateBarrel(onlyBarrel, editedBarrelDetails, editedStaveCurveConfig, editedStaveCurveConfig.configDetails)}>
             {session.data?.user?.id === barrel.userId && <FormButton isDisabled={!enableSaveButton}>Save</FormButton>}
-            <div className="text-tiny mt-4 text-gray-500">Created : {dateString(editedBarrel.createdAt.getTime())}</div>
-            <div className="text-tiny text-gray-500">Last updated : {dateString(editedBarrel.updatedAt.getTime())}</div>
           </form>
+
+          <div className="text-tiny mt-4 text-gray-500">Created : {dateString(barrel.createdAt.getTime())}</div>
+          <div className="text-tiny text-gray-500">Last updated : {dateString(barrel.updatedAt.getTime())}</div>
         </div>
       </div >
     </>)

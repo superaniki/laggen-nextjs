@@ -1,8 +1,9 @@
 import React from 'react';
 import { Group, Line, Text } from 'react-konva';
 import Cross from '../../commons/cross';
-import { Barrel } from '@prisma/client';//import { KonvaNodeComponent } from 'react-konva';
+import { Barrel, BarrelDetails } from '@prisma/client';
 import { ReactElement } from 'react';
+import { BarrelWithData } from '@/db/queries/barrels';
 
 function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, staveLength: number) {
 	const mmPerSizeChange = 15;
@@ -26,17 +27,16 @@ function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, st
 type StaveProps = {
 	x: number;
 	y: number;
-	rotate: boolean;
-	maxArea: { height: number; width: number };
+	//rotate: boolean;
+	//maxArea: { height: number; width: number };
 	scale: number;
 	useCross?: boolean;
-	barrel: Barrel;
+	barrelDetails: BarrelDetails;
 	onClick: () => void;
 };
 
-function StaveFront({ x, y, rotate, maxArea, scale, useCross = false, barrel, onClick }: StaveProps) {
-	const { bottomDiameter, topDiameter, staveLength } = { ...barrel };
-	//const staveTemplateInfoText = 'Stave Template';
+function StaveFront({ x, y, /*maxArea,*/ scale, useCross = false, barrelDetails, onClick }: StaveProps) {
+	const { bottomDiameter, topDiameter, staveLength } = { ...barrelDetails };
 	const pointsData = calcStaveTemplatePoints(topDiameter, bottomDiameter, staveLength);
 
 	let rotX = x;
@@ -49,7 +49,7 @@ function StaveFront({ x, y, rotate, maxArea, scale, useCross = false, barrel, on
 			<Line
 				draggable={false}
 				key={id++}
-				rotation={rotate ? 90 : 0}
+				//rotation={rotate ? 90 : 0}
 				points={element}
 				stroke={'black'}
 				strokeWidth={1}
@@ -63,9 +63,11 @@ function StaveFront({ x, y, rotate, maxArea, scale, useCross = false, barrel, on
 	pointsData.textData.forEach((element) => {
 		textData.push(
 			<Text
-				rotation={rotate ? 90 : 0}
-				x={rotate ? -element.y + 8 : element.x - 3}
-				y={rotate ? element.x - 4 : element.y - 6}
+				//rotation={rotate ? 90 : 0}
+				//x={rotate ? -element.y + 8 : element.x - 3}
+				//y={rotate ? element.x - 4 : element.y - 6}'
+				x={element.x - 3}
+				y={element.y - 6}
 				text={element.text}
 				fontFamily="courier"
 				fontSize={4}
@@ -75,13 +77,13 @@ function StaveFront({ x, y, rotate, maxArea, scale, useCross = false, barrel, on
 		);
 	});
 
-	if (!rotate) {
-		rotY = y * 0.5 + staveLength * scale + 50;
-	} else {
-		rotY = y * 0.5 + maxArea.height * 0.5 * scale;
-		rotX = maxArea.width * scale - staveLength * scale;
-	}
-	/* => {points : [], textData [] }  */
+	//if (!rotate) {
+	rotY = y * 0.5 + staveLength * scale + 50;
+	//} else {
+	//	rotY = y * 0.5 + maxArea.height * 0.5 * scale;
+	//	rotX = maxArea.width * scale - staveLength * scale;
+	//}
+
 	return (
 		<Group>
 			<Group scale={{ x: scale, y: scale }} x={rotX} y={rotY}>
@@ -96,10 +98,4 @@ function StaveFront({ x, y, rotate, maxArea, scale, useCross = false, barrel, on
 }
 
 export default StaveFront;
-/*
-		{isChecked ? (
-								<LockClosedIcon style={{ marginRight: "5px" }} className="h-5 w-5 mt-2 text-gray-500" />
-						) : (
-								<LockOpenIcon style={{ marginRight: "3px" }} className="h-5 w-5 mt-2 text-gray-500" />
-						)}
-*/
+

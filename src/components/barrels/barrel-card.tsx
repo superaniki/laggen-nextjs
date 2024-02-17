@@ -1,7 +1,7 @@
 "use client"
 import { Button, Card, CardBody, CardHeader, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 import BarrelPreviewCanvas from "../canvas/barrel-preview-canvas";
-import { BarrelWithUser } from "@/db/queries/barrels";
+import { BarrelWithData } from "@/db/queries/barrels";
 import paths from "@/paths";
 import Link from "next/link";
 import { useState } from "react";
@@ -15,7 +15,7 @@ export enum BarrelType {
 }
 
 interface BarrelCardProps {
-  barrel: BarrelWithUser,
+  barrel: BarrelWithData,
   color?: string,
   type: BarrelType
 }
@@ -54,7 +54,7 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
         return response.json();
       })
         .then(data => {
-          toast.success("Barrel " + barrel.name + "is deleted!", { position: 'bottom-center' })
+          toast.success("Barrel " + barrel.barrelDetails.name + "is deleted!", { position: 'bottom-center' })
           setIsPending(false);
           setIsDeleted(true);
         })
@@ -82,13 +82,13 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
       <Card isHoverable={false} className="card mx-5 mb-10 pb-4 fadeIn-animation">
         <Link href={paths.barrelEdit(barrel.slug)}>
           <CardBody className={`overflow-hidden py-2 h-48 w-full ${barrelColor}`}>
-            <BarrelPreviewCanvas barrel={barrel} color={"#707070"} />
+            <BarrelPreviewCanvas barrelDetails={barrel.barrelDetails} color={"#707070"} />
           </CardBody>
         </Link>
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
           <div className="flex w-full justify-between">
             <div>
-              <h4 className="font-bold text-large overflow-hidden text-ellipsis">{barrel.name}</h4>
+              <h4 className="font-bold text-large overflow-hidden text-ellipsis">{barrel.barrelDetails.name}</h4>
               <small className="text-default-500">by {author}</small>
             </div>
             <div>

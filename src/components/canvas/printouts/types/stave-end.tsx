@@ -10,25 +10,12 @@ type ToolCurveProps = {
 	title: string;
 	closed: boolean;
 };
+
 function ToolCurve({ x = 0, y, points, title, closed }: ToolCurveProps) {
 	const linePoints = [];
 	for (let i = 0; i < points.length; i += 8) {
 		linePoints.push({ x: Number(points[i]), y: Number(points[i + 1]) });
 	}
-	//const radius = points[Math.floor(points.length)];
-
-	/*
-				function Lines(points) {
-						return points.map((value, index, array) => {
-								if (index > points.length * 0.5)
-										return null;
-								return <Group>
-										<Line points={[array[array.length - 2].x - array[0].x, array[0].y, value.x, value.y]}
-												stroke={"black"} strokeWidth={0.5} />
-								</Group>
-						});
-				}
-				*/
 
 	return (
 		<Group x={x} y={y} draggable>
@@ -37,11 +24,6 @@ function ToolCurve({ x = 0, y, points, title, closed }: ToolCurveProps) {
 		</Group>
 	);
 }
-
-/*        <Line points={[0, 999, 0, -999]} stroke={"black"} strokeWidth={0.5} />
-		{Lines(linePoints)}
-		<Circle x={linePoints[linePoints.length - 2].x - linePoints[0].x} y={linePoints[0].y} radius={radius} fill={"white"} />
-*/
 
 function reversePairs(arr: number[]) {
 	return arr.map((_, i) => arr[arr.length - i - 2 * (1 - (i % 2))]);

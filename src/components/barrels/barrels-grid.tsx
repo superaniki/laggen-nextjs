@@ -1,12 +1,12 @@
 "use client"
-import type { BarrelWithUser } from "@/db/queries/barrels";
+import type { BarrelWithData } from "@/db/queries/barrels";
 import BarrelCard, { BarrelType } from "./barrel-card";
 import { Pagination } from "@nextui-org/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 interface BarrelsListProps {
-  publicBarrels: BarrelWithUser[],
-  privateBarrels: BarrelWithUser[]
+  publicBarrels: BarrelWithData[],
+  privateBarrels: BarrelWithData[]
 }
 
 export default function BarrelsGrid({ publicBarrels, privateBarrels }: BarrelsListProps) {

@@ -3,7 +3,7 @@
 "use server";
 import { auth } from "../auth"
 import BarrelCreateForm from "@/components/barrels/barrel-create-form";
-import { BarrelWithUser, fetchBarrelsFromUser, fetchPublicBarrels } from "@/db/queries/barrels";
+import { BarrelWithData, fetchBarrelsFromUser, fetchPublicBarrels } from "@/db/queries/barrels";
 import { UsersList } from "@/components/users/users-list";
 import { fetchAllUsers } from "@/db/queries/users";
 import { AccountsList } from "@/components/users/account-list";
@@ -16,7 +16,7 @@ export default async function Home() {
 
   const session = await auth();
   let publicBarrels = await fetchPublicBarrels();
-  let privateBarrels: BarrelWithUser[] = [];
+  let privateBarrels: BarrelWithData[] = [];
 
   if (session) {
     if (session.user?.id)

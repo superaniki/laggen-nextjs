@@ -3,7 +3,7 @@ import { Group } from 'react-konva';
 import Grid from '../commons/grid';
 import { useState, useEffect, useRef } from 'react';
 import { A4, a4size } from '../commons/A4';
-import PlaningTool from './types/planing-tool';
+import PlaningTool from './types/stave-curve';
 import StaveEnds from './types/stave-end';
 import { Barrel } from '@prisma/client';
 import StaveFront from './types/stave-front';

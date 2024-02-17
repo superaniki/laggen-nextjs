@@ -6,13 +6,13 @@ import Cross from '../commons/cross';
 import { Image } from 'react-konva';
 import useImage from 'use-image';
 import { findScaleToFit } from '../commons/barrel-math';
-import { Barrel } from '@prisma/client';
+import { Barrel, BarrelDetails } from '@prisma/client';
 
 type SideViewProps = {
 	worldX: number;
 	worldY: number;
 	dimensions: { width: number; height: number };
-	barrel: Barrel;
+	barrel: BarrelDetails;
 	useGrid?: boolean;
 	useRuler?: boolean;
 	useCross?: boolean;
