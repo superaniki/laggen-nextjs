@@ -1,4 +1,5 @@
-import { Barrel } from "@prisma/client";
+import { BarrelWithData } from "@/db/queries/barrels";
+import { Barrel, BarrelDetails } from "@prisma/client";
 
 function findDiameter(oldDiameter: number, x2: number, y2: number) {
 	const diameterStep = 0.1;
@@ -97,7 +98,7 @@ function round(value: number, numberOfDecimals = 2) {
 }
 
 // Utility function for editor input --------------------
-function applyBarrelHeight(newHeight: number, barrel: Barrel) {
+function applyBarrelHeight(newHeight: number, barrel: BarrelDetails) {
 	const newAngle = calculateAngle(barrel.topDiameter, barrel.bottomDiameter, newHeight);
 	const tan = parseFloat(String(Math.tan(toRadians(newAngle))));
 	const adjacent = parseFloat(String(tan * newHeight)); // längd för motsatt sida av vinkeln
@@ -106,7 +107,7 @@ function applyBarrelHeight(newHeight: number, barrel: Barrel) {
 	return { ...barrel, staveLength: round(hypotenusaLength), height: newHeight, angle: round(newAngle) };
 }
 
-function applyBarrelStaveLength(newStaveLength: number, barrel: Barrel, topDiameterLocked: boolean = false) {
+function applyBarrelStaveLength(newStaveLength: number, barrel: BarrelDetails, topDiameterLocked: boolean = false) {
 	if (barrel.angle === undefined || barrel.staveLength === undefined) return barrel;
 
 	const newAdjacent = newStaveLength * Math.sin(toRadians(barrel.angle));
@@ -124,21 +125,21 @@ function applyBarrelStaveLength(newStaveLength: number, barrel: Barrel, topDiame
 	return { ...barrel, staveLength: newStaveLength, height: newHeight, topDiameter: newTopDiameter };
 }
 
-function applyBarrelBottomDiameter(newBottomDiameter: number, barrel: Barrel) {
+function applyBarrelBottomDiameter(newBottomDiameter: number, barrel: BarrelDetails) {
 	const newAngle = round(calculateAngle(barrel.topDiameter, newBottomDiameter, barrel.height), 2);
 	const newStaveLength = round(calcStaveLength(newAngle, barrel.height), 2);
 
 	return { ...barrel, staveLength: newStaveLength, angle: newAngle, bottomDiameter: newBottomDiameter };
 }
 
-function applyBarrelTopDiameter(newTopDiameter: number, barrel: Barrel) {
+function applyBarrelTopDiameter(newTopDiameter: number, barrel: BarrelDetails) {
 	const newAngle = round(calculateAngle(newTopDiameter, barrel.bottomDiameter, barrel.height));
 	const newStaveLength = round(calcStaveLength(newAngle, barrel.height));
 
 	return { ...barrel, staveLength: newStaveLength, angle: newAngle, topDiameter: newTopDiameter };
 }
 
-function applyBarrelAngle(newAngle: number, barrel: Barrel, topDiameterLocked?: boolean) {
+function applyBarrelAngle(newAngle: number, barrel: BarrelDetails, topDiameterLocked?: boolean) {
 	//console.log('top diameter locked');
 
 	const newHeight = calcBarrelHeight(newAngle, barrel.staveLength);

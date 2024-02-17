@@ -1,6 +1,6 @@
 "use server";
 
-import type { Barrel } from "@prisma/client";
+import type { Barrel, StaveCurveConfigDetails } from "@prisma/client";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { revalidatePath } from "next/cache";
@@ -8,6 +8,8 @@ import { z } from 'zod';
 import paths from "@/paths";
 import { redirect } from "next/navigation";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { StaveCurveConfig } from "@prisma/client";
+import { createSlug } from "./utils";
 /*
 model Barrel {
   id                   String   @id @default(cuid())
@@ -37,11 +39,17 @@ model Barrel {
 Todo : increasing ID on barrels instead of long complex name. yes?
 */
 
-const createBarrelTemplate = (name: string, slug: string, notes: string, userId: string)  => {
+const createBarrelTemplate = (slug: string, userId: string) => {
+  return {
+    slug: slug,
+    userId: userId,
+  }
+}
+
+const createBarrelDetails = (name: string, notes: string, barrelId: string) => {
   return {
     // id
     name: name,
-    slug: slug,
     notes: notes,
     height: 200,
     bottomDiameter: 180,
@@ -54,17 +62,49 @@ const createBarrelTemplate = (name: string, slug: string, notes: string, userId:
     bottomMargin: 2,
     // createdAt : "", //((new Date()).getTime()),
     // updatedAt: "", //((new Date()).getTime()),
-    userId: userId,
+    barrelId: barrelId,
     isPublic: true,
     isExample: false
   }
 }
 
+function createStaveCurveConfig(barrelId: string) {//: StaveCurveConfig {
+  return {
+    //  id:"",
+    defaultPaperType: "A4",
+    barrelId: barrelId
+  }
+}
+/// HÄR!!! lägg till editordata tyyyyp
+
+function createStaveCurveConfigDetails(paperType: string, staveCurveConfigId: string) {
+  return {
+    //   id: "",
+    paperType: paperType, // A4 or A3
+    rotatePaper: false,
+    posX: 30,
+    posY: 20,
+    innerTopX: 20.5,
+    innerTopY: 220,
+    outerTopX: 20.5,
+    outerTopY: 180,
+    innerBottomX: 20.5,
+    innerBottomY: 90,
+    outerBottomX: 20.5,
+    outerBottomY: 50,
+    rectX: 0,
+    rectY: 0,
+    rectWidth: 20,
+    rectHeight: 250,
+    staveCurveConfigId: staveCurveConfigId
+  }
+}
+
 const createBarrelSchema = z.object({
   name: z.string().min(3).regex(/^[a-zA-Z0-9ÅÄÖåäö ]+$/, {
-      message: "Please avoid special characters",
-    }),
-    notes: z.string()
+    message: "Please avoid special characters",
+  }),
+  notes: z.string()
 });
 
 interface CreateBarrelFormState {
@@ -78,73 +118,66 @@ interface CreateBarrelFormState {
 }
 
 
-async function checkSlugUniqueness(slug: string) {
 
-  console.log("searching for slug: "+slug)
-  const exists = null === await db.barrel.findUnique({
-    where: {
-      slug: slug,
-    },
-  });
-  console.log("slug is unique: "+ exists);
-  return exists; // Returns true if unique, false if exists
-}
-
-export async function createBarrel(formState: CreateBarrelFormState, formData: FormData) : 
-  Promise<CreateBarrelFormState>
-{
-  await new Promise(resolve => setTimeout(resolve, 2500));
-
-  console.log("init formstate:"+JSON.stringify(formState));
+export async function createBarrel(formState: CreateBarrelFormState, formData: FormData):
+  Promise<CreateBarrelFormState> {
+  //await new Promise(resolve => setTimeout(resolve, 2500));
+ 
+  console.log("init formstate:" + JSON.stringify(formState));
   //formState = { success : false, errors :{}}
 
   const result = createBarrelSchema.safeParse({
     name: formData.get('name'),
-    notes : formData.get('notes')
+    notes: formData.get('notes')
   })
 
   if (!result.success) {
-    return {...formState, errors: result.error.flatten().fieldErrors} // errors för name och notes
+    return { ...formState, errors: result.error.flatten().fieldErrors } // errors för name och notes
   }
 
   const name = result.data.name;
   const notes = result.data.notes;
 
-  console.log("createBarrel name: ", name);
-  console.log("notes: ", notes);
-
   const session = await auth();
   if (!session || !session.user?.id) {
-    return {...formState, 
+    return {
+      ...formState,
       errors: {
         _form: ["You must be signed in to do this."],
       },
     };
   }
+ 
+  const slug = await createSlug(name);
 
-  let slug = name.replace(/\s+/g, '-').replace(/å/g, 'a')
-  .replace(/ä/g, 'a').replace(/ö/g, 'o').toLowerCase();
-
-  let slugId = 0;
-  while(!await checkSlugUniqueness(slug)){
-    console.log("not unique slug")
-    slug += slugId.toString();
-    slugId++;
-    console.log("new slug: "+slug)
-  }
-
-  let barrelTemplate = createBarrelTemplate(name, slug, notes, session.user.id);
-  //let barrel;
   try {
-    //throw new Error('Failed to create a topic');
+    const barrelTemplate = createBarrelTemplate(slug, session.user.id);
     const barrel = await db.barrel.create({
-      data: { ...barrelTemplate
-      },
+      data: { ...barrelTemplate },
     });
+
+    let barrelDetailsTemplate = createBarrelDetails(name, notes, barrel.id);
+    const barrelDetails = await db.barrelDetails.create({
+      data: { ...barrelDetailsTemplate },
+    });
+
+    let configTemplate = createStaveCurveConfig(barrel.id);
+    const config = await db.staveCurveConfig.create({
+      data: { ...configTemplate },
+    });
+
+    await db.staveCurveConfigDetails.create({
+      data: { ...createStaveCurveConfigDetails("A4", config.id) },
+    });
+
+    await db.staveCurveConfigDetails.create({
+      data: { ...createStaveCurveConfigDetails("A3", config.id) },
+    });
+
   } catch (err: unknown) {
     if (err instanceof PrismaClientKnownRequestError) {
       console.log(JSON.stringify(err));
-      if(err.code === "P2002"){ //"Unique constraint failed on the {constraint}"
+      if (err.code === "P2002") { //"Unique constraint failed on the {constraint}"
         console.log("code p2002")
         return {
           ...formState, errors: {
@@ -159,9 +192,16 @@ export async function createBarrel(formState: CreateBarrelFormState, formData: F
           _form: [err.message],
         },
       };
+    } else if (err instanceof PrismaClientKnownRequestError) {
+      console.log("PrismaClientKnownRequestError!")
+
+      console.log(JSON.stringify(err))
+
+
+
     } else {
       console.log("NOT PrismaClientKnownRequestError")
-
+      console.log(JSON.stringify(err))
       return {
         ...formState, errors: {
           _form: ["Something went wrong"],
@@ -170,8 +210,8 @@ export async function createBarrel(formState: CreateBarrelFormState, formData: F
     }
   }
 
-  formState = { errors : {}, success : true};
-  
+  formState = { errors: {}, success: true };
+
   console.log("revalidatePath");
   revalidatePath("/"); // revalidate!
   console.log("redirect");

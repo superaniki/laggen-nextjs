@@ -18,7 +18,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { id } = params;
-  const barrelName = await fetchOneBarrelById(id).then(barrel => barrel !== null && barrel.name);
+  const barrelName = await fetchOneBarrelById(id).then(barrel => barrel !== null && barrel);
 
   return {
     title: "Show barrel " + barrelName,
@@ -29,7 +29,8 @@ export async function generateMetadata(
 export default async function BarrelShowPage({ params }: BarrelShowPageProps) {
   const { id } = params;
   ////await new Promise(resolve => setTimeout(resolve, 2500));
-  const barrel = await fetchOneBarrelById(id);
+
+  let barrel = await fetchOneBarrelById(id);
 
   if (!barrel)
     return notFound();
@@ -37,7 +38,7 @@ export default async function BarrelShowPage({ params }: BarrelShowPageProps) {
   return (
     <div className="w-full pt-5">
       <div className="container relative min-h-[600px] w-[1024px] border-gray-500 mx-auto">
-        <BarrelShow barrel={barrel} />
+        <BarrelShow barrel={barrel.barrelDetails} />
       </div>
     </div>
   )

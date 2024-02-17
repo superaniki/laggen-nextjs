@@ -1,40 +1,64 @@
 import { db } from "..";
-import type { Barrel } from "@prisma/client";
+import type { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails } from "@prisma/client";
 
-//export 
+export type StaveCurveConfigWithData = StaveCurveConfig & {
+  configDetails : StaveCurveConfigDetails[]
+}
 
-
-export type BarrelWithUser = Barrel & {
-  user: { name: string | null };
+export type BarrelWithData = Barrel & {
+  user: { name: string | null }
+  barrelDetails : BarrelDetails
+  staveCurveConfig : StaveCurveConfigWithData
 };
 
-export async function fetchAllBarrels() : Promise<BarrelWithUser[]> {
-  return db.barrel.findMany({
+/*
+
+model StaveCurveConfig {
+  id               String                    @id @default(cuid())
+  defaultPaperType String // A4 or A3
+  canvasData       StaveCurveConfigDetails[] // Assuming StaveCurveConfigDetails is another model
+  barrel           Barrel                    @relation(fields: [barrelId], references: [id], onDelete: Cascade)
+  barrelId         String                    @unique
+}*/
+
+export async function fetchAllBarrels() : Promise<BarrelWithData[]> {
+  const barrels = <BarrelWithData[]> await db.barrel.findMany({
     orderBy: { 
       updatedAt : "desc"
     },
     include: {
       user: { select: { name: true, image: true } },
+      staveCurveConfig : {
+        include: {configDetails : true }
+      },
+      barrelDetails : true
     },
   });
+
+  //const filteredBarrels = barrels.filter((item) => item.staveCurveConfig !== null );
+  return barrels;
 }
 
-export async function fetchPublicBarrels() : Promise<BarrelWithUser[]> {
-  return db.barrel.findMany({
+export async function fetchPublicBarrels() : Promise<BarrelWithData[]> {
+  return <BarrelWithData[]> await db.barrel.findMany({
     where: {
-      isPublic : true
+      barrelDetails : { isPublic : true }
     },
     orderBy: { 
       updatedAt : "desc"
     },
     include: {
       user: { select: { name: true, image: true } },
+      staveCurveConfig : {
+        include: {configDetails : true }
+      },
+      barrelDetails : true
     },
   });
 }
 
-export async function fetchBarrelsFromUser(userId : string) : Promise<BarrelWithUser[]> {
-  return db.barrel.findMany({
+export async function fetchBarrelsFromUser(userId : string) : Promise<BarrelWithData[]> {
+  return <BarrelWithData[]> await db.barrel.findMany({
     where:{
       userId : userId
     },
@@ -43,12 +67,16 @@ export async function fetchBarrelsFromUser(userId : string) : Promise<BarrelWith
     },
     include: {
       user: { select: { name: true, image: true } },
+      staveCurveConfig : {
+        include: {configDetails : true }
+      },
+      barrelDetails : true
     },
   });
 }
 
-export async function fetchOneBarrelById(id:string) : Promise<BarrelWithUser | null> {
-  return db.barrel.findFirst({
+export async function fetchOneBarrelById(id:string) : Promise<BarrelWithData | null> {
+  return <BarrelWithData> await db.barrel.findFirst({
     where: {
       OR: [
         { id: id }, { slug: id }
@@ -56,6 +84,10 @@ export async function fetchOneBarrelById(id:string) : Promise<BarrelWithUser | n
     },
     include: {
       user: { select: { name: true } },
+      staveCurveConfig : {
+        include: {configDetails : true }
+      },
+      barrelDetails : true
     },
   });
 }

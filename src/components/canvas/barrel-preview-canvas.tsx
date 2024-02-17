@@ -3,10 +3,11 @@ import React from 'react';
 import { Stage, Layer } from 'react-konva';
 import { useState, useRef, useEffect } from 'react';
 import SideViewPreview from './barrel/sideview-preview';
-import { Barrel } from '@prisma/client';
+import { Barrel, BarrelDetails } from '@prisma/client';
 import { ErrorBoundary } from 'react-error-boundary';
+import { BarrelWithData } from '@/db/queries/barrels';
 
-export default function BarrelPreviewCanvas({ barrel, color }: { barrel: Barrel, color?: string; }) {
+export default function BarrelPreviewCanvas({ barrelDetails, color }: { barrelDetails: BarrelDetails, color?: string; }) {
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [dimensions, setDimensions] = useState({ width: 2, height: 2 });
 
@@ -45,7 +46,7 @@ export default function BarrelPreviewCanvas({ barrel, color }: { barrel: Barrel,
 							viewHeight={dimensions.height}
 							worldX={dimensions.width * 0.5}
 							worldY={dimensions.height * 0.5}
-							barrel={barrel}
+							barrelDetails={barrelDetails}
 							color={color}
 						/>
 					</Layer>

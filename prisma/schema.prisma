@@ -60,9 +60,19 @@ model VerificationToken {
 }
 
 model Barrel {
-  id                   String   @id @default(cuid())
-  slug                 String   @unique
-  name                 String   @unique
+  id               String            @id @default(cuid())
+  slug             String            @unique
+  userId           String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  barrelDetails    BarrelDetails?
+  staveCurveConfig StaveCurveConfig?
+  user             User              @relation(fields: [userId], references: [id])
+}
+
+model BarrelDetails {
+  id                   String  @id @default(cuid())
+  name                 String
   notes                String
   height               Float
   bottomDiameter       Float
@@ -73,14 +83,76 @@ model Barrel {
   staveTopThickness    Float
   bottomThickness      Float
   bottomMargin         Float
-  userId               String
-  isPublic             Boolean  @default(true)
-  isExample            Boolean  @default(false)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  isPublic             Boolean @default(true)
+  isExample            Boolean @default(false)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  barrel   Barrel @relation(fields: [barrelId], references: [id], onDelete: Cascade)
+  barrelId String @unique
 }
+
+model StaveCurveConfig {
+  id               String                    @id @default(cuid())
+  defaultPaperType String // A4 or A3
+  configDetails    StaveCurveConfigDetails[] // Assuming StaveCurveConfigDetails is another model
+  barrel           Barrel                    @relation(fields: [barrelId], references: [id], onDelete: Cascade)
+  barrelId         String                    @unique
+}
+
+model StaveCurveConfigDetails {
+  id                 String           @id @default(cuid())
+  paperType          String // A4 or A3
+  rotatePaper        Boolean
+  posX               Float
+  posY               Float
+  innerTopX          Float
+  innerTopY          Float
+  outerTopX          Float
+  outerTopY          Float
+  innerBottomX       Float
+  innerBottomY       Float
+  outerBottomX       Float
+  outerBottomY       Float
+  rectX              Float
+  rectY              Float
+  rectWidth          Float
+  rectHeight         Float
+  StaveCurveConfig   StaveCurveConfig @relation(fields: [staveCurveConfigId], references: [id], onDelete: Cascade)
+  staveCurveConfigId String
+}
+
+//  const defaultStaveCurveConfig = {
+//     rotate: false,
+//     group: { x: 30, y: 20 },
+//     innerTop: { x: 20.5, y: 20 },
+//     outerTop: { x: 20.5, y: 60 },
+//     innerBottom: { x: 20.5, y: 170 },
+//     outerBottom: { x: 20.5, y: 210 },
+//     rect: { x: 0, y: 0, width: 20, height: 250 },
+//   }
+
+//         innerTop: { x: number, y: number },
+//         outerTop: { x: number, y: number },
+//         innerBottom: { x: number, y: number },
+//         outerBottom: { x: number, y: number },
+//         rect: { x: number, y: number, width: number, height: number }
+//}
+
+// export interface ToolConfig {
+//   staveCurve: {
+//     defaultPaperType: string, // A3 or A4
+//     config: {
+//       [key: string]: { // A3 or A4
+//         rotate: boolean
+//         group: { x: number, y: number },
+//         innerTop: { x: number, y: number },
+//         outerTop: { x: number, y: number },
+//         innerBottom: { x: number, y: number },
+//         outerBottom: { x: number, y: number },
+//         rect: { x: number, y: number, width: number, height: number }
+//       }
+//     },
+//   }
+// }
 
 //  from DB
 // export type Barrel = {

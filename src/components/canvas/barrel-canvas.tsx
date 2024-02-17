@@ -1,14 +1,14 @@
 import { Stage, Layer } from 'react-konva';
 import { useState, useEffect, useRef, Component, FunctionComponent } from 'react';
 import SideView from './barrel/sideview';
-import { Barrel } from '@prisma/client';
+import { Barrel, BarrelDetails } from '@prisma/client';
 import { ErrorBoundary } from "react-error-boundary";
 
 export default function BarrelCanvas({
 	barrel,
 	useGrid = true
 }: {
-	barrel: Barrel;
+	barrel: BarrelDetails
 	useGrid?: boolean
 }) {
 	const ref = useRef<HTMLDivElement>(null);

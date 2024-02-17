@@ -2,7 +2,7 @@ import React from 'react';
 import { Line, Group } from 'react-konva';
 import { Image } from 'react-konva';
 import useImage from 'use-image';
-import { Barrel } from '@prisma/client';
+import { Barrel, BarrelDetails } from '@prisma/client';
 import Cross from '../commons/cross';
 import { findScaleToFit } from '../commons/barrel-math';
 
@@ -11,11 +11,11 @@ type SideViewPreviewProps = {
 	viewHeight: number;
 	worldX: number;
 	worldY: number;
-	barrel: Barrel;
+	barrelDetails: BarrelDetails;
 	color?: string;
 };
 
-function SideViewPreview({ viewWidth, viewHeight, worldX, worldY, barrel, color }: SideViewPreviewProps) {
+function SideViewPreview({ viewWidth, viewHeight, worldX, worldY, barrelDetails, color }: SideViewPreviewProps) {
 	const barrelColor = color === "undefined" ? '#000000' : color;
 	const strokeWidth = 1;
 	const strokeColor = "#888899";//color === "undefined" ? '#000000' : color;
@@ -24,7 +24,7 @@ function SideViewPreview({ viewWidth, viewHeight, worldX, worldY, barrel, color 
 	const url = 'apple.png';
 	const [image, imageStatus] = useImage(url);
 
-	const { angle, height, bottomDiameter, topDiameter } = { ...barrel };
+	const { angle, height, bottomDiameter, topDiameter } = { ...barrelDetails };
 
 	const tan = Math.tan((angle * Math.PI) / 180);
 	const length = tan * height; // position till motsatt sida av vinkeln
