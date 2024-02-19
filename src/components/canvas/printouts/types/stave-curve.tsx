@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { MutableRefObject, useRef, useState } from 'react';
 import { Group, Rect, Line, Text, Transformer } from 'react-konva';
 import Cross from '../../commons/cross';
 import { findAdjustedDiameter, createCurveMaxWidth } from '../../commons/barrel-math';
 import { Barrel, BarrelDetails, StaveCurveConfig } from '@prisma/client';
 import { Paper } from '../on-paper';
 import { BarrelWithData, StaveCurveConfigWithData } from '@/db/queries/barrels';
+import { KonvaEventObject } from 'konva/lib/Node';
+import useBarrelStore from '@/components/barrels/store';
 
 type ToolCurveProps = {
 	id: string;
@@ -19,7 +21,11 @@ type ToolCurveProps = {
 
 function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 	const [isHovered, setIsHovered] = useState(false);
-	const [isSelected, setIsSelected] = useState(false);
+	//const [isSelected, setIsSelected] = useState(false);
+	const curveRef = useRef<any>();
+
+	const { updateStaveCurve } = useBarrelStore();
+
 	const selMargin = 5;
 
 	const rect = {
@@ -28,16 +34,23 @@ function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 		x2: points[points.length - 2] + selMargin * 2,
 		y2: points[points.length - 1] + selMargin * 2
 	}
-	console.log("isSelected: " + isSelected);
 
-	function handleOnClick() {
-		isHovered ? setIsSelected(true) : setIsSelected(false);
+	/*
+		function handleOnClick() {
+			isHovered ? setIsSelected(true) : setIsSelected(false);
+		}*/
+
+	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
+		console.log("whaat");
+		curveRef.current.x(x); // lock X coordinate
+		event.cancelBubble = true;
+		updateStaveCurve(id, event.target.y());
 	}
 
 	return (
-		<Group id={id} onClick={() => handleOnClick()} onMouseLeave={() => setIsHovered(false)} onMouseOver={() => setIsHovered(true)} x={x} y={y} draggable>
+		<Group ref={curveRef} id={id} onMouseLeave={() => setIsHovered(false)} onDragMove={handleOnDragMove} onMouseOver={() => setIsHovered(true)} x={x} y={y} draggable>
 			<Rect stroke={"#FFAAAA"} strokeWidth={2} cornerRadius={5} strokeEnabled={isHovered} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />
-			<Rect stroke={"#DD4444"} strokeWidth={2} cornerRadius={5} strokeEnabled={isSelected} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />
+			{/*	<Rect stroke={"#DD4444"} strokeWidth={2} cornerRadius={5} strokeEnabled={isSelected} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />*/}
 			<Line closed={closed} points={points} stroke={'black'} strokeWidth={1} />
 			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
 		</Group>
@@ -63,9 +76,9 @@ export enum StaveCurves {
 
 function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth = 100 }: StaveCurveProps) {
 	const { height, angle, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
-	//let localConfig = config;
+	const { updateStaveCurve } = useBarrelStore();
+
 	const defaultPaperType = config.defaultPaperType;
-	//const paperType = defaultPaperType === ("A4" || "A3") ? defaultPaperType : "A4";
 	const configDetailsArray = config.configDetails;
 
 	const configDetails = configDetailsArray.find(item => (item.paperType === defaultPaperType));
@@ -74,11 +87,6 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 
 	const { posX, posY, innerTopX, innerTopY, outerTopX, outerTopY, innerBottomX, innerBottomY,
 		outerBottomX, outerBottomY, rectX, rectY, rectWidth, rectHeight } = { ...configDetails }
-
-
-	/*
-onUpdate ramlar in! Nu skall den uppdateras med ny data när jag pillar på nåt.
-	*/
 
 	const tan = Math.tan((angle * Math.PI) / 180);
 	const length = tan * height; // position till motsatt sida av vinkeln
@@ -97,12 +105,18 @@ onUpdate ramlar in! Nu skall den uppdateras med ny data när jag pillar på nåt
 
 	const curveXpos = rectX + rectWidth;
 
+	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
+		console.log("pinnen");
+		updateStaveCurve("posX", event.target.x());
+		updateStaveCurve("posY", event.target.y());
+	}
+
 	return (
-		<Group onClick={() => console.log("Hej")} x={posX} y={posY} draggable scale={{ x: scale, y: scale }}>
-			<Curve id={"InnerTop"} x={curveXpos} y={innerTopY} points={adjustedTopInnerPoints} title={'Top, inner!'} />
-			<Curve id={"OuterTop"} x={curveXpos} y={outerTopY} points={adjustedTopOuterPoints} title={'Top, outer'} />
-			<Curve id={"InnerBottom"} x={curveXpos} y={innerBottomY} points={adjustedBottomInnerPoints} title={'Bottom, inner'} />
-			<Curve id={"OuterBottom"} x={curveXpos} y={outerBottomY} points={adjustedBottomOuterPoints} title={'Bottom, outer'} />
+		<Group onDragMove={handleOnDragMove} x={posX} y={posY} draggable scale={{ x: scale, y: scale }}>
+			<Curve id={"innerTopY"} x={curveXpos} y={innerTopY} points={adjustedTopInnerPoints} title={'Top, inner!'} />
+			<Curve id={"outerTopY"} x={curveXpos} y={outerTopY} points={adjustedTopOuterPoints} title={'Top, outer'} />
+			<Curve id={"innerBottomY"} x={curveXpos} y={innerBottomY} points={adjustedBottomInnerPoints} title={'Bottom, inner'} />
+			<Curve id={"outerBottomY"} x={curveXpos} y={outerBottomY} points={adjustedBottomOuterPoints} title={'Bottom, outer'} />
 			<Rect id="rect" stroke={'black'} strokeWidth={1} fill="white" x={rectX} y={rectY} width={rectWidth} height={rectHeight} />
 			<Cross visible={cross} color="green" />
 		</Group>
