@@ -6,14 +6,13 @@ import BarrelSide from "./types/barrel-side";
 import Ruler from "../commons/ruler";
 import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
-import { BarrelDetails, StaveCurveConfig } from "@prisma/client";
-import { BarrelWithData, StaveCurveConfigWithData } from "@/db/queries/barrels";
+import { StaveCurveConfigWithData } from "@/db/queries/barrels";
+import useBarrelStore from "@/components/barrels/store";
+import { StaveTool } from "@/components/barrels/barrel-edit";
 
 interface OnPaperProps {
-  barrelDetails: BarrelDetails
-  tool: BarrelTool
-  paper: String
-  staveCurveConfig: StaveCurveConfigWithData
+  tool: StaveTool
+  paper: Paper
 }
 
 export enum Paper {
@@ -21,33 +20,20 @@ export enum Paper {
   A4 = "A4"
 }
 
-export enum BarrelTool {
-  StaveCurve,
-  StaveFront,
-  StaveEnd
+const PaperSizes = {
+  [Paper.A3]: { width: 297, height: 420 },
+  [Paper.A4]: { width: 210, height: 297 }
 }
 
-export default function OnPaper({ barrelDetails, tool = BarrelTool.StaveCurve, paper, staveCurveConfig }: OnPaperProps) {
+export default function OnPaper({ tool, paper }: OnPaperProps) {
+  const { details: barrelDetails, staveCurveConfig } = useBarrelStore()
   const { height, topDiameter, staveLength, angle, bottomDiameter } = { ...barrelDetails };
   const [staveTemplateRotation, setStaveTemplateRotation] = useState(false);
   const cross = false;
-  const visible = true;
   let paperSize = { width: 0, height: 0 }
 
-  //const [config, setConfig] = useState(barrel.staveCurveConfig);
-
-  switch (paper) {
-    case "A3":
-      paperSize = { width: 297, height: 420 }
-      break;
-    case "A4":
-      paperSize = { width: 210, height: 297 }
-      break;
-    default:
-      paperSize = { width: 210, height: 297 }
-  }
-  // Fixa så att val av papersize ger mig rätt mått
-  console.log("paperSize:", paperSize)
+  if (!barrelDetails || !staveCurveConfig)
+    return <></>
 
   const scale = 2.5; //f.d printScale 1.8
   const margins = 15;
@@ -56,44 +42,18 @@ export default function OnPaper({ barrelDetails, tool = BarrelTool.StaveCurve, p
   let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
     "  Stave length: " + staveLength + "  Angle: " + angle;
 
-  function hasKeys(obj: Record<string, any>, keys: string[]): boolean {
-    return keys.every(key => obj.hasOwnProperty(key));
-  }
-
-  function handleOnDragEnd(e: KonvaEventObject<MouseEvent>) {
-    /*
-    console.log("onDragEnd : " + e.target.id());
-    console.log(e.target.getPosition());
-    const id = e.target.id();
-    type k = keyof ToolConfig;
-
-    const newConfig = JSON.parse(JSON.stringify(config)) as ToolConfig;
-    newConfig.staveCurve.config[paperType][id as "innerBottom" | "outerBottom"]
-    newConfig.staveCurve.config[paperType]
-    Object.keys
-
-    //const newConfig = config.staveCurve.config[paperType];
-
-    //setConfig({ ...config, staveCurve: { config: {[paperType] : { ...newConfig })
-    */
-  }
-
-  function handleUpdate(updatedConfig: StaveCurveConfigWithData) {
-    // setConfig(updatedConfig);
-  }
-
-  return <Stage onDragEnd={(e) => handleOnDragEnd(e)} visible={visible} /*ref={printRef}*/ width={paperSize.width * scale} height={paperSize.height * scale}>
+  return <Stage width={PaperSizes[paper].width * scale} height={PaperSizes[paper].height * scale}>
     <Layer >
       <Rect fill={"white"} x={-5000} y={-5000} width={10000} height={10000} />
 
-      {tool === BarrelTool.StaveCurve &&
+      {tool === StaveTool.Curve &&
         // <StaveCurve cross={cross} scale={scale} x={30 * scale} y={20 * scale} barrel={barrel} />
         <StaveCurve /*onUpdate={handleUpdate}*/ cross={cross} scale={scale} barrelDetails={barrelDetails} config={staveCurveConfig} />
       }
-      {tool === BarrelTool.StaveFront &&
+      {tool === StaveTool.Front &&
         <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} /*maxArea={maxArea}*/ x={paperSize.width * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
       }
-      {tool === BarrelTool.StaveEnd &&
+      {tool === StaveTool.End &&
         <StaveEnds scale={scale} x={paperSize.width * scale * 0.5} y={paperSize.height} {...barrelDetails} />
       }
 
