@@ -64,6 +64,9 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     //console.log(index + ":" + test)
     //console.log(JSON.stringify({ ...currentValue }));
     //console.log(JSON.stringify({ ...loadedStaveCurveConfig.configDetails[index] }));
+    //console.log("currentvalue : ", currentValue.rotatePaper)
+    //console.log("configDetails[index] : ", loadedStaveCurveConfig.configDetails[index].rotatePaper)
+
     return test;
   };
 
@@ -91,8 +94,8 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     switch (staveToolState) {
       case StaveTool.Curve:
         return staveCurveConfig?.defaultPaperType as Paper
-      case StaveTool.Front:
-        return staveFrontConfig?.defaultPaperType as Paper
+      //case StaveTool.Front:
+      //  return staveFrontConfig?.defaultPaperType as Paper
       /* **********  Fyll på  ******************
       case BarrelTool.StaveEnd:
       return
