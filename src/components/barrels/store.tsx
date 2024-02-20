@@ -8,6 +8,11 @@ import {
 import { StaveTool } from './barrel-edit';
 import { Paper } from '../canvas/printouts/on-paper';
 
+
+// du MÅSTE göra en kopia på alla stevecurvedetails, annars funkar inte jämförelsen..
+
+
+
 type BarrelStore = {
   loadedBarrel: BarrelWithData | null;
   details: BarrelDetails | null;
@@ -15,7 +20,7 @@ type BarrelStore = {
   setBarrel: (barrel: BarrelWithData) => void;
   updateBarrelDetails: (name: string, value: boolean | string | number) => void;
   updateBarrelDetailsNumber: (name: string, value: number) => void;
-  updateStaveCurve: (name: string, value: number) => void;
+  updateStaveCurve: (name: string, value: number | boolean) => void;
   updateStaveCurvePaper: (paperState: string) => void;
   //  getCount: () => number;
 };

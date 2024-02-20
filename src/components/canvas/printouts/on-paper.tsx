@@ -35,14 +35,27 @@ export default function OnPaper({ tool, paper }: OnPaperProps) {
   if (!barrelDetails || !staveCurveConfig)
     return <></>
 
-  const scale = 2.5; //f.d printScale 1.8
+  const configDetailsDataArray = staveCurveConfig.configDetails;
+  const configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
+
+  if (configDetails === undefined)
+    return <></>;
+
+  let paperWidth = PaperSizes[paper].width;
+  let paperHeight = PaperSizes[paper].height;
+  if (configDetails.rotatePaper) {
+    paperWidth = PaperSizes[paper].height;
+    paperHeight = PaperSizes[paper].width;
+  }
+
+  const scale = 2.4; //f.d printScale 1.8
   const margins = 15;
   //l et maxArea = { width: paperSize.width - margins, height: paperSize.height - margins };
 
   let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
     "  Stave length: " + staveLength + "  Angle: " + angle;
 
-  return <Stage width={PaperSizes[paper].width * scale} height={PaperSizes[paper].height * scale}>
+  return <Stage width={paperWidth * scale} height={paperHeight * scale}>
     <Layer >
       <Rect fill={"white"} x={-5000} y={-5000} width={10000} height={10000} />
 
