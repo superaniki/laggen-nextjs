@@ -120,59 +120,10 @@ model StaveCurveConfigDetails {
   staveCurveConfigId String
 }
 
-//  const defaultStaveCurveConfig = {
-//     rotate: false,
-//     group: { x: 30, y: 20 },
-//     innerTop: { x: 20.5, y: 20 },
-//     outerTop: { x: 20.5, y: 60 },
-//     innerBottom: { x: 20.5, y: 170 },
-//     outerBottom: { x: 20.5, y: 210 },
-//     rect: { x: 0, y: 0, width: 20, height: 250 },
-//   }
+// model StaveFront {
+//   id        String @id @default(cuid())
+//   paperType String // A4 or A3
 
-//         innerTop: { x: number, y: number },
-//         outerTop: { x: number, y: number },
-//         innerBottom: { x: number, y: number },
-//         outerBottom: { x: number, y: number },
-//         rect: { x: number, y: number, width: number, height: number }
-//}
-
-// export interface ToolConfig {
-//   staveCurve: {
-//     defaultPaperType: string, // A3 or A4
-//     config: {
-//       [key: string]: { // A3 or A4
-//         rotate: boolean
-//         group: { x: number, y: number },
-//         innerTop: { x: number, y: number },
-//         outerTop: { x: number, y: number },
-//         innerBottom: { x: number, y: number },
-//         outerBottom: { x: number, y: number },
-//         rect: { x: number, y: number, width: number, height: number }
-//       }
-//     },
-//   }
-// }
-
-//  from DB
-// export type Barrel = {
-//   "id": number,
-//   "name": string,
-//   "notes": string,
-//   "height": number,
-//   "bottomDiameter": number,
-//   "topDiameter": number,
-//   "staveLength": number,
-//   "angle": number,
-//   "staveBottomThickness": number,
-//   "staveTopThickness": number,
-//   "bottomThickness": number,
-//   "bottomMargin": number,
-//   "userId": number,
-//   "isPublic": boolean,
-//   "isExample": boolean,
-//   "createdAt": number,
-//   "lastUpdated": number
 // }
 
 // 

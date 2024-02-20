@@ -1,5 +1,5 @@
 import { BarrelWithData } from "@/db/queries/barrels";
-import { Barrel, BarrelDetails } from "@prisma/client";
+import { BarrelDetails } from "@prisma/client";
 
 function findDiameter(oldDiameter: number, x2: number, y2: number) {
 	const diameterStep = 0.1;
@@ -111,7 +111,7 @@ function applyBarrelStaveLength(newStaveLength: number, barrel: BarrelDetails, t
 	if (barrel.angle === undefined || barrel.staveLength === undefined) return barrel;
 
 	const newAdjacent = newStaveLength * Math.sin(toRadians(barrel.angle));
-	const newHeight = newStaveLength * Math.cos(toRadians(barrel.angle));
+	const newHeight = round(newStaveLength * Math.cos(toRadians(barrel.angle)));
 
 	if (topDiameterLocked) {
 		const oldAdjacent = barrel.staveLength * Math.sin(toRadians(barrel.angle));

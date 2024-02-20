@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useRef, useState } from 'react';
 import { Group, Rect, Line, Text, Transformer } from 'react-konva';
 import Cross from '../../commons/cross';
-import { findAdjustedDiameter, createCurveMaxWidth } from '../../commons/barrel-math';
+import { findAdjustedDiameter, createCurveMaxWidth, round } from '../../commons/barrel-math';
 import { Barrel, BarrelDetails, StaveCurveConfig } from '@prisma/client';
 import { Paper } from '../on-paper';
 import { BarrelWithData, StaveCurveConfigWithData } from '@/db/queries/barrels';
@@ -17,15 +17,11 @@ type ToolCurveProps = {
 	closed?: boolean;
 };
 
-/* [currentSelection, setCurrentSelection, clearSelection] = useSelection(); */
 
 function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 	const [isHovered, setIsHovered] = useState(false);
-	//const [isSelected, setIsSelected] = useState(false);
 	const curveRef = useRef<any>();
-
 	const { updateStaveCurve } = useBarrelStore();
-
 	const selMargin = 5;
 
 	const rect = {
@@ -35,16 +31,10 @@ function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 		y2: points[points.length - 1] + selMargin * 2
 	}
 
-	/*
-		function handleOnClick() {
-			isHovered ? setIsSelected(true) : setIsSelected(false);
-		}*/
-
 	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
-		console.log("whaat");
 		curveRef.current.x(x); // lock X coordinate
 		event.cancelBubble = true;
-		updateStaveCurve(id, event.target.y());
+		updateStaveCurve(id, round(event.target.y(), 3));
 	}
 
 	return (
@@ -63,7 +53,6 @@ type StaveCurveProps = {
 	scale: number;
 	cross?: boolean;
 	maxStaveWidth?: number;
-	//onUpdate: (updatedConfig: ToolConfig) => void
 };
 
 
@@ -106,9 +95,8 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 	const curveXpos = rectX + rectWidth;
 
 	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
-		console.log("pinnen");
-		updateStaveCurve("posX", event.target.x());
-		updateStaveCurve("posY", event.target.y());
+		updateStaveCurve("posX", round(event.target.x(), 2));
+		updateStaveCurve("posY", round(event.target.y(), 2));
 	}
 
 	return (
