@@ -75,7 +75,7 @@ const useBarrelStore = create<BarrelStore>((set) => ({
       return {};
 
     const staveCurveConfig = state.staveCurveConfig;
-    const configDetailsArray = state.staveCurveConfig.configDetails;
+    const configDetailsArray = [...state.staveCurveConfig.configDetails];
 
     const configDetails = configDetailsArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
     if (configDetails === undefined)
@@ -83,7 +83,7 @@ const useBarrelStore = create<BarrelStore>((set) => ({
 
     const index = configDetailsArray.findIndex(item => (item.paperType === staveCurveConfig.defaultPaperType));
     configDetailsArray[index] = { ...configDetails, [name]: value };
-    const updatedConfig = { ...state.staveCurveConfig, configDetails: configDetailsArray }
+    const updatedConfig = { ...state.staveCurveConfig, configDetails: [...configDetailsArray] }
 
     return {
       staveCurveConfig: updatedConfig
