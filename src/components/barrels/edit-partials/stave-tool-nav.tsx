@@ -4,6 +4,7 @@ import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import useBarrelStore from "../barrel-store";
 import FormCheckBox from "@/components/common/form-checkbutton";
 import useEditStore, { Paper, StaveTool, View } from "../edit-store";
+import usePaperSize from "../usePaperSize";
 
 /*
 type StaveToolNavProps = {
@@ -16,7 +17,8 @@ type StaveToolNavProps = {
 
 export default function StaveToolNav() {
   const { staveCurveConfig, updateStaveCurvePaper, updateStaveCurve } = useBarrelStore();
-  const { staveToolState, viewState, setViewState, setStaveToolState, paperState } = useEditStore();
+  const { staveToolState, viewState, setViewState, setStaveToolState } = useEditStore();
+  const paperSize = usePaperSize();
 
   if (staveCurveConfig === null)
     return <></>
@@ -72,9 +74,9 @@ export default function StaveToolNav() {
     </div>
     <Divider className="box-content my-4 mx-2 w-auto" />
     <div className="flex flex-row self-center justify-center">
-      <Button variant={paperState === Paper.A3 ? "solid" : "faded"} disableRipple
+      <Button variant={paperSize === Paper.A3 ? "solid" : "faded"} disableRipple
         onClick={() => changePaperState(Paper.A3)} >A3</Button>
-      <Button variant={paperState === Paper.A4 ? "solid" : "faded"} disableRipple
+      <Button variant={paperSize === Paper.A4 ? "solid" : "faded"} disableRipple
         onClick={() => changePaperState(Paper.A4)} >A4</Button>
     </div>
     <FormCheckBox callback={handleCheckMark} name={"rotatePaper"} value={configDetails.rotatePaper} />
