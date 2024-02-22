@@ -50,12 +50,8 @@ function BarrelSide({ cross = false, angle, height, visible, inColor = true, bot
             <BottomPlate points={bottomPlantePoints} />
         </Group>
         <Apple visible={imageStatus === 'loaded' ? true : false} x={-bottomDiameter - length} y={0} sizeMm={80} />
-        <Cross visible={cross} color="green" />
+        <Cross visible={false} color="green" />
     </Group>;
 }
 
 export default BarrelSide;
-
-/*
- x={(-diameter * 0.05)} y={height * 0.5 + y}
-*/
