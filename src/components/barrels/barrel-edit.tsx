@@ -16,7 +16,6 @@ import MainEditNav from "./edit-partials/main-edit-nav";
 import StaveToolNav from "./edit-partials/stave-tool-nav";
 import useEditStore, { Paper, StaveTool, View } from "./edit-store";
 
-
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails: loadedBarrelDetails, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
   const { staveToolState, viewState, paperState: paperSize } = useEditStore();
@@ -51,7 +50,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     enableSaveButton = true;
   }
 
-  console.log("barrel edit, paperSize :", paperSize)
+  //console.log("barrel edit, paperSize :", paperSize)
 
   return (
     <>
@@ -73,7 +72,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
             {viewState === View.Barrel && <BarrelCanvas barrel={barrelDetails} />}
             {viewState === View.Tools && (
               <div className="shadow-medium">
-                <OnPaper tool={staveToolState} />
+                <OnPaper />
               </div>
             )}
             {viewState === View.View3d && <>3d view</>}

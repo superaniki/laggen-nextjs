@@ -9,23 +9,18 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { StaveCurveConfigWithData } from "@/db/queries/barrels";
 import useEditStore, { Paper, StaveTool } from "@/components/barrels/edit-store";
 import useBarrelStore from "@/components/barrels/barrel-store";
-import usePaperSize from "@/components/barrels/usePaperSize";
-
-interface OnPaperProps {
-  tool: StaveTool
-}
 
 const PaperSizes = {
   [Paper.A3]: { width: 297, height: 420 },
   [Paper.A4]: { width: 210, height: 297 }
 }
 
-export default function OnPaper({ tool }: OnPaperProps) {
+export default function OnPaper() {
   const { details: barrelDetails, staveCurveConfig } = useBarrelStore()
   const { height, topDiameter, staveLength, angle, bottomDiameter } = { ...barrelDetails };
   const [staveTemplateRotation, setStaveTemplateRotation] = useState(false);
+  const { staveToolState: tool, } = useEditStore();
   const cross = false;
-  let paperSize = { width: 0, height: 0 }
 
   if (!barrelDetails || !staveCurveConfig)
     return <></>
@@ -60,16 +55,16 @@ export default function OnPaper({ tool }: OnPaperProps) {
         <StaveCurve cross={cross} scale={scale} barrelDetails={barrelDetails} config={staveCurveConfig} />
       }
       {tool === StaveTool.Front &&
-        <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} x={paperSize.width * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
+        <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} x={paperWidth * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
       }
       {tool === StaveTool.End &&
-        <StaveEnds scale={scale} x={paperSize.width * scale * 0.5} y={paperSize.height} {...barrelDetails} />
+        <StaveEnds scale={scale} x={paperWidth * scale * 0.5} y={paperHeight} {...barrelDetails} />
       }
 
-      <BarrelSide visible={true} inColor={false} x={paperSize.width * scale - margins * scale} y={paperSize.height * scale - margins * scale}
+      <BarrelSide visible={true} inColor={false} x={paperWidth * scale - margins * scale} y={paperHeight * scale - margins * scale}
         {...barrelDetails} thickStroke={true} scale={0.07 * scale} />
-      <Ruler scale={scale * 10} y={paperSize.height * scale - margins * scale} x={margins * scale - 15} xLength={6} yLength={0} />
-      <Text x={margins * scale} rotation={270} y={paperSize.height * scale - 25 * scale} text={staveTemplateInfoText} fontFamily="courier" fontSize={3 * scale} fill={"black"} />
+      <Ruler scale={scale * 10} y={paperHeight * scale - margins * scale} x={margins * scale - 15} xLength={6} yLength={0} />
+      <Text x={margins * scale} rotation={270} y={paperHeight * scale - 25 * scale} text={staveTemplateInfoText} fontFamily="courier" fontSize={3 * scale} fill={"black"} />
     </Layer>
   </Stage>
 
