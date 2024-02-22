@@ -5,15 +5,8 @@ import {
   applyBarrelHeight, applyBarrelTopDiameter, applyBarrelAngle,
   applyBarrelBottomDiameter, applyBarrelStaveLength
 } from "../canvas/commons/barrel-math";
-import { StaveTool } from './barrel-edit';
-import { Paper } from '../canvas/printouts/on-paper';
 
-
-// du MÅSTE göra en kopia på alla stevecurvedetails, annars funkar inte jämförelsen..
-
-
-
-type BarrelStore = {
+export type BarrelStore = {
   loadedBarrel: BarrelWithData | null;
   details: BarrelDetails | null;
   staveCurveConfig: StaveCurveConfigWithData | null;

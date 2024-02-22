@@ -2,11 +2,12 @@ import React, { MutableRefObject, useRef, useState } from 'react';
 import { Group, Rect, Line, Text, Transformer } from 'react-konva';
 import Cross from '../../commons/cross';
 import { findAdjustedDiameter, createCurveMaxWidth, round } from '../../commons/barrel-math';
-import { Barrel, BarrelDetails, StaveCurveConfig } from '@prisma/client';
-import { Paper } from '../on-paper';
-import { BarrelWithData, StaveCurveConfigWithData } from '@/db/queries/barrels';
+import { BarrelDetails } from '@prisma/client';
+import { StaveCurveConfigWithData } from '@/db/queries/barrels';
 import { KonvaEventObject } from 'konva/lib/Node';
-import useBarrelStore from '@/components/barrels/store';
+import useBarrelStore from '@/components/barrels/barrel-store';
+import useEditStore from '@/components/barrels/edit-store';
+import usePaperSize from '@/components/barrels/usePaperSize';
 
 type ToolCurveProps = {
 	id: string;
@@ -16,7 +17,6 @@ type ToolCurveProps = {
 	title: string;
 	closed?: boolean;
 };
-
 
 function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 	const [isHovered, setIsHovered] = useState(false);
@@ -66,11 +66,13 @@ export enum StaveCurves {
 function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth = 100 }: StaveCurveProps) {
 	const { height, angle, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
 	const { updateStaveCurve } = useBarrelStore();
+	const paperState = usePaperSize();
+	//const { paperState } = useEditStore();
 
-	const defaultPaperType = config.defaultPaperType;
+	//const defaultPaperType = config.defaultPaperType;
 	const configDetailsArray = config.configDetails;
 
-	const configDetails = configDetailsArray.find(item => (item.paperType === defaultPaperType));
+	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
 	if (configDetails === undefined)
 		return <></>;
 

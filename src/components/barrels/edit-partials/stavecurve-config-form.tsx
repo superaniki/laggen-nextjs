@@ -1,8 +1,8 @@
 import FormInput from "@/components/common/form-input";
 import { StaveCurveConfigWithData } from "@/db/queries/barrels";
 import { ChangeEvent } from "react";
-import useStore from "../store";
-import useBarrelStore from "../store";
+import useStore from "../barrel-store";
+import useBarrelStore from "../barrel-store";
 
 
 export function StaveCurveConfigForm() {
