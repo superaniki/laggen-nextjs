@@ -1,20 +1,22 @@
 
 import { Button, Card, Divider } from "@nextui-org/react";
-import { StaveTool, View } from "../barrel-edit";
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
-import { Paper } from "@/components/canvas/printouts/on-paper";
-import useBarrelStore from "../store";
+import useBarrelStore from "../barrel-store";
 import FormCheckBox from "@/components/common/form-checkbutton";
+import useEditStore, { Paper, StaveTool, View } from "../edit-store";
 
+/*
 type StaveToolNavProps = {
   staveToolState: StaveTool,
   setBarrelToolState: Dispatch<SetStateAction<StaveTool>>
   viewState: View,
   setViewState: Dispatch<SetStateAction<View>>
 }
+*/
 
-export default function StaveToolNav({ staveToolState, setBarrelToolState, viewState, setViewState }: StaveToolNavProps) {
+export default function StaveToolNav() {
   const { staveCurveConfig, updateStaveCurvePaper, updateStaveCurve } = useBarrelStore();
+  const { staveToolState, viewState, setViewState, setStaveToolState, paperState } = useEditStore();
 
   if (staveCurveConfig === null)
     return <></>
@@ -43,6 +45,7 @@ export default function StaveToolNav({ staveToolState, setBarrelToolState, viewS
     switch (staveToolState) {
       case StaveTool.Curve:
         updateStaveCurvePaper(newPaperState)
+        console.log("updateStaveCurvePaper:" + newPaperState)
         break;
       default:
         break;
@@ -52,7 +55,7 @@ export default function StaveToolNav({ staveToolState, setBarrelToolState, viewS
   function StaveToolButton({ buttonType, label }: { buttonType: StaveTool, label: string }) {
     return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" disableRipple color="default"
       variant={staveToolState === buttonType ? "solid" : "faded"}
-      onClick={() => setBarrelToolState(buttonType)}>{label}</Button>
+      onClick={() => setStaveToolState(buttonType)}>{label}</Button>
   }
 
   function handleCheckMark(event: ChangeEvent<HTMLInputElement>) {
@@ -69,9 +72,9 @@ export default function StaveToolNav({ staveToolState, setBarrelToolState, viewS
     </div>
     <Divider className="box-content my-4 mx-2 w-auto" />
     <div className="flex flex-row self-center justify-center">
-      <Button variant={getCurrentPaperState() === Paper.A3 ? "solid" : "faded"} disableRipple
+      <Button variant={paperState === Paper.A3 ? "solid" : "faded"} disableRipple
         onClick={() => changePaperState(Paper.A3)} >A3</Button>
-      <Button variant={getCurrentPaperState() === Paper.A4 ? "solid" : "faded"} disableRipple
+      <Button variant={paperState === Paper.A4 ? "solid" : "faded"} disableRipple
         onClick={() => changePaperState(Paper.A4)} >A4</Button>
     </div>
     <FormCheckBox callback={handleCheckMark} name={"rotatePaper"} value={configDetails.rotatePaper} />

@@ -1,14 +1,16 @@
 
 import { Button, Card, Divider } from "@nextui-org/react";
-import { View } from "../barrel-edit";
 import { Dispatch, SetStateAction } from "react";
+import useEditStore, { View } from "../edit-store";
 
+/*
 type MainEditNavProps = {
   viewState: View,
   setViewState: Dispatch<SetStateAction<View>>
-}
+}*/
 
-export default function MainEditNav({ viewState, setViewState }: MainEditNavProps) {
+export default function MainEditNav() {//}: MainEditNavProps) {
+  const { viewState, setViewState } = useEditStore();
 
   function ViewButton({ buttonType, label }: { buttonType: View, label: string }) {
     return <Button disableRipple color="default" variant={viewState === buttonType ? "solid" : "faded"} className="row-span-1" onClick={() => setViewState(buttonType)}>{label}</Button>

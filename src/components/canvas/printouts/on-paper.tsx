@@ -7,17 +7,12 @@ import Ruler from "../commons/ruler";
 import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
 import { StaveCurveConfigWithData } from "@/db/queries/barrels";
-import useBarrelStore from "@/components/barrels/store";
-import { StaveTool } from "@/components/barrels/barrel-edit";
+import useEditStore, { Paper, StaveTool } from "@/components/barrels/edit-store";
+import useBarrelStore from "@/components/barrels/barrel-store";
+import usePaperSize from "@/components/barrels/usePaperSize";
 
 interface OnPaperProps {
   tool: StaveTool
-  paper: Paper
-}
-
-export enum Paper {
-  A3 = "A3",
-  A4 = "A4"
 }
 
 const PaperSizes = {
@@ -25,7 +20,7 @@ const PaperSizes = {
   [Paper.A4]: { width: 210, height: 297 }
 }
 
-export default function OnPaper({ tool, paper }: OnPaperProps) {
+export default function OnPaper({ tool }: OnPaperProps) {
   const { details: barrelDetails, staveCurveConfig } = useBarrelStore()
   const { height, topDiameter, staveLength, angle, bottomDiameter } = { ...barrelDetails };
   const [staveTemplateRotation, setStaveTemplateRotation] = useState(false);
@@ -35,22 +30,24 @@ export default function OnPaper({ tool, paper }: OnPaperProps) {
   if (!barrelDetails || !staveCurveConfig)
     return <></>
 
+  const paperState = staveCurveConfig.defaultPaperType as Paper; //usePaperSize();
+  console.log("usePaperSize, paper:" + paperState);
+
   const configDetailsDataArray = staveCurveConfig.configDetails;
   const configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
 
   if (configDetails === undefined)
     return <></>;
 
-  let paperWidth = PaperSizes[paper].width;
-  let paperHeight = PaperSizes[paper].height;
+  let paperWidth = PaperSizes[paperState].width;
+  let paperHeight = PaperSizes[paperState].height;
   if (configDetails.rotatePaper) {
-    paperWidth = PaperSizes[paper].height;
-    paperHeight = PaperSizes[paper].width;
+    paperWidth = PaperSizes[paperState].height;
+    paperHeight = PaperSizes[paperState].width;
   }
 
   const scale = 2.4; //f.d printScale 1.8
   const margins = 15;
-  //l et maxArea = { width: paperSize.width - margins, height: paperSize.height - margins };
 
   let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
     "  Stave length: " + staveLength + "  Angle: " + angle;
@@ -60,11 +57,10 @@ export default function OnPaper({ tool, paper }: OnPaperProps) {
       <Rect fill={"white"} x={-5000} y={-5000} width={10000} height={10000} />
 
       {tool === StaveTool.Curve &&
-        // <StaveCurve cross={cross} scale={scale} x={30 * scale} y={20 * scale} barrel={barrel} />
-        <StaveCurve /*onUpdate={handleUpdate}*/ cross={cross} scale={scale} barrelDetails={barrelDetails} config={staveCurveConfig} />
+        <StaveCurve cross={cross} scale={scale} barrelDetails={barrelDetails} config={staveCurveConfig} />
       }
       {tool === StaveTool.Front &&
-        <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} /*maxArea={maxArea}*/ x={paperSize.width * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
+        <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} x={paperSize.width * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
       }
       {tool === StaveTool.End &&
         <StaveEnds scale={scale} x={paperSize.width * scale * 0.5} y={paperSize.height} {...barrelDetails} />
