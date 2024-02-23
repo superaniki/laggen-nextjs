@@ -5,10 +5,8 @@ import StaveEnds from "./types/stave-end";
 import BarrelSide from "./types/barrel-side";
 import Ruler from "../commons/ruler";
 import { useState } from "react";
-import { KonvaEventObject } from "konva/lib/Node";
-import { StaveCurveConfigWithData } from "@/db/queries/barrels";
-import useEditStore, { Paper, StaveTool } from "@/components/barrels/edit-store";
-import useBarrelStore from "@/components/barrels/barrel-store";
+import useEditStore, { Paper, StaveTool } from "@/store/edit-store";
+import useBarrelStore from "@/store/barrel-store";
 
 const PaperSizes = {
   [Paper.A3]: { width: 297, height: 420 },

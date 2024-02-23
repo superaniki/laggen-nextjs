@@ -66,8 +66,10 @@ model Barrel {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   barrelDetails    BarrelDetails?
-  staveCurveConfig StaveCurveConfig?
   user             User              @relation(fields: [userId], references: [id])
+  staveCurveConfig StaveCurveConfig?
+  staveFrontConfig StaveFrontConfig?
+  staveEndConfig   StaveEndConfig?
 }
 
 model BarrelDetails {
@@ -116,8 +118,46 @@ model StaveCurveConfigDetails {
   rectY              Float
   rectWidth          Float
   rectHeight         Float
-  StaveCurveConfig   StaveCurveConfig @relation(fields: [staveCurveConfigId], references: [id], onDelete: Cascade)
+  staveCurveConfig   StaveCurveConfig @relation(fields: [staveCurveConfigId], references: [id], onDelete: Cascade)
   staveCurveConfigId String
+}
+
+model StaveFrontConfig {
+  id               String                    @id @default(cuid())
+  defaultPaperType String // A4 or A3
+  configDetails    StaveFrontConfigDetails[] // Assuming StaveCurveConfigDetails is another model
+  barrel           Barrel                    @relation(fields: [barrelId], references: [id], onDelete: Cascade)
+  barrelId         String                    @unique
+}
+
+model StaveFrontConfigDetails {
+  id                 String            @id @default(cuid())
+  paperType          String // A4 or A3
+  rotatePaper        Boolean
+  posX               Float
+  posY               Float
+  spacing            Float // mm mellan varje stavstorlek
+  staveFrontConfig   StaveFrontConfig? @relation(fields: [staveFrontConfigId], references: [id], onDelete: Cascade)
+  staveFrontConfigId String?
+}
+
+model StaveEndConfig {
+  id               String                  @id @default(cuid())
+  defaultPaperType String // A4 or A3
+  configDetails    StaveEndConfigDetails[] // Assuming StaveCurveConfigDetails is another model
+  barrel           Barrel                  @relation(fields: [barrelId], references: [id], onDelete: Cascade)
+  barrelId         String                  @unique
+}
+
+model StaveEndConfigDetails {
+  id               String          @id @default(cuid())
+  paperType        String // A4 or A3
+  rotatePaper      Boolean
+  posX             Float
+  posY             Float
+  spacing          Float // mm mellan varje stavstorlek
+  staveEndConfig   StaveEndConfig? @relation(fields: [staveEndConfigId], references: [id], onDelete: Cascade)
+  staveEndConfigId String?
 }
 
 // model StaveFront {

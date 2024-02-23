@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import useBarrelStore from "./barrel-store";
-import useEditStore, { Paper, StaveTool } from "./edit-store";
-
+import useBarrelStore from "@/store/barrel-store";
+import useEditStore, { Paper, StaveTool }  from "@/store/edit-store";
 
 export default function usePaperSize(defaultPaper?: Paper) {
   const { staveCurveConfig } = useBarrelStore();
@@ -16,6 +15,8 @@ export default function usePaperSize(defaultPaper?: Paper) {
         newPaperSize = staveCurveConfig?.defaultPaperType as Paper
         console.log("usePaperSize : " + newPaperSize)
       //case StaveTool.Front:
+        //newPaperSize = staveFrontConfig?.defaultPaperType as Paper
+
       //  return staveFrontConfig?.defaultPaperType as Paper
       /* **********  Fyll på  ******************
       case BarrelTool.StaveEnd:

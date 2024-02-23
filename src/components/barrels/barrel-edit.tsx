@@ -11,10 +11,10 @@ import OnPaper from "../canvas/printouts/on-paper";
 import { StaveCurveConfigDetails } from "@prisma/client";
 import { BarrelDetailForm } from "./edit-partials/barrel-detail-form";
 import { StaveCurveConfigForm } from "./edit-partials/stavecurve-config-form";
-import useBarrelStore from "./barrel-store";
+import useBarrelStore from "@/store/barrel-store";
 import MainEditNav from "./edit-partials/main-edit-nav";
 import StaveToolNav from "./edit-partials/stave-tool-nav";
-import useEditStore, { Paper, StaveTool, View } from "./edit-store";
+import useEditStore, { Paper, StaveTool, View } from "@/store/edit-store";
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails: loadedBarrelDetails, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
@@ -49,8 +49,6 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     !staveCurveConfig.configDetails.every(testEquality)) {
     enableSaveButton = true;
   }
-
-  //console.log("barrel edit, paperSize :", paperSize)
 
   return (
     <>

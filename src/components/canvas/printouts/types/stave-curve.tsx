@@ -5,9 +5,8 @@ import { findAdjustedDiameter, createCurveMaxWidth, round } from '../../commons/
 import { BarrelDetails } from '@prisma/client';
 import { StaveCurveConfigWithData } from '@/db/queries/barrels';
 import { KonvaEventObject } from 'konva/lib/Node';
-import useBarrelStore from '@/components/barrels/barrel-store';
-import useEditStore from '@/components/barrels/edit-store';
-import usePaperSize from '@/components/barrels/usePaperSize';
+import useBarrelStore from '@/store/barrel-store';
+import usePaperSize from '@/components/hooks/usePaperSize';
 
 type ToolCurveProps = {
 	id: string;
@@ -55,7 +54,6 @@ type StaveCurveProps = {
 	maxStaveWidth?: number;
 };
 
-
 export enum StaveCurves {
 	InnerTop,
 	OuterTop,
@@ -67,9 +65,7 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 	const { height, angle, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
 	const { updateStaveCurve } = useBarrelStore();
 	const paperState = usePaperSize();
-	//const { paperState } = useEditStore();
 
-	//const defaultPaperType = config.defaultPaperType;
 	const configDetailsArray = config.configDetails;
 
 	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
@@ -115,15 +111,3 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 
 
 export default StaveCurve;
-
-/*
-	<Group onClick={() => console.log("Hej")} y={y} scale={{ x: scale, y: scale }}>
-			<Curve x={20.5} y={-220} points={adjustedTopInnerPoints} title={'Top, inner'} />
-			<Curve x={20.5} y={-180} points={adjustedTopOuterPoints} title={'Top, outer'} />
-			<Curve x={20.5} y={-90} points={adjustedBottomInnerPoints} title={'Bottom, inner'} />
-			<Curve x={20.5} y={-50} points={adjustedBottomOuterPoints} title={'Bottom, outer'} />
-			<Rect stroke={'black'} strokeWidth={1} fill="white" x={0} y={0} width={20} height={-250} />
-			<Cross visible={cross} color="green" />
-		</Group>
-
-*/

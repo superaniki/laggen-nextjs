@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import {
   applyBarrelHeight, applyBarrelTopDiameter, applyBarrelAngle,
   applyBarrelBottomDiameter, applyBarrelStaveLength
-} from "../canvas/commons/barrel-math";
+} from '@/components/canvas/commons/barrel-math';
 
 export type BarrelStore = {
   loadedBarrel: BarrelWithData | null;
@@ -25,7 +25,8 @@ const useBarrelStore = create<BarrelStore>((set) => ({
   setBarrel: (barrel) => set((state) => ({
     loadedBarrel: barrel,
     details: barrel.barrelDetails,
-    staveCurveConfig: barrel.staveCurveConfig
+    staveCurveConfig: barrel.staveCurveConfig,
+    //staveFrontConfig: barrel.staveFrontConfig
   })),
   updateBarrelDetails: (name, value) => set((state) => {
     if (state.details === null)

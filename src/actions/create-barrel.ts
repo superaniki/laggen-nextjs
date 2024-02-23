@@ -100,6 +100,24 @@ function createStaveCurveConfigDetails(paperType: string, staveCurveConfigId: st
   }
 }
 
+function createStaveFrontConfig(barrelId: string) {
+  return {
+    //  id:"",
+    defaultPaperType: "A4",
+    barrelId: barrelId
+  }
+}
+
+function createStaveFrontConfigDetails(paperType: string, staveFrontConfigId: string) {
+  return {
+    paperType: paperType, // A4 or A3
+    rotatePaper: false,
+    posX: 0,
+    posY: 0,
+    spacing: 14, // mm mellan varje stavstorlek
+    staveFrontConfigId: staveFrontConfigId
+  }
+}
 const createBarrelSchema = z.object({
   name: z.string().min(3).regex(/^[a-zA-Z0-9ÅÄÖåäö ]+$/, {
     message: "Please avoid special characters",
@@ -122,7 +140,7 @@ interface CreateBarrelFormState {
 export async function createBarrel(formState: CreateBarrelFormState, formData: FormData):
   Promise<CreateBarrelFormState> {
   //await new Promise(resolve => setTimeout(resolve, 2500));
- 
+
   console.log("init formstate:" + JSON.stringify(formState));
   //formState = { success : false, errors :{}}
 
@@ -147,7 +165,7 @@ export async function createBarrel(formState: CreateBarrelFormState, formData: F
       },
     };
   }
- 
+
   const slug = await createSlug(name);
 
   try {
@@ -161,18 +179,33 @@ export async function createBarrel(formState: CreateBarrelFormState, formData: F
       data: { ...barrelDetailsTemplate },
     });
 
-    let configTemplate = createStaveCurveConfig(barrel.id);
-    const config = await db.staveCurveConfig.create({
-      data: { ...configTemplate },
+    let staveCurveConfigTemplate = createStaveCurveConfig(barrel.id);
+    const newSCconfig = await db.staveCurveConfig.create({
+      data: { ...staveCurveConfigTemplate },
     });
 
     await db.staveCurveConfigDetails.create({
-      data: { ...createStaveCurveConfigDetails("A4", config.id) },
+      data: { ...createStaveCurveConfigDetails("A4", newSCconfig.id) },
     });
 
     await db.staveCurveConfigDetails.create({
-      data: { ...createStaveCurveConfigDetails("A3", config.id) },
+      data: { ...createStaveCurveConfigDetails("A3", newSCconfig.id) },
     });
+
+
+    let staveFrontConfigTemplate = createStaveFrontConfig(barrel.id);
+    const newSFconfig = await db.staveFrontConfig.create({
+      data: { ...staveFrontConfigTemplate },
+    });
+
+    await db.staveFrontConfigDetails.create({
+      data: { ...createStaveFrontConfigDetails("A4", newSFconfig.id) },
+    });
+
+    await db.staveFrontConfigDetails.create({
+      data: { ...createStaveFrontConfigDetails("A3", newSFconfig.id) },
+    });
+
 
   } catch (err: unknown) {
     if (err instanceof PrismaClientKnownRequestError) {
