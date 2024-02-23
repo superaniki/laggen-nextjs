@@ -19,8 +19,7 @@ interface PostCreateFormProps {
   slug: string;
 }
 
-
-export default function BarrelCreateForm() {
+export default function ModalBarrelCreateForm() {
   //const [formState, action] = useFormState(actions.createBarrel.bind(null, slug), {
   const [formState, action] = useFormState(actions.createBarrel, { success: false, errors: {} });
   const [isOpen, setIsOpen] = useState(false);

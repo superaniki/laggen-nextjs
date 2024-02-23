@@ -1,19 +1,10 @@
 
 import { Button, Card, Divider } from "@nextui-org/react";
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
-import useBarrelStore from "../barrel-store";
+import useBarrelStore from "@/store/barrel-store";
 import FormCheckBox from "@/components/common/form-checkbutton";
-import useEditStore, { Paper, StaveTool, View } from "../edit-store";
-import usePaperSize from "../usePaperSize";
-
-/*
-type StaveToolNavProps = {
-  staveToolState: StaveTool,
-  setBarrelToolState: Dispatch<SetStateAction<StaveTool>>
-  viewState: View,
-  setViewState: Dispatch<SetStateAction<View>>
-}
-*/
+import useEditStore, { Paper, StaveTool, View } from "@/store/edit-store";
+import usePaperSize from "@/components/hooks/usePaperSize";
 
 export default function StaveToolNav() {
   const { staveCurveConfig, updateStaveCurvePaper, updateStaveCurve } = useBarrelStore();

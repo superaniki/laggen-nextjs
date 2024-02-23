@@ -27,15 +27,13 @@ function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, st
 type StaveProps = {
 	x: number;
 	y: number;
-	//rotate: boolean;
-	//maxArea: { height: number; width: number };
 	scale: number;
 	useCross?: boolean;
 	barrelDetails: BarrelDetails;
 	onClick: () => void;
 };
 
-function StaveFront({ x, y, /*maxArea,*/ scale, useCross = false, barrelDetails, onClick }: StaveProps) {
+function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick }: StaveProps) {
 	const { bottomDiameter, topDiameter, staveLength } = { ...barrelDetails };
 	const pointsData = calcStaveTemplatePoints(topDiameter, bottomDiameter, staveLength);
 
@@ -49,7 +47,6 @@ function StaveFront({ x, y, /*maxArea,*/ scale, useCross = false, barrelDetails,
 			<Line
 				draggable={false}
 				key={id++}
-				//rotation={rotate ? 90 : 0}
 				points={element}
 				stroke={'black'}
 				strokeWidth={1}

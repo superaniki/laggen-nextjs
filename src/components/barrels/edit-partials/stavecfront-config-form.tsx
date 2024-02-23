@@ -1,10 +1,10 @@
 import FormInput from "@/components/common/form-input";
 import { StaveCurveConfigWithData } from "@/db/queries/barrels";
 import { ChangeEvent } from "react";
+import useEditStore from "@/store/edit-store";
 import useBarrelStore from "@/store/barrel-store";
 
-export function StaveCurveConfigForm() {
-
+export function StaveFrontConfigForm() {
   const { staveCurveConfig: config, updateStaveCurve } = useBarrelStore();
   if (config === null)
     return <></>
@@ -31,6 +31,5 @@ export function StaveCurveConfigForm() {
     <FormInput callback={handleUpdate} name={"outerBottomY"} value={configDetails.outerBottomY.toString()} type={"number"} />
     <FormInput callback={handleUpdate} name={"rectHeight"} value={configDetails.rectHeight.toString()} type={"number"} />
     <FormInput callback={handleUpdate} name={"rectWidth"} value={configDetails.rectWidth.toString()} type={"number"} />
-
   </>
 }

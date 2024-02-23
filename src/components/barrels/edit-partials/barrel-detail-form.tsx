@@ -4,7 +4,7 @@ import LoadingString from "@/components/common/loading-string";
 import { Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { ChangeEvent } from "react";
-import useBarrelStore from "../barrel-store";
+import useBarrelStore from "@/store/barrel-store";
 
 export function BarrelDetailForm() {
   const session = useSession();

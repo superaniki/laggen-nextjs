@@ -1,13 +1,13 @@
 "use client"
 import { Button, Card, CardBody, CardHeader, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
-import BarrelPreviewCanvas from "../canvas/barrel-preview-canvas";
+import BarrelPreviewCanvas from "../../canvas/barrel-preview-canvas";
 import { BarrelWithData } from "@/db/queries/barrels";
 import paths from "@/paths";
 import Link from "next/link";
 import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { useSession } from "next-auth/react";
-import LoadingString from "../common/loading-string";
+import LoadingString from "../../common/loading-string";
 
 export enum BarrelType {
   public,
