@@ -1,11 +1,12 @@
 import FormInput from "@/components/common/form-input";
-import { StaveCurveConfigWithData } from "@/db/queries/barrels";
 import { ChangeEvent } from "react";
 import useBarrelStore from "@/store/barrel-store";
+import FormCheckBox from "@/components/common/form-checkbutton";
+import { StaveTool } from "@/store/edit-store";
 
-export function StaveCurveConfigForm() {
+export function StaveCurveConfig() {
 
-  const { staveCurveConfig: config, updateStaveCurve } = useBarrelStore();
+  const { staveCurveConfig: config, updateToolDetails } = useBarrelStore();
   if (config === null)
     return <></>
 
@@ -18,11 +19,16 @@ export function StaveCurveConfigForm() {
   function handleUpdate(event: ChangeEvent<HTMLInputElement>) {
     const { value, name } = event.target;
     const numberValue = parseFloat(value);
+    updateToolDetails(StaveTool.Curve, name, numberValue);
+  }
 
-    updateStaveCurve(name, numberValue);
+  function handleCheckMark(event: ChangeEvent<HTMLInputElement>) {
+    const { checked, name } = event.target;
+    updateToolDetails(StaveTool.Curve, name, checked);
   }
 
   return <>
+    <FormCheckBox callback={handleCheckMark} name={"rotatePaper"} value={configDetails.rotatePaper} />
     <FormInput callback={handleUpdate} name={"posX"} value={configDetails.posX.toString()} type={"number"} />
     <FormInput callback={handleUpdate} name={"posY"} value={configDetails.posY.toString()} type={"number"} />
     <FormInput callback={handleUpdate} name={"innerTopY"} value={configDetails.innerTopY.toString()} type={"number"} />

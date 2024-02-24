@@ -3,10 +3,11 @@ import { Group, Line, Text } from 'react-konva';
 import Cross from '../../commons/cross';
 import { Barrel, BarrelDetails } from '@prisma/client';
 import { ReactElement } from 'react';
-import { BarrelWithData } from '@/db/queries/barrels';
+import { BarrelWithData, StaveFrontConfigWithData } from '@/db/queries/barrels';
+import usePaperSize from '@/components/hooks/usePaperSize';
 
-function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, staveLength: number) {
-	const mmPerSizeChange = 15;
+function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, staveLength: number, spacing: number) {
+	const mmPerSizeChange = spacing;
 	const mmPerSizeChangeBottom = (bottomDiameter / topDiameter) * mmPerSizeChange;
 	const points = [];
 	const textData = [];
@@ -31,11 +32,21 @@ type StaveProps = {
 	useCross?: boolean;
 	barrelDetails: BarrelDetails;
 	onClick: () => void;
+	config: StaveFrontConfigWithData;
+
 };
 
-function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick }: StaveProps) {
+function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, config }: StaveProps) {
 	const { bottomDiameter, topDiameter, staveLength } = { ...barrelDetails };
-	const pointsData = calcStaveTemplatePoints(topDiameter, bottomDiameter, staveLength);
+
+	const paperState = usePaperSize();
+	const configDetailsArray = config.configDetails;
+	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
+	if (configDetails === undefined)
+		return <></>;
+
+	const { posX, posY, spacing } = { ...configDetails }
+	const pointsData = calcStaveTemplatePoints(topDiameter, bottomDiameter, staveLength, spacing);
 
 	let rotX = x;
 	let rotY = y;
@@ -82,7 +93,7 @@ function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick }: S
 	//}
 
 	return (
-		<Group>
+		<Group x={posX} y={posY}>
 			<Group scale={{ x: scale, y: scale }} x={rotX} y={rotY}>
 				<Group draggable={true} onClick={onClick}>
 					{lines}

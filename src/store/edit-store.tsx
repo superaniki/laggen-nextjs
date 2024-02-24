@@ -24,7 +24,7 @@ export enum Paper {
 type EditStore = {
   viewState: View,
   staveToolState: StaveTool,
-  paperState: Paper,
+  //paperState: Paper,
   setViewState: (view: View) => void;
   setStaveToolState: (staveTool: StaveTool) => void;
 };
@@ -33,33 +33,34 @@ const useEditStore = create<EditStore>((set) => {
   return {
     viewState: View.Barrel,
     staveToolState: StaveTool.Curve,
-    paperState: "A3" as Paper,
+    //paperState: "A3" as Paper,
     setViewState: (view) => set((state) => {
       return {
         viewState: view
       }
     }),
     setStaveToolState: (staveTool) => set((state) => {
-      let newPaperState = null;
-      switch (staveTool) {
+      //let newPaperState = null;
+      //let config = null;
+      /*switch (staveTool) {
         case StaveTool.Curve:
-          const config = useBarrelStore.getState().staveCurveConfig;
-          newPaperState = config?.defaultPaperType as Paper
-          //case StaveTool.Front:
-          //  return staveFrontConfig?.defaultPaperType as Paper
-          /* **********  Fyll på  ******************
-          case BarrelTool.StaveEnd:
-          return
-          
-          */
+          config = useBarrelStore.getState().staveCurveConfig;
+          //newPaperState = config?.defaultPaperType as Paper
+          break;
+        case StaveTool.Front:
+          config = useBarrelStore.getState().staveFrontConfig;
+          //newPaperState = config?.defaultPaperType as Paper
+          break;
+        case StaveTool.End:
+          config = useBarrelStore.getState().staveEndConfig;
+          //newPaperState = config?.defaultPaperType as Paper
           break;
         default:
-          newPaperState = Paper.A4;
-      }
-
+          //newPaperState = Paper.A4;
+      }*/
       return {
         staveToolState: staveTool,
-        paperState: newPaperState
+        //paperState: newPaperState
       }
     }),
   }
