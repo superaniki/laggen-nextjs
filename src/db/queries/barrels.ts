@@ -1,41 +1,47 @@
 import { db } from "..";
-import type { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails } from "@prisma/client";
+import type { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails, StaveEndConfig, StaveEndConfigDetails, StaveFrontConfig, StaveFrontConfigDetails } from "@prisma/client";
 
 export type StaveCurveConfigWithData = StaveCurveConfig & {
   configDetails : StaveCurveConfigDetails[]
 }
 
+export type StaveFrontConfigWithData = StaveFrontConfig & {
+  configDetails : StaveFrontConfigDetails[]
+}
+
+export type StaveEndConfigWithData = StaveEndConfig & {
+  configDetails : StaveEndConfigDetails[]
+}
 export type BarrelWithData = Barrel & {
   user: { name: string | null }
   barrelDetails : BarrelDetails
   staveCurveConfig : StaveCurveConfigWithData
+  staveFrontConfig : StaveFrontConfigWithData
+  staveEndConfig : StaveEndConfigWithData
 };
 
-/*
-
-model StaveCurveConfig {
-  id               String                    @id @default(cuid())
-  defaultPaperType String // A4 or A3
-  canvasData       StaveCurveConfigDetails[] // Assuming StaveCurveConfigDetails is another model
-  barrel           Barrel                    @relation(fields: [barrelId], references: [id], onDelete: Cascade)
-  barrelId         String                    @unique
-}*/
+const barrelSelectionConfig = {
+  user: { select: { name: true, image: true } },
+  staveCurveConfig : {
+    include: {configDetails : true }
+  },
+  staveFrontConfig : {
+    include: {configDetails : true }
+  },
+  staveEndConfig : {
+    include: {configDetails : true }
+  },
+  barrelDetails : true
+};
 
 export async function fetchAllBarrels() : Promise<BarrelWithData[]> {
   const barrels = <BarrelWithData[]> await db.barrel.findMany({
     orderBy: { 
       updatedAt : "desc"
     },
-    include: {
-      user: { select: { name: true, image: true } },
-      staveCurveConfig : {
-        include: {configDetails : true }
-      },
-      barrelDetails : true
-    },
+    include: barrelSelectionConfig
   });
 
-  //const filteredBarrels = barrels.filter((item) => item.staveCurveConfig !== null );
   return barrels;
 }
 
@@ -47,13 +53,7 @@ export async function fetchPublicBarrels() : Promise<BarrelWithData[]> {
     orderBy: { 
       updatedAt : "desc"
     },
-    include: {
-      user: { select: { name: true, image: true } },
-      staveCurveConfig : {
-        include: {configDetails : true }
-      },
-      barrelDetails : true
-    },
+    include: barrelSelectionConfig
   });
 }
 
@@ -65,13 +65,7 @@ export async function fetchBarrelsFromUser(userId : string) : Promise<BarrelWith
     orderBy: { 
       updatedAt : "desc"
     },
-    include: {
-      user: { select: { name: true, image: true } },
-      staveCurveConfig : {
-        include: {configDetails : true }
-      },
-      barrelDetails : true
-    },
+    include: barrelSelectionConfig
   });
 }
 
@@ -82,13 +76,7 @@ export async function fetchOneBarrelById(id:string) : Promise<BarrelWithData | n
         { id: id }, { slug: id }
       ]
     },
-    include: {
-      user: { select: { name: true } },
-      staveCurveConfig : {
-        include: {configDetails : true }
-      },
-      barrelDetails : true
-    },
+    include: barrelSelectionConfig
   });
 }
 

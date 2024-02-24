@@ -7,53 +7,21 @@ import useEditStore, { Paper, StaveTool, View } from "@/store/edit-store";
 import usePaperSize from "@/components/hooks/usePaperSize";
 
 export default function StaveToolNav() {
-  const { staveCurveConfig, updateStaveCurvePaper, updateStaveCurve } = useBarrelStore();
+  const { staveCurveConfig, staveFrontConfig, updatePaperState } = useBarrelStore();
   const { staveToolState, viewState, setViewState, setStaveToolState } = useEditStore();
   const paperSize = usePaperSize();
 
-  if (staveCurveConfig === null)
+  if (staveCurveConfig === null || staveFrontConfig === null)
     return <></>
   const configDetailsDataArray = staveCurveConfig.configDetails;
   const configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
   if (configDetails === undefined)
     return <></>;
 
-  function getCurrentPaperState() {
-    switch (staveToolState) {
-      case StaveTool.Curve:
-        if (staveCurveConfig === null)
-          return "";
-        return staveCurveConfig.defaultPaperType
-      /*case BarrelTool.StaveEnd:
-      return
-      case BarrelTool.StaveFront:
-      return 
-      */
-      default:
-        return ""
-    }
-  }
-
-  function changePaperState(newPaperState: string) {
-    switch (staveToolState) {
-      case StaveTool.Curve:
-        updateStaveCurvePaper(newPaperState)
-        console.log("updateStaveCurvePaper:" + newPaperState)
-        break;
-      default:
-        break;
-    }
-  }
-
   function StaveToolButton({ buttonType, label }: { buttonType: StaveTool, label: string }) {
     return <Button className="w-full xl:w-auto min-w-[3em] row-span-1" disableRipple color="default"
       variant={staveToolState === buttonType ? "solid" : "faded"}
       onClick={() => setStaveToolState(buttonType)}>{label}</Button>
-  }
-
-  function handleCheckMark(event: ChangeEvent<HTMLInputElement>) {
-    const { checked, name } = event.target;
-    updateStaveCurve(name, checked);
   }
 
   return <div className="grid gap-2 relative">
@@ -66,11 +34,10 @@ export default function StaveToolNav() {
     <Divider className="box-content my-4 mx-2 w-auto" />
     <div className="flex flex-row self-center justify-center">
       <Button variant={paperSize === Paper.A3 ? "solid" : "faded"} disableRipple
-        onClick={() => changePaperState(Paper.A3)} >A3</Button>
+        onClick={() => updatePaperState(staveToolState, Paper.A3)} >A3</Button>
       <Button variant={paperSize === Paper.A4 ? "solid" : "faded"} disableRipple
-        onClick={() => changePaperState(Paper.A4)} >A4</Button>
+        onClick={() => updatePaperState(staveToolState, Paper.A4)} >A4</Button>
     </div>
-    <FormCheckBox callback={handleCheckMark} name={"rotatePaper"} value={configDetails.rotatePaper} />
 
     {viewState !== View.Tools && <div className="absolute inset-0 bg-white opacity-50" onClick={() => setViewState(View.Tools)}></div>}
   </div>

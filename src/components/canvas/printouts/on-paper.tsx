@@ -7,6 +7,7 @@ import Ruler from "../commons/ruler";
 import { useState } from "react";
 import useEditStore, { Paper, StaveTool } from "@/store/edit-store";
 import useBarrelStore from "@/store/barrel-store";
+import usePaperSize from "@/components/hooks/usePaperSize";
 
 const PaperSizes = {
   [Paper.A3]: { width: 297, height: 420 },
@@ -14,27 +15,42 @@ const PaperSizes = {
 }
 
 export default function OnPaper() {
-  const { details: barrelDetails, staveCurveConfig } = useBarrelStore()
+  const { details: barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig } = useBarrelStore()
   const { height, topDiameter, staveLength, angle, bottomDiameter } = { ...barrelDetails };
   const [staveTemplateRotation, setStaveTemplateRotation] = useState(false);
-  const { staveToolState: tool, } = useEditStore();
+  const { staveToolState: tool } = useEditStore();
+  const paperState = usePaperSize();
   const cross = false;
 
-  if (!barrelDetails || !staveCurveConfig)
+  if (!barrelDetails || !staveCurveConfig || !staveFrontConfig || !staveEndConfig)
     return <></>
 
-  const paperState = staveCurveConfig.defaultPaperType as Paper; //usePaperSize();
+  //const paperState = staveCurveConfig.defaultPaperType as Paper; //usePaperSize();
   console.log("usePaperSize, paper:" + paperState);
 
-  const configDetailsDataArray = staveCurveConfig.configDetails;
-  const configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
+  let configDetails = null;
+  let configDetailsDataArray = null;
+  switch (tool) {
+    case StaveTool.Curve:
+      configDetailsDataArray = staveCurveConfig.configDetails;
+      configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
+      break;
+    case StaveTool.Front:
+      configDetailsDataArray = staveFrontConfig.configDetails;
+      configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
+      break;
+    case StaveTool.End:
+      configDetailsDataArray = staveEndConfig.configDetails;
+      configDetails = configDetailsDataArray.find(item => (item.paperType === staveEndConfig.defaultPaperType));
+      break;
+  }
 
   if (configDetails === undefined)
     return <></>;
 
   let paperWidth = PaperSizes[paperState].width;
   let paperHeight = PaperSizes[paperState].height;
-  if (configDetails.rotatePaper) {
+  if (configDetails?.rotatePaper) {
     paperWidth = PaperSizes[paperState].height;
     paperHeight = PaperSizes[paperState].width;
   }
@@ -53,10 +69,10 @@ export default function OnPaper() {
         <StaveCurve cross={cross} scale={scale} barrelDetails={barrelDetails} config={staveCurveConfig} />
       }
       {tool === StaveTool.Front &&
-        <StaveFront onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} x={paperWidth * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
+        <StaveFront config={staveFrontConfig} onClick={() => setStaveTemplateRotation(!staveTemplateRotation)} x={paperWidth * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
       }
       {tool === StaveTool.End &&
-        <StaveEnds scale={scale} x={paperWidth * scale * 0.5} y={paperHeight} {...barrelDetails} />
+        <StaveEnds config={staveEndConfig} scale={scale} x={paperWidth * scale * 0.5} y={paperHeight} {...barrelDetails} />
       }
 
       <BarrelSide visible={true} inColor={false} x={paperWidth * scale - margins * scale} y={paperHeight * scale - margins * scale}

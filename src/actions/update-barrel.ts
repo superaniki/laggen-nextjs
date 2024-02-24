@@ -1,14 +1,14 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails } from "@prisma/client";
+import { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
 import { db } from "@/db";
-import { BarrelWithData, StaveCurveConfigWithData } from "@/db/queries/barrels";
+import { BarrelWithData, StaveCurveConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { auth } from "@/auth";
 import { createSlug } from "./utils";
 
 
 export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails, staveCurveConfig: StaveCurveConfigWithData,
-  staveCurveConfigDetails : StaveCurveConfigDetails[] ) {
+  staveCurveConfigDetails : StaveCurveConfigDetails[], staveFrontConfig: StaveFrontConfigWithData, staveFrontConfigDetails : StaveFrontConfigDetails[] ) {
   const session = await auth();
 
   if (session?.user?.id !== barrel.userId)
@@ -33,7 +33,7 @@ export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails,
     data: { ...barrelDetails },
   });
 
-  const {configDetails, ...onlyStaveCurveConfig} = {...staveCurveConfig}
+  const {configDetails : curve, ...onlyStaveCurveConfig} = {...staveCurveConfig}
 
   await db.staveCurveConfig.update({
     where: { id: staveCurveConfig.id },
@@ -44,6 +44,20 @@ export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails,
     await db.staveCurveConfigDetails.update({
       where: { id: staveCurveConfigDetails[i].id },
       data: { ...staveCurveConfigDetails[i] }
+    })
+  }
+
+  const {configDetails: front, ...onlyStaveFrontConfig} = {...staveFrontConfig}
+
+  await db.staveFrontConfig.update({
+    where: { id: staveFrontConfig.id },
+    data: { ...onlyStaveFrontConfig }
+  })
+
+  for (let i = 0; i < staveFrontConfigDetails.length; i++) {
+    await db.staveFrontConfigDetails.update({
+      where: { id: staveFrontConfigDetails[i].id },
+      data: { ...staveFrontConfigDetails[i] }
     })
   }
 

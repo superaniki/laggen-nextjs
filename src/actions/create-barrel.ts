@@ -8,7 +8,6 @@ import { z } from 'zod';
 import paths from "@/paths";
 import { redirect } from "next/navigation";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { StaveCurveConfig } from "@prisma/client";
 import { createSlug } from "./utils";
 /*
 model Barrel {
@@ -118,6 +117,26 @@ function createStaveFrontConfigDetails(paperType: string, staveFrontConfigId: st
     staveFrontConfigId: staveFrontConfigId
   }
 }
+
+function createStaveEndConfig(barrelId: string) {
+  return {
+    //  id:"",
+    defaultPaperType: "A4",
+    barrelId: barrelId
+  }
+}
+
+function createStaveEndConfigDetails(paperType: string, staveEndConfigId: string) {
+  return {
+    paperType: paperType, // A4 or A3
+    rotatePaper: false,
+    topEndY: 0,
+    bottomEndY: 0,
+    staveEndConfigId: staveEndConfigId
+  }
+}
+
+
 const createBarrelSchema = z.object({
   name: z.string().min(3).regex(/^[a-zA-Z0-9ÅÄÖåäö ]+$/, {
     message: "Please avoid special characters",
@@ -179,6 +198,7 @@ export async function createBarrel(formState: CreateBarrelFormState, formData: F
       data: { ...barrelDetailsTemplate },
     });
 
+
     let staveCurveConfigTemplate = createStaveCurveConfig(barrel.id);
     const newSCconfig = await db.staveCurveConfig.create({
       data: { ...staveCurveConfigTemplate },
@@ -204,6 +224,20 @@ export async function createBarrel(formState: CreateBarrelFormState, formData: F
 
     await db.staveFrontConfigDetails.create({
       data: { ...createStaveFrontConfigDetails("A3", newSFconfig.id) },
+    });
+
+
+    let staveEndConfigTemplate = createStaveEndConfig(barrel.id);
+    const newSEconfig = await db.staveEndConfig.create({
+      data: { ...staveEndConfigTemplate },
+    });
+
+    await db.staveEndConfigDetails.create({
+      data: { ...createStaveEndConfigDetails("A4", newSEconfig.id) },
+    });
+
+    await db.staveEndConfigDetails.create({
+      data: { ...createStaveEndConfigDetails("A3", newSEconfig.id) },
     });
 
 
@@ -245,11 +279,11 @@ export async function createBarrel(formState: CreateBarrelFormState, formData: F
 
   formState = { errors: {}, success: true };
 
-  console.log("revalidatePath");
+  //console.log("revalidatePath");
   revalidatePath("/"); // revalidate!
-  console.log("redirect");
+  //console.log("redirect");
   //redirect("/");
-  console.log("after redirect");
+  //console.log("after redirect");
 
   return formState;
 }

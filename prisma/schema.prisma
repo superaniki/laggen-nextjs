@@ -153,9 +153,8 @@ model StaveEndConfigDetails {
   id               String          @id @default(cuid())
   paperType        String // A4 or A3
   rotatePaper      Boolean
-  posX             Float
-  posY             Float
-  spacing          Float // mm mellan varje stavstorlek
+  topEndY          Float
+  bottomEndY       Float
   staveEndConfig   StaveEndConfig? @relation(fields: [staveEndConfigId], references: [id], onDelete: Cascade)
   staveEndConfigId String?
 }

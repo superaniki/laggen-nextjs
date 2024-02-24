@@ -7,6 +7,7 @@ import { StaveCurveConfigWithData } from '@/db/queries/barrels';
 import { KonvaEventObject } from 'konva/lib/Node';
 import useBarrelStore from '@/store/barrel-store';
 import usePaperSize from '@/components/hooks/usePaperSize';
+import { StaveTool } from '@/store/edit-store';
 
 type ToolCurveProps = {
 	id: string;
@@ -20,7 +21,7 @@ type ToolCurveProps = {
 function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 	const [isHovered, setIsHovered] = useState(false);
 	const curveRef = useRef<any>();
-	const { updateStaveCurve } = useBarrelStore();
+	const { updateToolDetails } = useBarrelStore();
 	const selMargin = 5;
 
 	const rect = {
@@ -33,13 +34,12 @@ function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
 		curveRef.current.x(x); // lock X coordinate
 		event.cancelBubble = true;
-		updateStaveCurve(id, round(event.target.y(), 3));
+		updateToolDetails(StaveTool.Curve, id, round(event.target.y(), 3));
 	}
 
 	return (
 		<Group ref={curveRef} id={id} onMouseLeave={() => setIsHovered(false)} onDragMove={handleOnDragMove} onMouseOver={() => setIsHovered(true)} x={x} y={y} draggable>
 			<Rect stroke={"#FFAAAA"} strokeWidth={2} cornerRadius={5} strokeEnabled={isHovered} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />
-			{/*	<Rect stroke={"#DD4444"} strokeWidth={2} cornerRadius={5} strokeEnabled={isSelected} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />*/}
 			<Line closed={closed} points={points} stroke={'black'} strokeWidth={1} />
 			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
 		</Group>
@@ -63,7 +63,7 @@ export enum StaveCurves {
 
 function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth = 100 }: StaveCurveProps) {
 	const { height, angle, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
-	const { updateStaveCurve } = useBarrelStore();
+	const { updateToolDetails } = useBarrelStore();
 	const paperState = usePaperSize();
 
 	const configDetailsArray = config.configDetails;
@@ -93,8 +93,8 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 	const curveXpos = rectX + rectWidth;
 
 	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
-		updateStaveCurve("posX", round(event.target.x(), 2));
-		updateStaveCurve("posY", round(event.target.y(), 2));
+		updateToolDetails(StaveTool.Curve, "posX", round(event.target.x(), 2));
+		updateToolDetails(StaveTool.Curve, "posY", round(event.target.y(), 2));
 	}
 
 	return (

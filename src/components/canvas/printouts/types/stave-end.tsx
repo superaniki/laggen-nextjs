@@ -2,6 +2,8 @@ import React from 'react';
 import Cross from '../../commons/cross';
 import { Group, Line, Text } from 'react-konva';
 import { findAdjustedDiameter, createCurveForStaveEnds } from '../../commons/barrel-math';
+import usePaperSize from '@/components/hooks/usePaperSize';
+import { StaveEndConfigWithData } from '@/db/queries/barrels';
 
 type ToolCurveProps = {
 	x?: number;
@@ -39,6 +41,7 @@ type StaveEndsProps = {
 	staveTopThickness: number;
 	scale: number;
 	useCross?: boolean;
+	config: StaveEndConfigWithData
 };
 
 function StaveEnds({
@@ -51,7 +54,16 @@ function StaveEnds({
 	staveTopThickness,
 	scale,
 	useCross = true,
+	config
 }: StaveEndsProps) {
+
+
+	const paperState = usePaperSize();
+	const configDetailsArray = config.configDetails;
+	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
+	if (configDetails === undefined)
+		return <></>;
+
 	const tan = Math.tan((angle * Math.PI) / 180);
 	const length = tan * height; // position till motsatt sida av vinkeln
 	const topOuterDiameter = length * 2 + bottomDiameter;
@@ -73,8 +85,8 @@ function StaveEnds({
 
 	return (
 		<Group x={x} y={y} scale={{ x: scale, y: scale }}>
-			<ToolCurve y={scale} points={topEndPoints} title={'Top Ends'} closed />
-			<ToolCurve y={20 * scale} points={bottomEndPoints} title={'Bottom Ends'} closed />
+			<ToolCurve y={configDetails.topEndY} points={topEndPoints} title={'Top Ends'} closed />
+			<ToolCurve y={configDetails.bottomEndY} points={bottomEndPoints} title={'Bottom Ends'} closed />
 			<Cross visible={useCross} color="green" />
 		</Group>
 	);
