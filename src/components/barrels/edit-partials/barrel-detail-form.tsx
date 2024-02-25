@@ -49,12 +49,12 @@ export function BarrelDetailForm() {
     <FormInput callback={handleNumberInput} name={"bottomDiameter"} value={bottomDiameter.toString()} type={"number"} />
     <FormInput callback={handleNumberInput} name={"topDiameter"} value={topDiameter.toString()} type={"number"} />
     <FormInput callback={handleNumberInput} name={"staveLength"} value={staveLength.toString()} type={"number"} />
-    <FormInput callback={handleNumberInput} name={"angle"} value={angle.toString()} type={"number"} />
+    <FormInput step={1} callback={handleNumberInput} name={"angle"} value={angle.toString()} type={"number"} />
     <Divider className="my-4" />
-    <FormInput callback={handleNumberInput} name={"staveBottomThickness"} value={staveBottomThickness.toString()} type={"number"} />
-    <FormInput callback={handleNumberInput} name={"staveTopThickness"} value={staveTopThickness.toString()} type={"number"} />
-    <FormInput callback={handleNumberInput} name={"bottomThickness"} value={bottomThickness.toString()} type={"number"} />
-    <FormInput callback={handleNumberInput} name={"bottomMargin"} value={bottomMargin.toString()} type={"number"} />
+    <FormInput step={1} callback={handleNumberInput} name={"staveBottomThickness"} value={staveBottomThickness.toString()} type={"number"} />
+    <FormInput step={1} callback={handleNumberInput} name={"staveTopThickness"} value={staveTopThickness.toString()} type={"number"} />
+    <FormInput step={1} callback={handleNumberInput} name={"bottomThickness"} value={bottomThickness.toString()} type={"number"} />
+    <FormInput step={1} callback={handleNumberInput} name={"bottomMargin"} value={bottomMargin.toString()} type={"number"} />
     <Divider className="my-4" />
     <FormCheckBox callback={handleCheckMark} name={"isPublic"} value={isPublic} />
     <FormCheckBox callback={handleCheckMark} name={"isExample"} value={isExample} />

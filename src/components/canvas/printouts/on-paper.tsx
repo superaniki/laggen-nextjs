@@ -25,7 +25,6 @@ export default function OnPaper() {
   if (!barrelDetails || !staveCurveConfig || !staveFrontConfig || !staveEndConfig)
     return <></>
 
-  //const paperState = staveCurveConfig.defaultPaperType as Paper; //usePaperSize();
   console.log("usePaperSize, paper:" + paperState);
 
   let configDetails = null;

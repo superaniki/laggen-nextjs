@@ -1,14 +1,16 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
+import { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails, StaveEndConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
 import { db } from "@/db";
-import { BarrelWithData, StaveCurveConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
+import { BarrelWithData, StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { auth } from "@/auth";
 import { createSlug } from "./utils";
 
 
-export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails, staveCurveConfig: StaveCurveConfigWithData,
-  staveCurveConfigDetails : StaveCurveConfigDetails[], staveFrontConfig: StaveFrontConfigWithData, staveFrontConfigDetails : StaveFrontConfigDetails[] ) {
+export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails, 
+  staveCurveConfig: StaveCurveConfigWithData, staveCurveConfigDetails : StaveCurveConfigDetails[], 
+  staveFrontConfig: StaveFrontConfigWithData, staveFrontConfigDetails : StaveFrontConfigDetails[],
+  staveEndConfig: StaveEndConfigWithData, staveEndConfigDetails : StaveEndConfigDetails[] ) {
   const session = await auth();
 
   if (session?.user?.id !== barrel.userId)
@@ -58,6 +60,20 @@ export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails,
     await db.staveFrontConfigDetails.update({
       where: { id: staveFrontConfigDetails[i].id },
       data: { ...staveFrontConfigDetails[i] }
+    })
+  }
+
+  const {configDetails: end, ...onlyStaveEndConfig} = {...staveEndConfig}
+
+  await db.staveEndConfig.update({
+    where: { id: staveEndConfig.id },
+    data: { ...onlyStaveEndConfig }
+  })
+
+  for (let i = 0; i < staveEndConfigDetails.length; i++) {
+    await db.staveEndConfigDetails.update({
+      where: { id: staveEndConfigDetails[i].id },
+      data: { ...staveEndConfigDetails[i] }
     })
   }
 
