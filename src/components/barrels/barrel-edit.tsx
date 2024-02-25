@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { BarrelWithData, } from "@/db/queries/barrels";
 import LoadingString from "../common/loading-string";
 import OnPaper from "../canvas/printouts/on-paper";
-import { StaveCurveConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
+import { StaveCurveConfigDetails, StaveEndConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
 import { BarrelDetailForm } from "./edit-partials/barrel-detail-form";
 import { StaveCurveConfig } from "./edit-partials/stave-curve-config";
 import useBarrelStore from "@/store/barrel-store";
@@ -19,9 +19,9 @@ import { StaveFrontConfig } from "./edit-partials/stave-front-config";
 import { StaveEndConfig } from "./edit-partials/stave-end-config";
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
-  const { user, barrelDetails: loadedBarrelDetails, staveFrontConfig: loadedStaveFrontConfig, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
+  const { user, barrelDetails: loadedBarrelDetails, staveEndConfig: loadedStaveEndConfig, staveFrontConfig: loadedStaveFrontConfig, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
   const { staveToolState, viewState } = useEditStore();
-  const { setBarrel, details: barrelDetails, staveCurveConfig, staveFrontConfig } = useBarrelStore();
+  const { setBarrel, details: barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig } = useBarrelStore();
   const session = useSession();
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   if (barrel === undefined)
     return <LoadingString />;
 
-  if (staveCurveConfig === null || barrelDetails == null || staveFrontConfig === null)
+  if (staveCurveConfig === null || barrelDetails == null || staveFrontConfig === null || staveEndConfig === null)
     return <></>
 
   function dateString(milliSeconds: number) {
@@ -44,10 +44,12 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveCurveConfig.configDetails[index] });
     return test;
   };
-
-
   const testFrontEquality = (currentValue: StaveFrontConfigDetails, index: number) => {
     const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveFrontConfig.configDetails[index] });
+    return test;
+  };
+  const testEndEquality = (currentValue: StaveEndConfigDetails, index: number) => {
+    const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveEndConfig.configDetails[index] });
     return test;
   };
 
@@ -55,10 +57,10 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   if (JSON.stringify({ ...barrelDetails }) !== JSON.stringify({ ...loadedBarrelDetails }) ||
     JSON.stringify({ ...staveCurveConfig }) !== JSON.stringify({ ...loadedStaveCurveConfig }) ||
     JSON.stringify({ ...staveFrontConfig }) !== JSON.stringify({ ...loadedStaveFrontConfig }) ||
-    //JSON.stringify({ ...staveEndConfig }) !== JSON.stringify({ ...loadedStaveEndConfig }) ||
-
+    JSON.stringify({ ...staveEndConfig }) !== JSON.stringify({ ...loadedStaveEndConfig }) ||
     !staveCurveConfig.configDetails.every(testCurveEquality) ||
-    !staveFrontConfig.configDetails.every(testFrontEquality)) {
+    !staveFrontConfig.configDetails.every(testFrontEquality) ||
+    !staveEndConfig.configDetails.every(testEndEquality)) {
     enableSaveButton = true;
   }
 
@@ -98,7 +100,9 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
         <div className="col-span-2">
           <BarrelDetailForm />
           <Divider className="my-4" />
-          <form action={() => updateBarrel(loadedBarrel, barrelDetails, staveCurveConfig, staveCurveConfig.configDetails, staveFrontConfig, staveFrontConfig.configDetails)}>
+          <form action={() => updateBarrel(loadedBarrel, barrelDetails, staveCurveConfig,
+            staveCurveConfig.configDetails, staveFrontConfig, staveFrontConfig.configDetails,
+            staveEndConfig, staveEndConfig.configDetails)}>
             {session.data?.user?.id === barrel.userId && <FormButton isDisabled={!enableSaveButton}>Save</FormButton>}
           </form>
           <div className="text-tiny mt-4 text-gray-500">Created : {dateString(barrel.createdAt.getTime())}</div>

@@ -1,12 +1,11 @@
 import { BarrelWithData, StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from '@/db/queries/barrels';
-import { BarrelDetails, StaveCurveConfigDetails, StaveFrontConfigDetails } from '@prisma/client';
+import { BarrelDetails } from '@prisma/client';
 import { create } from 'zustand';
 import {
   applyBarrelHeight, applyBarrelTopDiameter, applyBarrelAngle,
   applyBarrelBottomDiameter, applyBarrelStaveLength
 } from '@/components/canvas/commons/barrel-math';
 import { StaveTool } from './edit-store';
-import { StaveCurveConfig } from '@/components/barrels/edit-partials/stave-curve-config';
 
 export type BarrelStore = {
   loadedBarrel: BarrelWithData | null;
@@ -114,11 +113,14 @@ const useBarrelStore = create<BarrelStore>((set) => {
               staveCurveConfig: { ...state.staveCurveConfig, defaultPaperType: paperState }
             }
         case StaveTool.Front:
+          console.log("update paper state:", "StaveTool.Front")
           if (state.staveFrontConfig !== null)
             return {
               staveFrontConfig: { ...state.staveFrontConfig, defaultPaperType: paperState }
             }
         case StaveTool.End:
+          console.log("update paper state:", "StaveTool.End")
+
           if (state.staveEndConfig !== null)
             return {
               staveEndConfig: { ...state.staveEndConfig, defaultPaperType: paperState }

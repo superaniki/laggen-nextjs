@@ -1,8 +1,6 @@
 
-import { Button, Card, Divider } from "@nextui-org/react";
-import { ChangeEvent, Dispatch, SetStateAction } from "react";
+import { Button, Divider } from "@nextui-org/react";
 import useBarrelStore from "@/store/barrel-store";
-import FormCheckBox from "@/components/common/form-checkbutton";
 import useEditStore, { Paper, StaveTool, View } from "@/store/edit-store";
 import usePaperSize from "@/components/hooks/usePaperSize";
 
@@ -23,6 +21,8 @@ export default function StaveToolNav() {
       variant={staveToolState === buttonType ? "solid" : "faded"}
       onClick={() => setStaveToolState(buttonType)}>{label}</Button>
   }
+
+  console.log("StaveToolNav:" + staveToolState);
 
   return <div className="grid gap-2 relative">
     <div className={`${viewState !== View.Tools && "opacity-disabled"} flex flex-col items-center text-sm`}>templates for stave</div>
