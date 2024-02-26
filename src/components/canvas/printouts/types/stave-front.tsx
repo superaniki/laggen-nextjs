@@ -1,10 +1,14 @@
-import React from 'react';
-import { Group, Line, Text } from 'react-konva';
+import React, { useEffect, useRef, useState } from 'react';
+import { Group, Line, Rect, Text } from 'react-konva';
 import Cross from '../../commons/cross';
 import { Barrel, BarrelDetails } from '@prisma/client';
 import { ReactElement } from 'react';
 import { BarrelWithData, StaveFrontConfigWithData } from '@/db/queries/barrels';
 import usePaperSize from '@/components/hooks/usePaperSize';
+import { KonvaEventObject } from 'konva/lib/Node';
+import useBarrelStore from '@/store/barrel-store';
+import { StaveTool } from '@/store/edit-store';
+import { round } from '../../commons/barrel-math';
 
 function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, staveLength: number, spacing: number) {
 	const mmPerSizeChange = spacing;
@@ -37,16 +41,26 @@ type StaveProps = {
 };
 
 function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, config }: StaveProps) {
-	const { bottomDiameter, topDiameter, staveLength } = { ...barrelDetails };
+	const { bottomDiameter, topDiameter, staveLength, height } = { ...barrelDetails };
+	const { updateToolDetails } = useBarrelStore();
+	const [isHovered, setIsHovered] = useState(false);
+	const curveRef = useRef<any>();
 
 	const paperState = usePaperSize();
 	const configDetailsArray = config.configDetails;
 	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
+
 	if (configDetails === undefined)
 		return <></>;
-
-	const { posX, posY, spacing } = { ...configDetails }
+	const { posY, spacing } = { ...configDetails }
 	const pointsData = calcStaveTemplatePoints(topDiameter, bottomDiameter, staveLength, spacing);
+	const selMargin = 5;
+	const rect = {
+		x1: (-topDiameter * 0.5) - selMargin,
+		y1: -staveLength - selMargin,
+		x2: (topDiameter * 0.5) * 2 + (selMargin * 2),
+		y2: staveLength + (selMargin * 2)
+	}
 
 	let rotX = x;
 	let rotY = y;
@@ -71,9 +85,7 @@ function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, con
 	pointsData.textData.forEach((element) => {
 		textData.push(
 			<Text
-				//rotation={rotate ? 90 : 0}
-				//x={rotate ? -element.y + 8 : element.x - 3}
-				//y={rotate ? element.x - 4 : element.y - 6}'
+
 				x={element.x - 3}
 				y={element.y - 6}
 				text={element.text}
@@ -85,22 +97,22 @@ function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, con
 		);
 	});
 
-	//if (!rotate) {
 	rotY = y * 0.5 + staveLength * scale + 50;
-	//} else {
-	//	rotY = y * 0.5 + maxArea.height * 0.5 * scale;
-	//	rotX = maxArea.width * scale - staveLength * scale;
-	//}
+
+	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
+		curveRef.current.x(x); // lock X coordinate
+		event.cancelBubble = true;
+		updateToolDetails(StaveTool.Front, "posX", round(event.target.x()));
+		updateToolDetails(StaveTool.Front, "posY", round(event.target.y()));
+	}
 
 	return (
-		<Group x={posX} y={posY}>
-			<Group scale={{ x: scale, y: scale }} x={rotX} y={rotY}>
-				<Group draggable={true} onClick={onClick}>
-					{lines}
-					{textData}
-				</Group>
-				{useCross && <Cross color="blue" />}
-			</Group>
+		<Group x={x} y={posY} scale={{ x: scale, y: scale }} ref={curveRef} draggable={true} onClick={onClick} onMouseLeave={() => setIsHovered(false)}
+			onDragMove={handleOnDragMove} onMouseOver={() => setIsHovered(true)}>
+			<Rect stroke={"#FFAAAA"} strokeWidth={2} cornerRadius={5} strokeEnabled={isHovered} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />
+
+			{lines}
+			{textData}
 		</Group>
 	);
 }

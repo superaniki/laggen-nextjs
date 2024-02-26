@@ -112,7 +112,7 @@ function createStaveFrontConfigDetails(paperType: string, staveFrontConfigId: st
     paperType: paperType, // A4 or A3
     rotatePaper: false,
     posX: 0,
-    posY: 0,
+    posY: 500,
     spacing: 14, // mm mellan varje stavstorlek
     staveFrontConfigId: staveFrontConfigId
   }

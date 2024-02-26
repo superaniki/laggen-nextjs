@@ -36,7 +36,7 @@ export default function OnPaper() {
       break;
     case StaveTool.Front:
       configDetailsDataArray = staveFrontConfig.configDetails;
-      configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
+      configDetails = configDetailsDataArray.find(item => (item.paperType === staveFrontConfig.defaultPaperType));
       break;
     case StaveTool.End:
       configDetailsDataArray = staveEndConfig.configDetails;
@@ -49,7 +49,7 @@ export default function OnPaper() {
 
   let paperWidth = PaperSizes[paperState].width;
   let paperHeight = PaperSizes[paperState].height;
-  if (configDetails?.rotatePaper) {
+  if (configDetails.rotatePaper) {
     paperWidth = PaperSizes[paperState].height;
     paperHeight = PaperSizes[paperState].width;
   }
