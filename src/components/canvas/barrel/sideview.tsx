@@ -50,7 +50,8 @@ function SideView({
 	//console.log('width : ' + width, 'height: ' + height);
 	console.log('dimensions : ' + JSON.stringify(dimensions));
 
-	const scale = findScaleToFit(dimensions, { width: width, height: height }, 0.8); // 20% margin
+	let scale = findScaleToFit(dimensions, { width: width, height: height }, 0.8); // 20% margin
+	scale = Math.min(3, scale);
 	const url = '/apple.png';
 	const [image, imageStatus] = useImage(url);
 
@@ -117,8 +118,8 @@ function SideView({
 			<Image
 				alt="apple"
 				visible={visible}
-				opacity={0.7}
-				x={x - size - size}
+				opacity={0.3}
+				x={x - (size * 0.5) - size}
 				y={y - size + 4}
 				image={image}
 				width={size}
@@ -135,18 +136,19 @@ function SideView({
 				{useGrid && <Grid pixelsPerCm={pixelsPerCm} scale={scale} x={worldX} y={worldY} />}
 
 				<Group scaleX={scale} scaleY={scale}>
+					<Apple
+						visible={imageStatus === 'loaded' ? true : false}
+						x={-bottomDiameter * 0.8}
+						y={height * 0.5}
+						sizeMm={80}
+					/>
 					<Group x={-bottomDiameter * 0.5} y={height * 0.5}>
 						<Outline points={outlinePoints} />
 						<LeftStave points={leftStavePoints} angle={angle} />
 						<RightStave points={rightStavePoints} angle={angle} x={bottomDiameter} />
 						<BottomPlate points={bottomPlatePoints} />
 					</Group>
-					<Apple
-						visible={imageStatus === 'loaded' ? true : false}
-						x={0 - bottomDiameter * 0.5}
-						y={height * 0.5}
-						sizeMm={80}
-					/>
+
 					{useCross && <Cross color="green" />}
 				</Group>
 			</Group>
