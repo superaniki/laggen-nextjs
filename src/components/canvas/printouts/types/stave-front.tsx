@@ -9,6 +9,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import useBarrelStore from '@/store/barrel-store';
 import { StaveTool } from '@/store/edit-store';
 import { round } from '../../commons/barrel-math';
+import { SelectionRect } from '../../commons/SelectionRect';
 
 function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, staveLength: number, spacing: number) {
 	const mmPerSizeChange = spacing;
@@ -40,6 +41,8 @@ type StaveProps = {
 
 };
 
+
+
 function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, config }: StaveProps) {
 	const { bottomDiameter, topDiameter, staveLength, height } = { ...barrelDetails };
 	const { updateToolDetails } = useBarrelStore();
@@ -62,9 +65,6 @@ function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, con
 		y2: staveLength + (selMargin * 2)
 	}
 
-	let rotX = x;
-	let rotY = y;
-
 	const lines: ReactElement[] = [];
 	let id = 0;
 	pointsData.points.forEach((element) => {
@@ -85,7 +85,6 @@ function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, con
 	pointsData.textData.forEach((element) => {
 		textData.push(
 			<Text
-
 				x={element.x - 3}
 				y={element.y - 6}
 				text={element.text}
@@ -97,8 +96,6 @@ function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, con
 		);
 	});
 
-	rotY = y * 0.5 + staveLength * scale + 50;
-
 	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
 		curveRef.current.x(x); // lock X coordinate
 		event.cancelBubble = true;
@@ -106,14 +103,15 @@ function StaveFront({ x, y, scale, useCross = false, barrelDetails, onClick, con
 		updateToolDetails(StaveTool.Front, "posY", round(event.target.y()));
 	}
 
-	return (
-		<Group x={x} y={posY} scale={{ x: scale, y: scale }} ref={curveRef} draggable={true} onClick={onClick} onMouseLeave={() => setIsHovered(false)}
-			onDragMove={handleOnDragMove} onMouseOver={() => setIsHovered(true)}>
-			<Rect stroke={"#FFAAAA"} strokeWidth={2} cornerRadius={5} strokeEnabled={isHovered} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />
+	const selPos = { x: (-topDiameter * 0.5) - selMargin, y: -staveLength - selMargin };
+	const selSize = { x: (topDiameter * 0.5) * 2 + (selMargin * 2), y: staveLength + (selMargin * 2) }
 
+	return (
+		<Group x={x} y={posY} scale={{ x: scale, y: scale }} ref={curveRef} draggable={true} onClick={onClick} onDragMove={handleOnDragMove}>
 			{lines}
 			{textData}
-		</Group>
+			<SelectionRect pos={selPos} size={selSize} />
+		</Group >
 	);
 }
 
