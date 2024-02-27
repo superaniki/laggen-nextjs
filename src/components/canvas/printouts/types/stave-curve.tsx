@@ -8,6 +8,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import useBarrelStore from '@/store/barrel-store';
 import usePaperSize from '@/components/hooks/usePaperSize';
 import { StaveTool } from '@/store/edit-store';
+import { SelectionRect } from '../../commons/SelectionRect';
 
 type ToolCurveProps = {
 	id: string;
@@ -19,16 +20,17 @@ type ToolCurveProps = {
 };
 
 function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
-	const [isHovered, setIsHovered] = useState(false);
 	const curveRef = useRef<any>();
 	const { updateToolDetails } = useBarrelStore();
 	const selMargin = 5;
 
-	const rect = {
-		x1: points[0] - selMargin,
-		y1: points[1] - selMargin,
-		x2: points[points.length - 2] + selMargin * 2,
-		y2: points[points.length - 1] + selMargin * 2
+	const selPos = {
+		x: points[0] - selMargin,
+		y: points[1] - selMargin,
+	}
+	const selSize = {
+		x: points[points.length - 2] + selMargin * 2,
+		y: points[points.length - 1] + selMargin * 2
 	}
 
 	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
@@ -38,8 +40,8 @@ function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 	}
 
 	return (
-		<Group ref={curveRef} id={id} onMouseLeave={() => setIsHovered(false)} onDragMove={handleOnDragMove} onMouseOver={() => setIsHovered(true)} x={x} y={y} draggable>
-			<Rect stroke={"#FFAAAA"} strokeWidth={2} cornerRadius={5} strokeEnabled={isHovered} x={rect.x1} y={rect.y1} width={rect.x2} height={rect.y2} />
+		<Group ref={curveRef} id={id} onDragMove={handleOnDragMove} x={x} y={y} draggable>
+			<SelectionRect pos={selPos} size={selSize} />
 			<Line closed={closed} points={points} stroke={'black'} strokeWidth={1} />
 			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
 		</Group>
@@ -104,6 +106,8 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 			<Curve id={"innerBottomY"} x={curveXpos} y={innerBottomY} points={adjustedBottomInnerPoints} title={'Bottom, inner'} />
 			<Curve id={"outerBottomY"} x={curveXpos} y={outerBottomY} points={adjustedBottomOuterPoints} title={'Bottom, outer'} />
 			<Rect id="rect" stroke={'black'} strokeWidth={1} fill="white" x={rectX} y={rectY} width={rectWidth} height={rectHeight} />
+			<SelectionRect pos={{ x: rectX - 2, y: rectY - 2 }} size={{ x: rectWidth + 4, y: rectHeight + 4 }} />
+
 			<Cross visible={cross} color="green" />
 		</Group>
 	);

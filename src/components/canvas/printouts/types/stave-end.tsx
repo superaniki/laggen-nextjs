@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Cross from '../../commons/cross';
-import { Group, Line, Text } from 'react-konva';
-import { findAdjustedDiameter, createCurveForStaveEnds } from '../../commons/barrel-math';
+import { Group, Line, Rect, Text } from 'react-konva';
+import { findAdjustedDiameter, createCurveForStaveEnds, round } from '../../commons/barrel-math';
 import usePaperSize from '@/components/hooks/usePaperSize';
 import { StaveEndConfigWithData } from '@/db/queries/barrels';
+import { KonvaEventObject } from 'konva/lib/Node';
+import { StaveTool } from '@/store/edit-store';
+import useBarrelStore from '@/store/barrel-store';
+import { SelectionRect } from '../../commons/SelectionRect';
 
 type ToolCurveProps = {
+	id: string
 	x?: number;
 	y: number;
 	points: number[];
@@ -13,16 +18,38 @@ type ToolCurveProps = {
 	closed: boolean;
 };
 
-function ToolCurve({ x = 0, y, points, title, closed }: ToolCurveProps) {
+function ToolCurve({ id, x = 0, y, points, title, closed }: ToolCurveProps) {
+	const curveRef = useRef<any>();
+	const { updateToolDetails } = useBarrelStore();
+
 	const linePoints = [];
 	for (let i = 0; i < points.length; i += 8) {
 		linePoints.push({ x: Number(points[i]), y: Number(points[i + 1]) });
 	}
 
+	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
+		curveRef.current.x(x); // lock X coordinate
+		event.cancelBubble = true;
+		updateToolDetails(StaveTool.End, id, round(event.target.y()));
+	}
+	const selMargin = 5;
+
+	const selPos = {
+		x: linePoints[0].x - selMargin,
+		y: linePoints[0].y + (selMargin)
+	}
+	const selSize = {
+		x: -linePoints[0].x * 2 + (selMargin * 2),
+		y: -linePoints[0].y - (selMargin * 2)
+	}
+
+	console.log(JSON.stringify(linePoints));
+
 	return (
-		<Group x={x} y={y} draggable>
+		<Group ref={curveRef} x={x} y={y} draggable onDragMove={handleOnDragMove}>
 			<Line closed={closed} points={points} stroke={'black'} strokeWidth={1} />
 			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
+			<SelectionRect pos={selPos} size={selSize} />
 		</Group>
 	);
 }
@@ -53,7 +80,7 @@ function StaveEnds({
 	staveBottomThickness,
 	staveTopThickness,
 	scale,
-	useCross = true,
+	useCross = false,
 	config
 }: StaveEndsProps) {
 
@@ -85,8 +112,8 @@ function StaveEnds({
 
 	return (
 		<Group x={x} y={y} scale={{ x: scale, y: scale }}>
-			<ToolCurve y={configDetails.topEndY} points={topEndPoints} title={'Top Ends'} closed />
-			<ToolCurve y={configDetails.bottomEndY} points={bottomEndPoints} title={'Bottom Ends'} closed />
+			<ToolCurve id={"topEndY"} y={configDetails.topEndY} points={topEndPoints} title={'Top Ends'} closed />
+			<ToolCurve id={"bottomEndY"} y={configDetails.bottomEndY} points={bottomEndPoints} title={'Bottom Ends'} closed />
 			<Cross visible={useCross} color="green" />
 		</Group>
 	);
