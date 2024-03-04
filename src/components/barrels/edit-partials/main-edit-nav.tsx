@@ -1,7 +1,8 @@
 
 import { Button, Card, Divider } from "@nextui-org/react";
 import { Dispatch, SetStateAction } from "react";
-import useEditStore, { View } from "@/store/edit-store";
+import useEditStore from "@/store/edit-store";
+import { View } from "@/common/enums";
 /*
 type MainEditNavProps = {
   viewState: View,

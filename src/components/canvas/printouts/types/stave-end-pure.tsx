@@ -5,9 +5,9 @@ import { findAdjustedDiameter, createCurveForStaveEnds, round } from '../../comm
 import usePaperSize from '@/components/hooks/usePaperSize';
 import { StaveEndConfigWithData } from '@/db/queries/barrels';
 import { KonvaEventObject } from 'konva/lib/Node';
+import { Paper, StaveTool } from '@/store/edit-store';
 import useBarrelStore from '@/store/barrel-store';
 import { SelectionRect } from '../../commons/SelectionRect';
-import { StaveTool } from '@/common/enums';
 
 type ToolCurveProps = {
 	id: string
@@ -19,37 +19,15 @@ type ToolCurveProps = {
 };
 
 function ToolCurve({ id, x = 0, y, points, title, closed }: ToolCurveProps) {
-	const curveRef = useRef<any>();
-	const { updateToolDetails } = useBarrelStore();
-
 	const linePoints = [];
 	for (let i = 0; i < points.length; i += 8) {
 		linePoints.push({ x: Number(points[i]), y: Number(points[i + 1]) });
 	}
 
-	function handleOnDragMove(event: KonvaEventObject<DragEvent>) {
-		curveRef.current.x(x); // lock X coordinate
-		event.cancelBubble = true;
-		updateToolDetails(StaveTool.End, id, round(event.target.y()));
-	}
-	const selMargin = 5;
-
-	const selPos = {
-		x: linePoints[0].x - selMargin,
-		y: linePoints[0].y + (selMargin)
-	}
-	const selSize = {
-		x: -linePoints[0].x * 2 + (selMargin * 2),
-		y: -linePoints[0].y - (selMargin * 2)
-	}
-
-	console.log(JSON.stringify(linePoints));
-
 	return (
-		<Group ref={curveRef} x={x} y={y} draggable onDragMove={handleOnDragMove}>
+		<Group x={x} y={y} draggable>
 			<Line closed={closed} points={points} stroke={'black'} strokeWidth={1} />
 			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
-			<SelectionRect pos={selPos} size={selSize} />
 		</Group>
 	);
 }
@@ -58,7 +36,7 @@ function reversePairs(arr: number[]) {
 	return arr.map((_, i) => arr[arr.length - i - 2 * (1 - (i % 2))]);
 }
 
-type StaveEndsProps = {
+type StaveEndsPureProps = {
 	x: number;
 	y: number;
 	angle: number;
@@ -68,24 +46,13 @@ type StaveEndsProps = {
 	staveTopThickness: number;
 	scale: number;
 	useCross?: boolean;
-	config: StaveEndConfigWithData
+	config: StaveEndConfigWithData;
+	paperState: Paper
 };
 
-function StaveEnds({
-	x,
-	y,
-	angle,
-	height,
-	bottomDiameter,
-	staveBottomThickness,
-	staveTopThickness,
-	scale,
-	useCross = false,
-	config
-}: StaveEndsProps) {
+function StaveEndsPure({ paperState, x, y, angle, height, bottomDiameter, staveBottomThickness, staveTopThickness,
+	scale, config }: StaveEndsPureProps) {
 
-
-	const paperState = usePaperSize();
 	const configDetailsArray = config.configDetails;
 	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
 	if (configDetails === undefined)
@@ -114,13 +81,8 @@ function StaveEnds({
 		<Group x={x} y={y} scale={{ x: scale, y: scale }}>
 			<ToolCurve id={"topEndY"} y={configDetails.topEndY} points={topEndPoints} title={'Top Ends'} closed />
 			<ToolCurve id={"bottomEndY"} y={configDetails.bottomEndY} points={bottomEndPoints} title={'Bottom Ends'} closed />
-			<Cross visible={useCross} color="green" />
 		</Group>
 	);
 }
 
-export default StaveEnds;
-
-/*
-
-*/
+export default StaveEndsPure;

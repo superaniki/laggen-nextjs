@@ -1,8 +1,9 @@
 
 import { Button, Divider } from "@nextui-org/react";
 import useBarrelStore from "@/store/barrel-store";
-import useEditStore, { Paper, StaveTool, View } from "@/store/edit-store";
+import useEditStore from "@/store/edit-store";
 import usePaperSize from "@/components/hooks/usePaperSize";
+import { Paper, StaveTool, View } from "@/common/enums";
 
 export default function StaveToolNav() {
   const { staveCurveConfig, staveFrontConfig, updatePaperState } = useBarrelStore();

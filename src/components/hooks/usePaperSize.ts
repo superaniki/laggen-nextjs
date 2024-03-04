@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useBarrelStore from "@/store/barrel-store";
-import useEditStore, { Paper, StaveTool } from "@/store/edit-store";
+import useEditStore from "@/store/edit-store";
+import { Paper, StaveTool } from "@/common/enums";
 
 export default function usePaperSize(defaultPaper?: Paper) {
   const { staveCurveConfig, staveFrontConfig, staveEndConfig } = useBarrelStore();

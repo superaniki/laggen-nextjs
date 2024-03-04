@@ -2,7 +2,7 @@ import FormInput from "@/components/common/form-input";
 import { ChangeEvent } from "react";
 import useBarrelStore from "@/store/barrel-store";
 import FormCheckBox from "@/components/common/form-checkbutton";
-import { StaveTool } from "@/store/edit-store";
+import { StaveTool } from "@/common/enums";
 
 export function StaveCurveConfig() {
 
