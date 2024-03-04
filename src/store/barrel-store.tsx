@@ -5,7 +5,7 @@ import {
   applyBarrelHeight, applyBarrelTopDiameter, applyBarrelAngle,
   applyBarrelBottomDiameter, applyBarrelStaveLength
 } from '@/components/canvas/commons/barrel-math';
-import { StaveTool } from './edit-store';
+import { StaveTool } from '@/common/enums';
 
 export type BarrelStore = {
   loadedBarrel: BarrelWithData | null;

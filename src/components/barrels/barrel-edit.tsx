@@ -1,7 +1,7 @@
 "use client";
 import BarrelCanvas from "../canvas/barrel-canvas";
 import { useEffect } from "react";
-import { Card, Divider } from "@nextui-org/react";
+import { Button, Card, Divider } from "@nextui-org/react";
 import { updateBarrel } from "@/actions";
 import FormButton from "../common/form-button";
 import { useSession } from "next-auth/react";
@@ -14,9 +14,10 @@ import { StaveCurveConfig } from "./edit-partials/stave-curve-config";
 import useBarrelStore from "@/store/barrel-store";
 import MainEditNav from "./edit-partials/main-edit-nav";
 import StaveToolNav from "./edit-partials/stave-tool-nav";
-import useEditStore, { Paper, StaveTool, View } from "@/store/edit-store";
+import useEditStore from "@/store/edit-store";
 import { StaveFrontConfig } from "./edit-partials/stave-front-config";
 import { StaveEndConfig } from "./edit-partials/stave-end-config";
+import { StaveTool, View } from "@/common/enums";
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails: loadedBarrelDetails, staveEndConfig: loadedStaveEndConfig, staveFrontConfig: loadedStaveFrontConfig, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
@@ -64,6 +65,48 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     enableSaveButton = true;
   }
 
+
+  async function savePng() {
+    try {
+      /*
+        (barrel: Barrel, barrelDetails: BarrelDetails, 
+          staveCurveConfig: StaveCurveConfigWithData, staveCurveConfigDetails : StaveCurveConfigDetails[], 
+          staveFrontConfig: StaveFrontConfigWithData, staveFrontConfigDetails : StaveFrontConfigDetails[],
+          staveEndConfig: StaveEndConfigWithData, staveEndConfigDetails : StaveEndConfigDetails[] ) {
+      */
+      /*
+                  const { staveCurveConfig: config, updateToolDetails } = useBarrelStore();
+                  if (config === null)
+                    return <></>
+                
+                  const configDetailsDataArray = config.configDetails;
+                  const configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
+                
+                  if (configDetails === undefined)
+                    return <></>;*/
+
+      const jsonData = { staveCurveConfig, barrelDetails }; // Your JSON data object
+
+      const response = await fetch('/api/barrels/export', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
+
+      const imageBuffer = await response.arrayBuffer();
+      const dataUrl = `data:image/png;base64,${Buffer.from(imageBuffer).toString('base64')}`;
+      // Prompt user to save the image to disk
+      const anchor = document.createElement('a');
+      anchor.href = dataUrl;
+      anchor.download = 'toolthing.png';
+      anchor.click();
+    } catch (error) {
+      console.error('Error fetching image:', error);
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-12 gap-6">
@@ -88,10 +131,12 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
         <div className="col-span-8">
           <Card className="py-4 bg-gradient-to-t from-green-100 to-blue-100 items-center p-0">
             {viewState === View.Barrel && <BarrelCanvas barrel={barrelDetails} />}
-            {viewState === View.Tools && (
+            {viewState === View.Tools && (<>
               <div className="shadow-medium">
                 <OnPaper />
               </div>
+              <Button onClick={() => savePng()}>Save PNG</Button>
+            </>
             )}
             {viewState === View.View3d && <>3d view</>}
           </Card>
