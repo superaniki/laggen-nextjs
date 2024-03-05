@@ -28,7 +28,7 @@ function Ruler({
 			return (
 				<Group key={'h-' + index}>
 					<Line
-						strokeWidth={1}
+						strokeWidth={0.5}
 						x={x}
 						y={y}
 						fill={'white'}
@@ -40,7 +40,7 @@ function Ruler({
 							key={'text' + index}
 							x={x + 2 + index * scale}
 							y={y - 10}
-							fontSize={10}
+							fontSize={5}
 							text={String(index)}
 							align="left"
 							width={700}
@@ -60,7 +60,7 @@ function Ruler({
 			return (
 				<Group key={'v-' + index}>
 					<Line
-						strokeWidth={1}
+						strokeWidth={0.5}
 						x={x}
 						y={y}
 						fill={'white'}
@@ -72,7 +72,7 @@ function Ruler({
 							key={'text' + index}
 							x={x + margin - 15}
 							y={y - index * scale - 10}
-							fontSize={10}
+							fontSize={5}
 							text={String(index)}
 							align="left"
 							width={700}
@@ -96,7 +96,7 @@ function Ruler({
 
 			<Line
 				key={'h-line'}
-				strokeWidth={1}
+				strokeWidth={0.5}
 				x={x + margin}
 				y={y - margin}
 				fill={'white'}
@@ -105,14 +105,14 @@ function Ruler({
 			></Line>
 			<Line
 				key={'v-line'}
-				strokeWidth={1}
+				strokeWidth={0.5}
 				x={x + margin}
 				y={y - margin}
 				fill={'white'}
 				points={[0, 0, 0, pointHeight * scale]}
 				stroke={'black'}
 			></Line>
-			{generateHorizontalCentimeters(x + margin, y, pointWidth, 10, scale)}
+			{generateHorizontalCentimeters(x + margin, y, pointWidth, 3, scale)}
 			{generateVerticalCentimeters(x, y - margin, -pointHeight, 10, scale)}
 		</Group>
 	);

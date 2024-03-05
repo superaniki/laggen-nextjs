@@ -6,7 +6,7 @@ import { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails } from
 import { StaveCurveConfigWithData } from "@/db/queries/barrels";
 import { PaperSizes } from "@/common/constants";
 import { Paper } from "@/common/enums";
-import StaveCurveCTX from "@/common/api-utils";
+import { drawInfoTextCTX, drawRuler, drawRulerCTX, drawStaveCurveCTX } from "@/common/api-utils";
 
 export async function POST(request: Request) {
 
@@ -15,21 +15,56 @@ export async function POST(request: Request) {
   const barrelDetails = data.barrelDetails as BarrelDetails;
   const configDetailsDataArray: StaveCurveConfigDetails[] = config.configDetails;
   const configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
+  const { height, angle, topDiameter, staveLength, bottomDiameter } = { ...barrelDetails };
 
   if (configDetails === undefined)
     return;
 
-  const height = PaperSizes[config.defaultPaperType as Paper].height;
-  const width = PaperSizes[config.defaultPaperType as Paper].width;
+  const paperHeight = PaperSizes[config.defaultPaperType as Paper].height;
+  const paperWidth = PaperSizes[config.defaultPaperType as Paper].width;
   const scale = 4;
-  const img1 = PImage.make(width * scale, height * scale);
 
+  const img1 = PImage.make(paperWidth * scale, paperHeight * scale);
   // Get canvas context
   const ctx = img1.getContext('2d');
+  ctx.scale(scale, scale);
   ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, width * scale, height * scale);
+  ctx.fillRect(0, 0, paperWidth, paperHeight);
 
-  StaveCurveCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config, scale)
+  var fnt = PImage.registerFont(
+    "./src/fonts/LiberationSans-Regular.ttf",
+    "Liberation",
+  );
+  fnt.loadSync();
+  const margins = 15;
+
+
+
+  let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
+    "  Stave length: " + staveLength + "  Angle: " + angle;
+
+  drawStaveCurveCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
+  drawInfoTextCTX(ctx, staveTemplateInfoText, -90, -paperHeight + 23, margins + 4,)
+  drawRulerCTX(ctx, 10, margins, paperHeight - margins + 5, 6, 0, 10);
+
+  //<Ruler scale={10} y={paperHeight - margins + 5} x={margins - 15} xLength={6} yLength={0} margin={10} />
+
+  //export function drawRuler(scale: number, y: number, x: number, xLength: number, yLength: number, margin: number) {
+  /*
+  ctx.font = "4pt 'Liberation'";
+  ctx.strokeStyle = 'black';
+ 
+  ctx.rotate((-90 * Math.PI) / 180.0);
+  ctx.translate(-paperHeight + 23, margins + 4);
+  ctx.fillText(staveTemplateInfoText, 0, 0);
+  */
+
+  //  ctx.fillText(staveTemplateInfoText, margins, paperHeight - 25);
+
+  //<Text x={margins} rotation={270} y={paperHeight - 25} text={staveTemplateInfoText} fontFamily="courier" fontSize={3} fill={"black"} />
+
+
+
 
   /*
    ctx.rotate(20 * Math.PI / 180);
@@ -60,12 +95,5 @@ export async function POST(request: Request) {
       'Content-Type': 'image/png',
     },
   });
-
-  console.log("hej7")
-
-
-
-
-
 }
 
