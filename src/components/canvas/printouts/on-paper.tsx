@@ -64,10 +64,10 @@ export default function OnPaper({ scale = 2.4 }: { scale?: number }) {
         <StaveCurve cross={cross} scale={1} barrelDetails={barrelDetails} config={staveCurveConfig} />
       }
       {tool === StaveTool.Front &&
-        <StaveFront config={staveFrontConfig} x={paperWidth * scale * 0.5} y={margins * scale} barrelDetails={barrelDetails} scale={scale} />
+        <StaveFront config={staveFrontConfig} x={paperWidth * 0.5} y={margins} barrelDetails={barrelDetails} />
       }
       {tool === StaveTool.End &&
-        <StaveEnds config={staveEndConfig} scale={scale} x={paperWidth * scale * 0.5} y={paperHeight} {...barrelDetails} />
+        <StaveEnds config={staveEndConfig} x={paperWidth * 0.5} y={paperHeight} {...barrelDetails} />
       }
 
       <BarrelSide visible={true} inColor={false} x={paperWidth * 1 - margins * 1} y={paperHeight * 1 - margins * 1}

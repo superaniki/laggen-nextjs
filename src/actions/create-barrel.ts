@@ -112,7 +112,7 @@ function createStaveFrontConfigDetails(paperType: string, staveFrontConfigId: st
     paperType: paperType, // A4 or A3
     rotatePaper: false,
     posX: 0,
-    posY: 500,
+    posY: 200,
     spacing: 14, // mm mellan varje stavstorlek
     staveFrontConfigId: staveFrontConfigId
   }
@@ -130,8 +130,8 @@ function createStaveEndConfigDetails(paperType: string, staveEndConfigId: string
   return {
     paperType: paperType, // A4 or A3
     rotatePaper: false,
-    topEndY: 0,
-    bottomEndY: 0,
+    topEndY: -100,
+    bottomEndY: -50,
     staveEndConfigId: staveEndConfigId
   }
 }
