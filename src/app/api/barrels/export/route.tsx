@@ -6,7 +6,7 @@ import { Barrel, BarrelDetails, StaveCurveConfig, StaveCurveConfigDetails } from
 import { StaveCurveConfigWithData } from "@/db/queries/barrels";
 import { PaperSizes } from "@/common/constants";
 import { Paper } from "@/common/enums";
-import { drawInfoTextCTX, drawRuler, drawRulerCTX, drawStaveCurveCTX } from "@/common/api-utils";
+import { drawInfoTextCTX, drawRulerCTX, drawStaveCurveCTX } from "@/common/api-utils";
 
 export async function POST(request: Request) {
 
