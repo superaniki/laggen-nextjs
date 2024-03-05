@@ -66,7 +66,6 @@ type StaveEndsProps = {
 	bottomDiameter: number;
 	staveBottomThickness: number;
 	staveTopThickness: number;
-	scale: number;
 	useCross?: boolean;
 	config: StaveEndConfigWithData
 };
@@ -79,7 +78,6 @@ function StaveEnds({
 	bottomDiameter,
 	staveBottomThickness,
 	staveTopThickness,
-	scale,
 	useCross = false,
 	config
 }: StaveEndsProps) {
@@ -111,7 +109,7 @@ function StaveEnds({
 	const topEndPoints = [...createCurveForStaveEnds(adjustedTopOuterDiameter, 90, 270, 0), ...reversePairs(topPoints)];
 
 	return (
-		<Group x={x} y={y} scale={{ x: scale, y: scale }}>
+		<Group x={x} y={y} >
 			<ToolCurve id={"topEndY"} y={configDetails.topEndY} points={topEndPoints} title={'Top Ends'} closed />
 			<ToolCurve id={"bottomEndY"} y={configDetails.bottomEndY} points={bottomEndPoints} title={'Bottom Ends'} closed />
 			<Cross visible={useCross} color="green" />
