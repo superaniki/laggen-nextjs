@@ -1,6 +1,6 @@
 "use client";
 import BarrelCanvas from "../canvas/barrel-canvas";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button, Card, Divider } from "@nextui-org/react";
 import { updateBarrel } from "@/actions";
 import FormButton from "../common/form-button";
@@ -18,12 +18,14 @@ import useEditStore from "@/store/edit-store";
 import { StaveFrontConfig } from "./edit-partials/stave-front-config";
 import { StaveEndConfig } from "./edit-partials/stave-end-config";
 import { StaveTool, View } from "@/common/enums";
+import { round } from "../canvas/commons/barrel-math";
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails: loadedBarrelDetails, staveEndConfig: loadedStaveEndConfig, staveFrontConfig: loadedStaveFrontConfig, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
   const { staveToolState, viewState } = useEditStore();
   const { setBarrel, details: barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig } = useBarrelStore();
   const session = useSession();
+  const [toolScale, setToolScale] = useState(2.4);
 
   useEffect(() => {
     setBarrel(barrel);
@@ -133,9 +135,15 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
             {viewState === View.Barrel && <BarrelCanvas barrel={barrelDetails} />}
             {viewState === View.Tools && (<>
               <div className="shadow-medium">
-                <OnPaper />
+                <OnPaper scale={toolScale} />
               </div>
               <Button onClick={() => savePng()}>Save PNG</Button>
+              <span>
+                <Button onClick={() => setToolScale((current) => round(current + 0.1, 2))}>zoom +</Button>
+                <span>{toolScale}</span>
+                <Button onClick={() => setToolScale((current) => round(current - 0.1, 2))}>zoom -</Button>
+              </span>
+
             </>
             )}
             {viewState === View.View3d && <>3d view</>}

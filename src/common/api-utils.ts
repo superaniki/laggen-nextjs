@@ -3,6 +3,8 @@ import { BarrelDetails } from "@prisma/client";
 import { Paper } from "./enums";
 import { createCurveMaxWidth, findAdjustedDiameter } from "@/components/canvas/commons/barrel-math";
 import * as PImage from "pureimage";
+import { Line } from "react-konva";
+import { LinearGradient } from "pureimage/dist/gradients";
 
 type ToolCurveProps = {
 	ctx:PImage.Context
@@ -14,7 +16,7 @@ type ToolCurveProps = {
 	closed?: boolean;
 };
 
-function drawPath(x :number, y : number, ctx :PImage.Context,points: number[]){
+function drawPath(ctx :PImage.Context, x :number, y : number, points: number[]){
 	// Draw the line
 	ctx.beginPath();
 	ctx.moveTo(points[0]+x, points[1]+y); // Move to the first point
@@ -25,14 +27,16 @@ function drawPath(x :number, y : number, ctx :PImage.Context,points: number[]){
 	}
 
 	// Set line style and stroke
-	ctx.lineWidth = 2;
-	ctx.strokeStyle = 'black';
 	ctx.stroke();
 }
-
-function Curve( ctx :PImage.Context, id :string, x :number, y:number, points: number[], title: string, closed :boolean = false) {
-
-	drawPath(x,y,ctx,points);
+function drawCurve(x :number, y : number, ctx :PImage.Context,points: number[], title : string){
+		
+	drawPath(ctx,x,y,points);
+	ctx.fillStyle = "black";
+	ctx.font = "6pt 'Liberation'";
+	ctx.strokeStyle = 'black';
+  ctx.fillText(title, x+4.5, y-6);
+}
 
 	/*
 	return (
@@ -41,11 +45,47 @@ function Curve( ctx :PImage.Context, id :string, x :number, y:number, points: nu
 			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
 		</Group>
 	);*/
+
+
+
+
+	function generateHorizontalCentimeters(ctx: PImage.Context, x: number, y: number, number: number, length: number, scale: number, margin:number) {
+		Array.from(Array(number)).map((val, index) => {
+			const extraLength = Number.isInteger(index / 5) ? 6 : 0;
+			drawPath(ctx,x,y,[index * scale, -margin, index * scale, -margin + length + extraLength]);
+			if(extraLength){
+				ctx.fillStyle = "black";
+				ctx.font = "4pt 'Liberation'";
+				ctx.strokeStyle = 'black';
+				ctx.fillText(String(index), x + 2 + index * scale, y - 6);
+			}
+		});
+	}
+
+
+export function drawRulerCTX(ctx: PImage.Context, scale: number, x:number, y:number, xLength:number | string, yLength:number | string, 
+	margin:number,  width : number = 100, height: number = 100){
+
+	const pointWidth = Number(xLength == 'max' ? width - margin : xLength);
+	const pointHeight = Number(yLength == 'max' ? -height + margin : yLength);
+	ctx.fillStyle = "white";
+	ctx.fillRect(x, y - 15, pointWidth * scale, margin); // horisontell
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 1;
+	drawPath(ctx,x,y - 15,[0, 0, pointWidth * scale, 0]);
+	generateHorizontalCentimeters(ctx, x, y-5, pointWidth, 3, scale, margin)
 }
 
+export function drawInfoTextCTX( ctx : PImage.Context, text:string, angle:number, posx:number, posy:number){
+		ctx.font = "4pt 'Liberation'";
+		ctx.strokeStyle = 'black';
+		ctx.rotate((angle * Math.PI) / 180.0);
+		ctx.fillText(text, posx, posy);
+		ctx.rotate((-angle * Math.PI) / 180.0);
+	} 
 
-function StaveCurveCTX( ctx : PImage.Context, paperState : Paper, barrelDetails:BarrelDetails, config:StaveCurveConfigWithData, 
-	scale : number, maxStaveWidth = 100) {
+export function drawStaveCurveCTX( ctx : PImage.Context, paperState : Paper, barrelDetails:BarrelDetails, config:StaveCurveConfigWithData, 
+	maxStaveWidth = 100) {
 	const { height, angle, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
 
 	const configDetailsArray = config.configDetails;
@@ -75,31 +115,20 @@ function StaveCurveCTX( ctx : PImage.Context, paperState : Paper, barrelDetails:
 	const curveXpos = rectX + rectWidth;
 
 	ctx.translate(posX,posY);
-	ctx.scale(scale,scale);
-
-	drawPath(curveXpos,outerBottomY,ctx,adjustedBottomOuterPoints);
-	drawPath(curveXpos,innerBottomY,ctx,adjustedBottomInnerPoints);
-	drawPath(curveXpos,outerTopY,ctx,adjustedTopOuterPoints);
-	drawPath(curveXpos,innerTopY,ctx,adjustedTopInnerPoints);
-
-	ctx.strokeStyle = 'black';
-	ctx.lineWidth = 1; // Set the line width if you're using strokeRect()
 	ctx.fillStyle = "black";
-	ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+  ctx.font = "6pt 'Liberation'";
+	ctx.imageSmoothingEnabled = true;
+	ctx.lineWidth = 4;
+	ctx.strokeStyle = 'black';
 
+	drawCurve(curveXpos,outerBottomY,ctx,adjustedBottomOuterPoints, "Bottom, outer");
+	drawCurve(curveXpos,innerBottomY,ctx,adjustedBottomInnerPoints, "Bottom, inner");
+	drawCurve(curveXpos,outerTopY,ctx,adjustedTopOuterPoints,"Top, outer'");
+	drawCurve(curveXpos,innerTopY,ctx,adjustedTopInnerPoints, "Top, inner");
 
-/*
-	return (
-		<Group x={posX} y={posY} draggable scale={{ x: scale, y: scale }}>
-			<Curve id={"innerTopY"} x={curveXpos} y={innerTopY} points={adjustedTopInnerPoints} title={'Top, inner!'} />
-			<Curve id={"outerTopY"} x={curveXpos} y={outerTopY} points={adjustedTopOuterPoints} title={'Top, outer'} />
-			<Curve id={"innerBottomY"} x={curveXpos} y={innerBottomY} points={adjustedBottomInnerPoints} title={'Bottom, inner'} />
-			<Curve id={"outerBottomY"} x={curveXpos} y={outerBottomY} points={adjustedBottomOuterPoints} title={'Bottom, outer'} />
-			<Rect id="rect" stroke={'black'} strokeWidth={1} fill="white" x={rectX} y={rectY} width={rectWidth} height={rectHeight} />
-		</Group>
-	);
-	*/
+	ctx.rect((rectX), (rectY), rectWidth, rectHeight);
+	ctx.stroke();
+	ctx.translate(-posX,-posY);
 }
 
 
-export default StaveCurveCTX;
