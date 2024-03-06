@@ -46,9 +46,6 @@ function drawCurve(x :number, y : number, ctx :PImage.Context,points: number[], 
 		</Group>
 	);*/
 
-
-
-
 	function generateHorizontalCentimeters(ctx: PImage.Context, x: number, y: number, number: number, length: number, scale: number, margin:number) {
 		Array.from(Array(number)).map((val, index) => {
 			const extraLength = Number.isInteger(index / 5) ? 6 : 0;
@@ -68,17 +65,18 @@ export function drawRulerCTX(ctx: PImage.Context, scale: number, x:number, y:num
 
 	const pointWidth = Number(xLength == 'max' ? width - margin : xLength);
 	const pointHeight = Number(yLength == 'max' ? -height + margin : yLength);
+	ctx.strokeStyle = "black";
 	ctx.fillStyle = "white";
-	ctx.fillRect(x, y - 15, pointWidth * scale, margin); // horisontell
-	ctx.fillStyle = "black";
+	ctx.fillRect(x, y, pointWidth * scale, margin); // horisontell, 10,
+	//ctx.fillStyle = "black";
 	ctx.lineWidth = 1;
-	drawPath(ctx,x,y - 15,[0, 0, pointWidth * scale, 0]);
-	generateHorizontalCentimeters(ctx, x, y-5, pointWidth, 3, scale, margin)
+	drawPath(ctx,x ,y , [0, 0, pointWidth * scale, 0]);
+	generateHorizontalCentimeters(ctx, x, y+margin, pointWidth, 3, scale, margin)
 }
 
 export function drawInfoTextCTX( ctx : PImage.Context, text:string, angle:number, posx:number, posy:number){
-		ctx.font = "4pt 'Liberation'";
-		ctx.strokeStyle = 'black';
+		ctx.font = "3pt 'Liberation'";
+		ctx.fillStyle = 'black';
 		ctx.rotate((angle * Math.PI) / 180.0);
 		ctx.fillText(text, posx, posy);
 		ctx.rotate((-angle * Math.PI) / 180.0);
@@ -117,7 +115,6 @@ export function drawStaveCurveCTX( ctx : PImage.Context, paperState : Paper, bar
 	ctx.translate(posX,posY);
 	ctx.fillStyle = "black";
   ctx.font = "6pt 'Liberation'";
-	ctx.imageSmoothingEnabled = true;
 	ctx.lineWidth = 4;
 	ctx.strokeStyle = 'black';
 
