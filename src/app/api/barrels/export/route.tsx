@@ -20,8 +20,14 @@ export async function POST(request: Request) {
   if (configDetails === undefined)
     return;
 
-  const paperHeight = PaperSizes[config.defaultPaperType as Paper].height;
-  const paperWidth = PaperSizes[config.defaultPaperType as Paper].width;
+  let paperHeight = PaperSizes[config.defaultPaperType as Paper].height;
+  let paperWidth = PaperSizes[config.defaultPaperType as Paper].width;
+
+  if (configDetails.rotatePaper) {
+    paperWidth = PaperSizes[config.defaultPaperType as Paper].height;
+    paperHeight = PaperSizes[config.defaultPaperType as Paper].width;
+  }
+
   const scale = 4;
 
   const img1 = PImage.make(paperWidth * scale, paperHeight * scale);
@@ -37,17 +43,25 @@ export async function POST(request: Request) {
   );
   fnt.loadSync();
   const margins = 15;
+  const rulerMargin = 10
 
   let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
     "  Stave length: " + staveLength + "  Angle: " + angle;
 
-  drawStaveCurveCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
+  /*  
+  ctx.imageSmoothingEnabled = true;
+  ctx.fillStyle = "black";
+  ctx.font = "6pt 'Liberation'";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = 'black';
+*/
+
   drawInfoTextCTX(ctx, staveTemplateInfoText, -90, -paperHeight + 23, margins + 4,)
-  drawRulerCTX(ctx, 10, margins, paperHeight - margins + 5, 6, 0, 10);
+  drawRulerCTX(ctx, 10, rulerMargin, paperHeight - (rulerMargin * 2), 6, 0, rulerMargin);
+  drawStaveCurveCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
 
   const passThroughStream = new PassThrough();
   PImage.encodePNGToStream(img1, passThroughStream); // skip await. dont return if scale is too large...
-
   // Collect the PNG data from the PassThrough stream
   const pngData: Buffer[] = [];
   passThroughStream.on("data", (chunk) => pngData.push(chunk));
