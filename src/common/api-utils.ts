@@ -7,7 +7,7 @@ import { Line } from "react-konva";
 import { LinearGradient } from "pureimage/dist/gradients";
 
 type ToolCurveProps = {
-	ctx:PImage.Context
+	ctx: PImage.Context
 	id: string;
 	x: number;
 	y: number;
@@ -16,73 +16,98 @@ type ToolCurveProps = {
 	closed?: boolean;
 };
 
-function drawPath(ctx :PImage.Context, x :number, y : number, points: number[]){
+function drawPath(ctx: PImage.Context, x: number, y: number, points: number[]) {
 	// Draw the line
 	ctx.beginPath();
-	ctx.moveTo(points[0]+x, points[1]+y); // Move to the first point
+	ctx.moveTo(points[0] + x, points[1] + y); // Move to the first point
 
 	// Iterate over the vector and draw line segments
 	for (var i = 2; i < points.length; i += 2) {
-		ctx.lineTo(points[i]+x, points[i + 1]+y); // Draw line to next point
+		ctx.lineTo(points[i] + x, points[i + 1] + y); // Draw line to next point
 	}
 
 	// Set line style and stroke
 	ctx.stroke();
 }
-function drawCurve(x :number, y : number, ctx :PImage.Context,points: number[], title : string){
-		
-	drawPath(ctx,x,y,points);
+
+function drawCurve(x: number, y: number, ctx: PImage.Context, points: number[], title: string) {
+	drawPath(ctx, x, y, points);
 	ctx.fillStyle = "black";
 	ctx.font = "6pt 'Liberation'";
 	ctx.strokeStyle = 'black';
-  ctx.fillText(title, x+4.5, y-6);
+	ctx.fillText(title, x + 4.5, y - 6);
 }
 
-	/*
-	return (
-		<Group id={id} x={x} y={y} draggable>
-			<Line closed={closed} points={points} stroke={'black'} strokeWidth={1} />
-			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
-		</Group>
-	);*/
+export function drawBarrelSideCTX(ctx: PImage.Context, x:number, y:number, barrelDetails: BarrelDetails, scale:number){
+	const { angle, height, bottomDiameter, staveTopThickness, staveBottomThickness, bottomThickness, bottomMargin } = { ...barrelDetails };
 
-	function generateHorizontalCentimeters(ctx: PImage.Context, x: number, y: number, number: number, length: number, scale: number, margin:number) {
-		Array.from(Array(number)).map((val, index) => {
-			const extraLength = Number.isInteger(index / 5) ? 6 : 0;
-			drawPath(ctx,x,y,[index * scale, -margin, index * scale, -margin + length + extraLength]);
-			if(extraLength){
-				ctx.fillStyle = "black";
-				ctx.font = "4pt 'Liberation'";
-				ctx.strokeStyle = 'black';
-				ctx.fillText(String(index), x + 2 + index * scale, y - 6);
-			}
-		});
-	}
+	const tan = Math.tan(angle * Math.PI / 180);
+	const length = tan * height; // position till motsatt sida av vinkeln
+	const hypotenusaLength = Math.sqrt((height * height) + (length * length));
+	const outlinePoints = [0, 0, -length, -height, bottomDiameter + length, -height, bottomDiameter, 0];
+	const leftStavePoints = [0, 0, 0, -hypotenusaLength, staveTopThickness, -hypotenusaLength, staveBottomThickness, 0];
+	const rightStavePoints = [0, 0, 0, -hypotenusaLength, -staveTopThickness, -hypotenusaLength, -staveBottomThickness, 0];
+	const angleLength = (tan * bottomMargin) - (staveBottomThickness - 5); // angle-dependent extra length to plate
+	const bottomPlantePoints = [0 + angleLength, 0, 0 + angleLength, -bottomThickness, -bottomDiameter - angleLength, -bottomThickness, -bottomDiameter - angleLength, 0]
+
+	ctx.translate(x,y);
+	ctx.lineWidth = 1;
+	ctx.scale(scale,scale);
+	drawPath(ctx,-bottomDiameter-length,0,outlinePoints);
+	ctx.save
+	ctx.translate(-bottomDiameter-length,0);
+	ctx.rotate((-angle * Math.PI) / 180.0);
+	drawPath(ctx,0,0,leftStavePoints);
+	ctx.rotate((angle * Math.PI) / 180.0);
+	ctx.translate(bottomDiameter+length,0);
+
+	ctx.translate(-length,0);
+	ctx.rotate((angle * Math.PI) / 180.0);
+	drawPath(ctx,0,0,rightStavePoints);
+	ctx.rotate((-angle * Math.PI) / 180.0);
+	ctx.translate(length,0);
+
+	drawPath(ctx,-length,- bottomMargin,bottomPlantePoints);
+}
 
 
-export function drawRulerCTX(ctx: PImage.Context, scale: number, x:number, y:number, xLength:number | string, yLength:number | string, 
-	margin:number,  width : number = 100, height: number = 100){
+
+function generateHorizontalCentimeters(ctx: PImage.Context, x: number, y: number, number: number, length: number, scale: number, margin: number) {
+	Array.from(Array(number)).map((val, index) => {
+		const extraLength = Number.isInteger(index / 5) ? 6 : 0;
+		drawPath(ctx, x, y, [index * scale, -margin, index * scale, -margin + length + extraLength]);
+		if (extraLength) {
+			ctx.fillStyle = "black";
+			ctx.font = "4pt 'Liberation'";
+			ctx.strokeStyle = 'black';
+			ctx.fillText(String(index), x + 2 + index * scale, y - 6);
+		}
+	});
+}
+
+
+export function drawRulerCTX(ctx: PImage.Context, scale: number, x: number, y: number, xLength: number | string, yLength: number | string,
+	margin: number, width: number = 100, height: number = 100) {
 
 	const pointWidth = Number(xLength == 'max' ? width - margin : xLength);
 	const pointHeight = Number(yLength == 'max' ? -height + margin : yLength);
 	ctx.strokeStyle = "black";
 	ctx.fillStyle = "white";
 	ctx.fillRect(x, y, pointWidth * scale, margin); // horisontell, 10,
-	//ctx.fillStyle = "black";
 	ctx.lineWidth = 1;
-	drawPath(ctx,x ,y , [0, 0, pointWidth * scale, 0]);
-	generateHorizontalCentimeters(ctx, x, y+margin, pointWidth, 3, scale, margin)
+	drawPath(ctx, x, y, [0, 0, pointWidth * scale, 0]);
+	generateHorizontalCentimeters(ctx, x, y + margin, pointWidth, 3, scale, margin)
 }
 
-export function drawInfoTextCTX( ctx : PImage.Context, text:string, angle:number, posx:number, posy:number){
-		ctx.font = "3pt 'Liberation'";
-		ctx.fillStyle = 'black';
-		ctx.rotate((angle * Math.PI) / 180.0);
-		ctx.fillText(text, posx, posy);
-		ctx.rotate((-angle * Math.PI) / 180.0);
-	} 
+export function drawInfoTextCTX(ctx: PImage.Context, text: string, angle: number, posx: number, posy: number) {
+	ctx.font = "3pt 'Liberation'";
+	ctx.fillStyle = 'black';
+	ctx.rotate((angle * Math.PI) / 180.0);
+	ctx.fillText(text, posx, posy);
+	ctx.rotate((-angle * Math.PI) / 180.0);
+}
 
-export function drawStaveCurveCTX( ctx : PImage.Context, paperState : Paper, barrelDetails:BarrelDetails, config:StaveCurveConfigWithData, 
+export function drawStaveCurveCTX(ctx: PImage.Context, paperState: Paper, barrelDetails: BarrelDetails, config: StaveCurveConfigWithData,
 	maxStaveWidth = 100) {
 	const { height, angle, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
 
@@ -112,20 +137,20 @@ export function drawStaveCurveCTX( ctx : PImage.Context, paperState : Paper, bar
 
 	const curveXpos = rectX + rectWidth;
 
-	ctx.translate(posX,posY);
+	ctx.translate(posX, posY);
 	ctx.fillStyle = "black";
-  ctx.font = "6pt 'Liberation'";
+	ctx.font = "6pt 'Liberation'";
 	ctx.lineWidth = 4;
 	ctx.strokeStyle = 'black';
 
-	drawCurve(curveXpos,outerBottomY,ctx,adjustedBottomOuterPoints, "Bottom, outer");
-	drawCurve(curveXpos,innerBottomY,ctx,adjustedBottomInnerPoints, "Bottom, inner");
-	drawCurve(curveXpos,outerTopY,ctx,adjustedTopOuterPoints,"Top, outer'");
-	drawCurve(curveXpos,innerTopY,ctx,adjustedTopInnerPoints, "Top, inner");
+	drawCurve(curveXpos, outerBottomY, ctx, adjustedBottomOuterPoints, "Bottom, outer");
+	drawCurve(curveXpos, innerBottomY, ctx, adjustedBottomInnerPoints, "Bottom, inner");
+	drawCurve(curveXpos, outerTopY, ctx, adjustedTopOuterPoints, "Top, outer'");
+	drawCurve(curveXpos, innerTopY, ctx, adjustedTopInnerPoints, "Top, inner");
 
 	ctx.rect((rectX), (rectY), rectWidth, rectHeight);
 	ctx.stroke();
-	ctx.translate(-posX,-posY);
+	ctx.translate(-posX, -posY);
 }
 
 

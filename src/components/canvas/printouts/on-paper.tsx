@@ -70,8 +70,8 @@ export default function OnPaper({ scale = 2.4 }: { scale?: number }) {
         <StaveEnds config={staveEndConfig} x={paperWidth * 0.5} y={paperHeight} {...barrelDetails} />
       }
 
-      <BarrelSide visible={true} inColor={false} x={paperWidth * 1 - margins * 1} y={paperHeight * 1 - margins * 1}
-        {...barrelDetails} thickStroke={true} scale={0.07 * 1} />
+      <BarrelSide inColor={false} x={paperWidth * 1 - margins * 1} y={paperHeight * 1 - margins * 1}
+        barrelDetails={barrelDetails} thickStroke={true} scale={0.07} />
       <Ruler scale={10} y={paperHeight - margins + 5} x={margins - 15} xLength={6} yLength={0} margin={10} />
       <Text x={margins} rotation={270} y={paperHeight - 25} text={staveTemplateInfoText} fontFamily="courier" fontSize={3} fill={"black"} />
     </Layer>
