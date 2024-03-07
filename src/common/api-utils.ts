@@ -1,22 +1,11 @@
-import { StaveCurveConfigWithData } from "@/db/queries/barrels";
-import { BarrelDetails } from "@prisma/client";
+import { StaveCurveConfigWithData, StaveEndConfigWithData } from "@/db/queries/barrels";
+import { BarrelDetails, StaveEndConfigDetails } from "@prisma/client";
 import { Paper } from "./enums";
-import { createCurveMaxWidth, findAdjustedDiameter } from "@/components/canvas/commons/barrel-math";
+import { createCurveForStaveEnds, createCurveMaxWidth, findAdjustedDiameter } from "@/components/canvas/commons/barrel-math";
 import * as PImage from "pureimage";
-import { Line } from "react-konva";
-import { LinearGradient } from "pureimage/dist/gradients";
 
-type ToolCurveProps = {
-	ctx: PImage.Context
-	id: string;
-	x: number;
-	y: number;
-	points: number[];
-	title: string;
-	closed?: boolean;
-};
 
-function drawPath(ctx: PImage.Context, x: number, y: number, points: number[]) {
+function drawPath(ctx: PImage.Context, x: number, y: number, points: number[], closed=false) {
 	// Draw the line
 	ctx.beginPath();
 	ctx.moveTo(points[0] + x, points[1] + y); // Move to the first point
@@ -24,6 +13,9 @@ function drawPath(ctx: PImage.Context, x: number, y: number, points: number[]) {
 	// Iterate over the vector and draw line segments
 	for (var i = 2; i < points.length; i += 2) {
 		ctx.lineTo(points[i] + x, points[i + 1] + y); // Draw line to next point
+	}
+	if(closed){
+		ctx.lineTo(points[0] + x, points[1] + y); // Draw to the first point
 	}
 
 	// Set line style and stroke
@@ -70,8 +62,6 @@ export function drawBarrelSideCTX(ctx: PImage.Context, x:number, y:number, barre
 	drawPath(ctx,-length,- bottomMargin,bottomPlantePoints);
 }
 
-
-
 function generateHorizontalCentimeters(ctx: PImage.Context, x: number, y: number, number: number, length: number, scale: number, margin: number) {
 	Array.from(Array(number)).map((val, index) => {
 		const extraLength = Number.isInteger(index / 5) ? 6 : 0;
@@ -84,7 +74,6 @@ function generateHorizontalCentimeters(ctx: PImage.Context, x: number, y: number
 		}
 	});
 }
-
 
 export function drawRulerCTX(ctx: PImage.Context, scale: number, x: number, y: number, xLength: number | string, yLength: number | string,
 	margin: number, width: number = 100, height: number = 100) {
@@ -153,4 +142,47 @@ export function drawStaveCurveCTX(ctx: PImage.Context, paperState: Paper, barrel
 	ctx.translate(-posX, -posY);
 }
 
+function reversePairs(arr: number[]) {
+	return arr.map((_, i) => arr[arr.length - i - 2 * (1 - (i % 2))]);
+}
+
+export function drawStaveEndsCTX(ctx: PImage.Context, x: number ,y:number ,barrelDetails: BarrelDetails, config: StaveEndConfigWithData, paperState: Paper){
+	const {angle, height,bottomDiameter,staveBottomThickness,staveTopThickness} = {...barrelDetails};
+	const configDetailsArray = config.configDetails;
+
+	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
+	if (configDetails === undefined)
+		return ctx;
+
+	const tan = Math.tan((angle * Math.PI) / 180);
+	const length = tan * height; // position till motsatt sida av vinkeln
+	const topOuterDiameter = length * 2 + bottomDiameter;
+	const bottomOuterDiameter = bottomDiameter;
+
+	const adjustedBottomOuterDiameter = findAdjustedDiameter(bottomOuterDiameter, angle);
+	const adjustedBottomInnerDiameter = adjustedBottomOuterDiameter - staveBottomThickness * 2;
+	const adjustedTopOuterDiameter = findAdjustedDiameter(topOuterDiameter, angle);
+	const adjustedTopInnerDiameter = adjustedTopOuterDiameter - staveTopThickness * 2;
+
+	const bottomPoints = createCurveForStaveEnds(adjustedBottomInnerDiameter, 90, 270, staveBottomThickness);
+	const bottomEndPoints = [
+		...createCurveForStaveEnds(adjustedBottomOuterDiameter, 90, 270, 0),
+		...reversePairs(bottomPoints),
+	];
+
+	const topPoints = createCurveForStaveEnds(adjustedTopInnerDiameter, 90, 270, staveTopThickness);
+	const topEndPoints = [...createCurveForStaveEnds(adjustedTopOuterDiameter, 90, 270, 0), ...reversePairs(topPoints)];
+
+	ctx.fillStyle = "black";
+	ctx.font = "6pt 'Liberation'";
+	ctx.lineWidth = 4;
+	ctx.strokeStyle = 'black';
+
+	ctx.translate(x,y);
+	drawPath(ctx,0,configDetails.topEndY,topEndPoints, true);
+	ctx.fillText("Top Ends", 4.5, configDetails.topEndY-4);
+	drawPath(ctx,0,configDetails.bottomEndY,bottomEndPoints, true);
+	ctx.fillText("Bottom Ends", 4.5, configDetails.bottomEndY-4);
+	ctx.translate(-x,-y);
+}
 

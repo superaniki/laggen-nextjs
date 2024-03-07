@@ -6,7 +6,7 @@ import { BarrelDetails, StaveCurveConfigDetails, StaveEndConfigDetails, StaveFro
 import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { PaperSizes } from "@/common/constants";
 import { Paper, StaveTool } from "@/common/enums";
-import { drawBarrelSideCTX, drawInfoTextCTX, drawRulerCTX, drawStaveCurveCTX } from "@/common/api-utils";
+import { drawBarrelSideCTX, drawInfoTextCTX, drawRulerCTX, drawStaveCurveCTX, drawStaveEndsCTX } from "@/common/api-utils";
 
 export async function POST(request: Request) {
   const data: any = await request.json()
@@ -33,12 +33,6 @@ export async function POST(request: Request) {
       configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
       break;
   }
-  /*
-    config = data.staveCurveConfig as StaveCurveConfigWithData;
-    const configDetailsDataArray: StaveCurveConfigDetails[] = config.configDetails;
-    const configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
-  */
-  // staveEndConfig, staveFrontConfig, 
 
   const { height, angle, topDiameter, staveLength, bottomDiameter } = { ...barrelDetails };
 
@@ -54,7 +48,6 @@ export async function POST(request: Request) {
   }
 
   const scale = 4;
-
   const img1 = PImage.make(paperWidth * scale, paperHeight * scale);
 
   const ctx = img1.getContext('2d');
@@ -78,7 +71,7 @@ export async function POST(request: Request) {
       drawStaveCurveCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
       break;
     case StaveTool.End:
-      //drawStaveEndCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
+      drawStaveEndsCTX(ctx, paperWidth * 0.5, paperHeight, barrelDetails, config, config.defaultPaperType as Paper)
       break;
     case StaveTool.Front:
       //drawStaveFrontCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
