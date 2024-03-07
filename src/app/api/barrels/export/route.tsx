@@ -1,20 +1,45 @@
 
 import { PassThrough } from "stream";
 import * as PImage from "pureimage";
-import { BarrelDetails, StaveCurveConfigDetails } from "@prisma/client";
+import { BarrelDetails, StaveCurveConfigDetails, StaveEndConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
 
-import { StaveCurveConfigWithData } from "@/db/queries/barrels";
+import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { PaperSizes } from "@/common/constants";
-import { Paper } from "@/common/enums";
-import { drawInfoTextCTX, drawRulerCTX, drawStaveCurveCTX } from "@/common/api-utils";
+import { Paper, StaveTool } from "@/common/enums";
+import { drawBarrelSideCTX, drawInfoTextCTX, drawRulerCTX, drawStaveCurveCTX } from "@/common/api-utils";
 
 export async function POST(request: Request) {
-
   const data: any = await request.json()
-  const config = data.staveCurveConfig as StaveCurveConfigWithData;
   const barrelDetails = data.barrelDetails as BarrelDetails;
-  const configDetailsDataArray: StaveCurveConfigDetails[] = config.configDetails;
-  const configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
+  const staveToolState = data.staveToolState as StaveTool;
+
+  let config: any;
+  let configDetailsDataArray: StaveCurveConfigDetails[] | StaveEndConfigDetails[] | StaveFrontConfigDetails[];
+  let configDetails: any;
+  switch (staveToolState) {
+    case StaveTool.Curve:
+      config = data.staveCurveConfig as StaveCurveConfigWithData;
+      configDetailsDataArray = config.configDetails as StaveCurveConfigDetails[];
+      configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
+      break;
+    case StaveTool.End:
+      config = data.staveEndConfig as StaveEndConfigWithData;
+      configDetailsDataArray = config.configDetails as StaveEndConfigDetails[];
+      configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
+      break;
+    case StaveTool.Front:
+      config = data.staveFrontConfig as StaveFrontConfigWithData;
+      configDetailsDataArray = config.configDetails as StaveFrontConfigDetails[];
+      configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
+      break;
+  }
+  /*
+    config = data.staveCurveConfig as StaveCurveConfigWithData;
+    const configDetailsDataArray: StaveCurveConfigDetails[] = config.configDetails;
+    const configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
+  */
+  // staveEndConfig, staveFrontConfig, 
+
   const { height, angle, topDiameter, staveLength, bottomDiameter } = { ...barrelDetails };
 
   if (configDetails === undefined)
@@ -48,17 +73,21 @@ export async function POST(request: Request) {
   let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
     "  Stave length: " + staveLength + "  Angle: " + angle;
 
-  /*  
-  ctx.imageSmoothingEnabled = true;
-  ctx.fillStyle = "black";
-  ctx.font = "6pt 'Liberation'";
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = 'black';
-*/
+  switch (staveToolState) {
+    case StaveTool.Curve:
+      drawStaveCurveCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
+      break;
+    case StaveTool.End:
+      //drawStaveEndCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
+      break;
+    case StaveTool.Front:
+      //drawStaveFrontCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
+      break;
+  }
 
   drawInfoTextCTX(ctx, staveTemplateInfoText, -90, -paperHeight + 23, margins + 4,)
   drawRulerCTX(ctx, 10, rulerMargin, paperHeight - (rulerMargin * 2), 6, 0, rulerMargin);
-  drawStaveCurveCTX(ctx, config.defaultPaperType as Paper, barrelDetails, config)
+  drawBarrelSideCTX(ctx, paperWidth - margins, paperHeight - margins, barrelDetails, 0.07);
 
   const passThroughStream = new PassThrough();
   PImage.encodePNGToStream(img1, passThroughStream); // skip await. dont return if scale is too large...

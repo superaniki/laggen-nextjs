@@ -70,25 +70,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
 
   async function savePng() {
     try {
-      /*
-        (barrel: Barrel, barrelDetails: BarrelDetails, 
-          staveCurveConfig: StaveCurveConfigWithData, staveCurveConfigDetails : StaveCurveConfigDetails[], 
-          staveFrontConfig: StaveFrontConfigWithData, staveFrontConfigDetails : StaveFrontConfigDetails[],
-          staveEndConfig: StaveEndConfigWithData, staveEndConfigDetails : StaveEndConfigDetails[] ) {
-      */
-      /*
-                  const { staveCurveConfig: config, updateToolDetails } = useBarrelStore();
-                  if (config === null)
-                    return <></>
-                
-                  const configDetailsDataArray = config.configDetails;
-                  const configDetails = configDetailsDataArray.find(item => (item.paperType === config.defaultPaperType));
-                
-                  if (configDetails === undefined)
-                    return <></>;*/
-
-      const jsonData = { staveCurveConfig, barrelDetails }; // Your JSON data object
-
+      const jsonData = { staveToolState, staveCurveConfig, staveEndConfig, staveFrontConfig, barrelDetails }; // Your JSON data object
       const response = await fetch('/api/barrels/export', {
         method: 'POST',
         headers: {
@@ -131,19 +113,18 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
         </div>
 
         <div className="col-span-8">
-          <Card className="py-4 bg-gradient-to-t from-green-100 to-blue-100 items-center p-0">
+          <Card className="bg-gradient-to-t from-green-100 to-blue-100 items-center p-0">
             {viewState === View.Barrel && <BarrelCanvas barrel={barrelDetails} />}
             {viewState === View.Tools && (<>
-              <div className="shadow-medium">
+              <div className="mt-4 shadow-medium">
                 <OnPaper scale={toolScale} />
               </div>
-              <Button onClick={() => savePng()}>Save PNG</Button>
-              <span>
-                <Button onClick={() => setToolScale((current) => round(current + 0.1, 2))}>zoom +</Button>
-                <span>{toolScale}</span>
-                <Button onClick={() => setToolScale((current) => round(current - 0.1, 2))}>zoom -</Button>
+              <Button className="my-4" onClick={() => savePng()}>Save PNG</Button>
+              <span className="absolute m-3 right-0">
+                <Button className="shadow-medium min-w-10 rounded-full bg-white text-xl border-solid border-2 border-gray-200 p-0" onClick={() => setToolScale((current) => round(current + 0.2, 2))}>+</Button>
+                <Button className="shadow-medium min-w-10 rounded-full bg-white text-xl border-solid border-2 border-gray-200 p-0" onClick={() => setToolScale((current) => round(current - 0.2, 2))}>-</Button>
+                <div className="text-center">{toolScale}</div>
               </span>
-
             </>
             )}
             {viewState === View.View3d && <>3d view</>}
