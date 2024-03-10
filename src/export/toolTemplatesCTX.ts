@@ -1,11 +1,11 @@
-import { StaveCurveConfigWithData, StaveEndConfigWithData } from "@/db/queries/barrels";
+import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { BarrelDetails, StaveEndConfigDetails } from "@prisma/client";
 import { Paper } from "./enums";
 import { createCurveForStaveEnds, createCurveMaxWidth, findAdjustedDiameter } from "@/components/canvas/commons/barrel-math";
 import * as PImage from "pureimage";
 
 
-function drawPath(ctx: PImage.Context, x: number, y: number, points: number[], closed=false) {
+function drawPath(ctx: PImage.Context, x: number, y: number, points: number[], closed = false, useFill = false) {
 	// Draw the line
 	ctx.beginPath();
 	ctx.moveTo(points[0] + x, points[1] + y); // Move to the first point
@@ -14,12 +14,15 @@ function drawPath(ctx: PImage.Context, x: number, y: number, points: number[], c
 	for (var i = 2; i < points.length; i += 2) {
 		ctx.lineTo(points[i] + x, points[i + 1] + y); // Draw line to next point
 	}
-	if(closed){
+	if (closed) {
 		ctx.lineTo(points[0] + x, points[1] + y); // Draw to the first point
 	}
 
-	// Set line style and stroke
-	ctx.stroke();
+	if(useFill){
+		ctx.fill()
+	}else{
+		ctx.stroke();
+	}
 }
 
 function drawCurve(x: number, y: number, ctx: PImage.Context, points: number[], title: string) {
@@ -30,7 +33,7 @@ function drawCurve(x: number, y: number, ctx: PImage.Context, points: number[], 
 	ctx.fillText(title, x + 4.5, y - 6);
 }
 
-export function drawBarrelSideCTX(ctx: PImage.Context, x:number, y:number, barrelDetails: BarrelDetails, scale:number){
+export function drawBarrelSideCTX(ctx: PImage.Context, x: number, y: number, barrelDetails: BarrelDetails, scale: number) {
 	const { angle, height, bottomDiameter, staveTopThickness, staveBottomThickness, bottomThickness, bottomMargin } = { ...barrelDetails };
 
 	const tan = Math.tan(angle * Math.PI / 180);
@@ -42,24 +45,23 @@ export function drawBarrelSideCTX(ctx: PImage.Context, x:number, y:number, barre
 	const angleLength = (tan * bottomMargin) - (staveBottomThickness - 5); // angle-dependent extra length to plate
 	const bottomPlantePoints = [0 + angleLength, 0, 0 + angleLength, -bottomThickness, -bottomDiameter - angleLength, -bottomThickness, -bottomDiameter - angleLength, 0]
 
-	ctx.translate(x,y);
+	ctx.translate(x, y);
 	ctx.lineWidth = 1;
-	ctx.scale(scale,scale);
-	drawPath(ctx,-bottomDiameter-length,0,outlinePoints);
-	ctx.save
-	ctx.translate(-bottomDiameter-length,0);
+	ctx.scale(scale, scale);
+	drawPath(ctx, -bottomDiameter - length, 0, outlinePoints);
+	ctx.save();
+	ctx.translate(-bottomDiameter - length, 0);
 	ctx.rotate((-angle * Math.PI) / 180.0);
-	drawPath(ctx,0,0,leftStavePoints);
-	ctx.rotate((angle * Math.PI) / 180.0);
-	ctx.translate(bottomDiameter+length,0);
+	drawPath(ctx, 0, 0, leftStavePoints);
+	ctx.restore();
 
-	ctx.translate(-length,0);
+	ctx.save();
+	ctx.translate(-length, 0);
 	ctx.rotate((angle * Math.PI) / 180.0);
-	drawPath(ctx,0,0,rightStavePoints);
-	ctx.rotate((-angle * Math.PI) / 180.0);
-	ctx.translate(length,0);
+	drawPath(ctx, 0, 0, rightStavePoints);
+	ctx.restore();
 
-	drawPath(ctx,-length,- bottomMargin,bottomPlantePoints);
+	drawPath(ctx, -length, - bottomMargin, bottomPlantePoints);
 }
 
 function generateHorizontalCentimeters(ctx: PImage.Context, x: number, y: number, number: number, length: number, scale: number, margin: number) {
@@ -91,9 +93,10 @@ export function drawRulerCTX(ctx: PImage.Context, scale: number, x: number, y: n
 export function drawInfoTextCTX(ctx: PImage.Context, text: string, angle: number, posx: number, posy: number) {
 	ctx.font = "3pt 'Liberation'";
 	ctx.fillStyle = 'black';
+	ctx.save();
 	ctx.rotate((angle * Math.PI) / 180.0);
 	ctx.fillText(text, posx, posy);
-	ctx.rotate((-angle * Math.PI) / 180.0);
+	ctx.restore();
 }
 
 export function drawStaveCurveCTX(ctx: PImage.Context, paperState: Paper, barrelDetails: BarrelDetails, config: StaveCurveConfigWithData,
@@ -126,6 +129,7 @@ export function drawStaveCurveCTX(ctx: PImage.Context, paperState: Paper, barrel
 
 	const curveXpos = rectX + rectWidth;
 
+	ctx.save();
 	ctx.translate(posX, posY);
 	ctx.fillStyle = "black";
 	ctx.font = "6pt 'Liberation'";
@@ -139,15 +143,15 @@ export function drawStaveCurveCTX(ctx: PImage.Context, paperState: Paper, barrel
 
 	ctx.rect((rectX), (rectY), rectWidth, rectHeight);
 	ctx.stroke();
-	ctx.translate(-posX, -posY);
+	ctx.restore();
 }
 
 function reversePairs(arr: number[]) {
 	return arr.map((_, i) => arr[arr.length - i - 2 * (1 - (i % 2))]);
 }
 
-export function drawStaveEndsCTX(ctx: PImage.Context, x: number ,y:number ,barrelDetails: BarrelDetails, config: StaveEndConfigWithData, paperState: Paper){
-	const {angle, height,bottomDiameter,staveBottomThickness,staveTopThickness} = {...barrelDetails};
+export function drawStaveEndsCTX(ctx: PImage.Context, x: number, y: number, barrelDetails: BarrelDetails, config: StaveEndConfigWithData, paperState: Paper) {
+	const { angle, height, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
 	const configDetailsArray = config.configDetails;
 
 	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
@@ -178,11 +182,88 @@ export function drawStaveEndsCTX(ctx: PImage.Context, x: number ,y:number ,barre
 	ctx.lineWidth = 4;
 	ctx.strokeStyle = 'black';
 
-	ctx.translate(x,y);
-	drawPath(ctx,0,configDetails.topEndY,topEndPoints, true);
-	ctx.fillText("Top Ends", 4.5, configDetails.topEndY-4);
-	drawPath(ctx,0,configDetails.bottomEndY,bottomEndPoints, true);
-	ctx.fillText("Bottom Ends", 4.5, configDetails.bottomEndY-4);
-	ctx.translate(-x,-y);
+	ctx.save();
+	ctx.translate(x, y);
+	drawPath(ctx, 0, configDetails.topEndY, topEndPoints, true);
+	ctx.fillText("Top Ends", 4.5, configDetails.topEndY - 4);
+	drawPath(ctx, 0, configDetails.bottomEndY, bottomEndPoints, true);
+	ctx.fillText("Bottom Ends", 4.5, configDetails.bottomEndY - 4);
+	ctx.restore();
 }
 
+
+type TextData = {
+	x: number,
+	y: number,
+	text: string,
+}
+
+function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, staveLength: number, spacing: number) {
+	const mmPerSizeChange = spacing;
+	const mmPerSizeChangeBottom = (bottomDiameter / topDiameter) * mmPerSizeChange;
+	const points = [];
+	const textData = [];
+
+	let diaBottom = bottomDiameter;
+	let count = 1;
+
+	for (let diaTop = topDiameter; diaTop >= 0 && diaBottom >= 0; diaTop -= mmPerSizeChange) {
+		points.push([-diaBottom * 0.5, 0, -diaTop * 0.5, -staveLength, diaTop * 0.5, -staveLength, diaBottom * 0.5, 0]);
+		textData.push({ x: -diaTop * 0.5, y: -staveLength, text: String(count) });
+		textData.push({ x: diaTop * 0.5, y: -staveLength, text: String(count) });
+		count++;
+		diaBottom -= mmPerSizeChangeBottom;
+	}
+	return { points: points, textData: textData };
+}
+
+export function drawStaveFrontCTX(ctx: PImage.Context, x: number, y: number, barrelDetails: BarrelDetails, config: StaveFrontConfigWithData, paperState: Paper) {
+	const { bottomDiameter, topDiameter, staveLength } = { ...barrelDetails };
+	const configDetailsArray = config.configDetails;
+
+	const configDetails = configDetailsArray.find(item => (item.paperType === paperState));
+	if (configDetails === undefined)
+		return ctx;
+
+	const { posY, spacing } = { ...configDetails }
+	const pointsData = calcStaveTemplatePoints(topDiameter, bottomDiameter, staveLength, spacing);
+
+	ctx.strokeStyle = "black";
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 3;
+
+	ctx.save();
+	ctx.translate(x, posY);
+	ctx.fillStyle = "lightgrey";
+	drawPath(ctx, 0,0 , pointsData.points[0], true, true);
+	pointsData.points.forEach((element) => {
+		drawPath(ctx, 0,0 , element, true);
+	});
+	ctx.fillStyle = "black";
+	ctx.font = "4pt 'Liberation'";
+	pointsData.textData.forEach((element) => {
+		ctx.fillText(element.text, element.x - 3, element.y - 6);
+	});
+
+/*
+	const textData: ReactElement[] = [];
+	pointsData.textData.forEach((element) => {
+		textData.push(
+			<Text
+				x={element.x - 3}
+				y={element.y - 6}
+				text={element.text}
+				fontFamily="courier"
+				fontSize={4}
+				fill={'black'}
+				key={id++}
+			/>
+		);
+	});
+	*/
+	ctx.restore();
+
+
+
+
+}

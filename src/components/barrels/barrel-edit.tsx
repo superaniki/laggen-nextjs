@@ -98,8 +98,10 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
           <MainEditNav />
           <Divider className="box-content my-4 mx-2 w-auto" />
           <StaveToolNav />
-          <Divider className="box-content my-4 mx-2 w-auto" />
-          <div className="grid gap-2 relative">
+
+          <div className={`grid gap-2 relative ${viewState !== View.Tools && "opacity-0"}`}>
+            <Divider className="box-content my-4 mx-2 w-auto" />
+
             {staveToolState === StaveTool.Curve && (
               <StaveCurveConfig />
             )}

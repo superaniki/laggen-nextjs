@@ -25,7 +25,7 @@ export default function StaveToolNav() {
 
   console.log("StaveToolNav:" + staveToolState);
 
-  return <div className="grid gap-2 relative">
+  return <div className={`grid gap-2 relative ${viewState !== View.Tools && "opacity-0"}`}>
     <div className={`${viewState !== View.Tools && "opacity-disabled"} flex flex-col items-center text-sm`}>templates for stave</div>
     <div className="xl:flex xl:flex-row self-center justify-center">
       <StaveToolButton buttonType={StaveTool.Curve} label="inside" />
@@ -40,7 +40,7 @@ export default function StaveToolNav() {
         onClick={() => updatePaperState(staveToolState, Paper.A4)} >A4</Button>
     </div>
 
-    {viewState !== View.Tools && <div className="absolute inset-0 bg-white opacity-50" onClick={() => setViewState(View.Tools)}></div>}
+    {viewState !== View.Tools && <div className="absolute inset-0 bg-white opacity-75" onClick={() => setViewState(View.Tools)}></div>}
   </div>
 
 }
