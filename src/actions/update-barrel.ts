@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { BarrelWithData, StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { auth } from "@/auth";
 import { createSlug } from "./utils";
+import { redirect } from "next/navigation";
 
 
 export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails, 
@@ -21,12 +22,13 @@ export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails,
   const dbBarrel = await db.barrelDetails.findFirst({
     where: { id: barrelDetails.id }});
   
+  let currentSlug = barrel.slug;
   if(dbBarrel?.name !== barrelDetails.name){
     // update the slug since name has changed
-    let newSlug = await createSlug(barrelDetails.name);
+    currentSlug = await createSlug(barrelDetails.name);
     await db.barrel.update({
       where: { id: barrelDetails.barrelId },
-      data: { ...onlyBarrel, slug: newSlug},
+      data: { ...onlyBarrel, slug: currentSlug},
     });
   }
 
@@ -78,6 +80,7 @@ export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails,
   }
 
   revalidatePath(`/barrels/edit/${barrel.id}`);
+  redirect(`/barrels/edit/${currentSlug}`);
 }
 
 

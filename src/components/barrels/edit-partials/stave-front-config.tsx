@@ -28,7 +28,6 @@ export function StaveFrontConfig() {
 
   return <>
     <FormCheckBox callback={handleCheckMark} name={"rotatePaper"} value={configDetails.rotatePaper} />
-    <FormInput callback={handleUpdate} name={"posX"} value={configDetails.posX.toString()} type={"number"} />
     <FormInput callback={handleUpdate} name={"posY"} value={configDetails.posY.toString()} type={"number"} />
     <FormInput step={1} min={8} callback={handleUpdate} name={"spacing"} value={configDetails.spacing.toString()} type={"number"} />
   </>

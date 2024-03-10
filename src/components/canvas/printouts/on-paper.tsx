@@ -74,6 +74,8 @@ export default function OnPaper({ scale = 2.4 }: { scale?: number }) {
         barrelDetails={barrelDetails} thickStroke={true} scale={0.07} />
       <Ruler scale={10} y={paperHeight - margins + 5} x={margins - 15} xLength={6} yLength={0} margin={10} />
       <Text x={margins} rotation={270} y={paperHeight - 25} text={staveTemplateInfoText} fontFamily="courier" fontSize={3} fill={"black"} />
+      <Text direction="ltr" x={10} y={10} text={barrelDetails.name} fontFamily="courier" fontSize={4} fill={"black"} align="left" />
+
     </Layer>
   </Stage>
 
