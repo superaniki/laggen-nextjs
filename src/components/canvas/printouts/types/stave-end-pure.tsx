@@ -1,13 +1,7 @@
-import React, { useRef, useState } from 'react';
-import Cross from '../../commons/cross';
-import { Group, Line, Rect, Text } from 'react-konva';
-import { findAdjustedDiameter, createCurveForStaveEnds, round } from '../../commons/barrel-math';
-import usePaperSize from '@/components/hooks/usePaperSize';
+import { Group, Line, Text } from 'react-konva';
+import { findAdjustedDiameter, createCurveForStaveEnds } from '../../commons/barrel-math';
 import { StaveEndConfigWithData } from '@/db/queries/barrels';
-import { KonvaEventObject } from 'konva/lib/Node';
-import { Paper, StaveTool } from '@/store/edit-store';
-import useBarrelStore from '@/store/barrel-store';
-import { SelectionRect } from '../../commons/SelectionRect';
+import { Paper } from '@/common/enums';
 
 type ToolCurveProps = {
 	id: string
