@@ -4,6 +4,38 @@ import { PaperSizes } from "@/common/constants";
 import { Paper, StaveTool } from "@/common/enums";
 import { StaveCurveConfigDetails, StaveEndConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
 import * as PImage from "pureimage";
+import fs from 'fs';
+import path from 'path';
+
+
+// Function to list files in the current directory
+function listFilesInCurrentDirectory( path:string) {
+  // Read the current directory
+  fs.readdir(path, (err, files) => {
+      if (err) {
+          console.error('Error reading directory:', err);
+          return;
+      }
+
+      // Print each file in the directory
+      console.log('Files in the current directory:');
+      files.forEach(file => {
+          console.log(file);
+      });
+  });
+}
+
+function throughDirectory(directory : string) {
+  let files  = [];
+  
+  fs.readdirSync(directory).forEach(file => {
+      const absolute = path.join(directory, file);
+      if (fs.statSync(absolute).isDirectory()) return throughDirectory(absolute);
+      else{
+        console.log(absolute)
+      } 
+  });
+}
 
 export function createStaveToolsPImage(barrelExportData : BarrelExportData){
   const {barrelDetails, staveToolState, staveCurveConfig, staveEndConfig, staveFrontConfig} = {...barrelExportData}
@@ -42,13 +74,26 @@ export function createStaveToolsPImage(barrelExportData : BarrelExportData){
     paperHeight = PaperSizes[config.defaultPaperType as Paper].width;
   }
 
-  const scale = 16;
+  const scale = 8;
   const bitmap = PImage.make(paperWidth * scale, paperHeight * scale);
 
   const ctx = bitmap.getContext('2d');
   ctx.scale(scale, scale);
   ctx.fillStyle = 'white';
   ctx.fillRect(0, 0, paperWidth, paperHeight);
+
+  //console.log("EXPORT, 'process.cwd()': "+process.cwd())
+  //console.log("EXPORT, '__dirname': "+__dirname)
+
+  //const directoryPath = path.join(__dirname, '.next/server/');
+  //const directoryPath = path.join(process.cwd(), '.next/server/');
+  //const directoryPathRoot = path.join(process.cwd(), '');
+
+  //Call the function to list files
+  //listFilesInCurrentDirectory(directoryPath);
+  //throughDirectory(directoryPathRoot);
+  //console.log("2")
+  //listFilesInCurrentDirectory(directoryPath2);
 
   var fnt = PImage.registerFont(
     "./src/fonts/LiberationSans-Regular.ttf",
