@@ -1,9 +1,8 @@
 import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { BarrelDetails, StaveEndConfigDetails } from "@prisma/client";
-import { Paper } from "./enums";
+import { Paper } from "@/common/enums";
 import { createCurveForStaveEnds, createCurveMaxWidth, findAdjustedDiameter } from "@/components/canvas/commons/barrel-math";
 import * as PImage from "pureimage";
-
 
 function drawPath(ctx: PImage.Context, x: number, y: number, points: number[], closed = false, useFill = false) {
 	// Draw the line
@@ -191,7 +190,6 @@ export function drawStaveEndsCTX(ctx: PImage.Context, x: number, y: number, barr
 	ctx.restore();
 }
 
-
 type TextData = {
 	x: number,
 	y: number,
@@ -244,26 +242,5 @@ export function drawStaveFrontCTX(ctx: PImage.Context, x: number, y: number, bar
 	pointsData.textData.forEach((element) => {
 		ctx.fillText(element.text, element.x - 3, element.y - 6);
 	});
-
-/*
-	const textData: ReactElement[] = [];
-	pointsData.textData.forEach((element) => {
-		textData.push(
-			<Text
-				x={element.x - 3}
-				y={element.y - 6}
-				text={element.text}
-				fontFamily="courier"
-				fontSize={4}
-				fill={'black'}
-				key={id++}
-			/>
-		);
-	});
-	*/
 	ctx.restore();
-
-
-
-
 }
