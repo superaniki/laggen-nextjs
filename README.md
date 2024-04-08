@@ -1,7 +1,7 @@
 
 
 
-# Online editor for making plans for traditional historical wooden buckets.
+# Online editor for traditional wooden buckets.
 
 With this tool, you can easily create your library of buckets and print out templates for use as
 you manually create your wooden bucket using manual tools like in the pre-industry society.
@@ -11,6 +11,6 @@ The project is pre-set to use PostgreSql, but to easily get it up and running, u
 Using Next.js(app router), react, tailwind
 
 
-** To start:**
+To start:
 > npm run dev
 
