@@ -16,7 +16,7 @@ type ToolCurveProps = {
 
 function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
 	return (
-		<Group id={id} x={x} y={y} draggable>
+		<Group id={id} x={x} y={y} draggable>§
 			<Line closed={closed} points={points} stroke={'black'} strokeWidth={1} />
 			<Text x={4.5} y={-10} text={title} fontSize={8} fill={'black'} />
 		</Group>

@@ -2,7 +2,6 @@ import { Group, Line, Text } from 'react-konva';
 import { BarrelDetails } from '@prisma/client';
 import { ReactElement } from 'react';
 import { StaveFrontConfigWithData } from '@/db/queries/barrels';
-import usePaperSize from '@/components/hooks/usePaperSize';
 import { Paper } from '@/common/enums';
 
 function calcStaveTemplatePoints(topDiameter: number, bottomDiameter: number, staveLength: number, spacing: number) {
