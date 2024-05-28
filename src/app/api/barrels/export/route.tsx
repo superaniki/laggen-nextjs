@@ -1,10 +1,11 @@
 
-import { PassThrough } from "stream";
-import * as PImage from "pureimage";
+
 import { BarrelDetails } from "@prisma/client";
 import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { StaveTool } from "@/common/enums";
 import { createStaveToolsPImage } from "@/export/drawStaveToolsCTX";
+import { PassThrough } from "stream";
+import * as PImage from "pureimage";
 
 
 export type BarrelExportData = {
@@ -15,6 +16,27 @@ export type BarrelExportData = {
   staveFrontConfig: StaveFrontConfigWithData
 }
 
+
+// save button triggering this function accessible from barrel-edit.tsx
+export async function POST(request: Request) {
+  const barrelExportData: any = await request.json() as BarrelExportData;
+  const response = await fetch(process.env.LAGGEN_SERVER_FUNC as string, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(barrelExportData),
+  });
+
+  // Return only the PNG image data
+  return new Response(response.body, {
+    headers: {
+      'Content-Type': 'image/png',
+    },
+  });
+}
+
+/*
 export async function POST(request: Request) {
   const barrelExportData: any = await request.json() as BarrelExportData
   const barrelToolsBitmap = createStaveToolsPImage(barrelExportData);
@@ -38,4 +60,16 @@ export async function POST(request: Request) {
     },
   });
 }
+*/
+
+/*
+
+  // Return the JSON response
+  return new Response(JSON.stringify(barrelExportData), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+*/
 

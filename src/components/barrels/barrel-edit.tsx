@@ -71,13 +71,23 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   async function savePng() {
     try {
       const jsonData = { staveToolState, staveCurveConfig, staveEndConfig, staveFrontConfig, barrelDetails }; // Your JSON data object
+      /*const response = await fetch('http://localhost:7071/api/BarrelToImage', {
+        method: 'POST'
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });*/
+      const scale = 16;
+
       const response = await fetch('/api/barrels/export', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(jsonData),
+        body: JSON.stringify({ scale: scale, barrel: jsonData }),
       });
+
 
       const imageBuffer = await response.arrayBuffer();
       const dataUrl = `data:image/png;base64,${Buffer.from(imageBuffer).toString('base64')}`;
