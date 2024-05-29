@@ -33,7 +33,10 @@ export default function StaveToolNav() {
       <StaveToolButton buttonType={StaveTool.End} label="end" />
     </div>
     <Divider className="box-content my-4 mx-2 w-auto" />
+    <div className={`${viewState !== View.Tools && "opacity-disabled"} flex flex-col items-center text-sm`}>Paper size</div>
+
     <div className="flex flex-row self-center justify-center">
+
       <Button variant={paperSize === Paper.A3 ? "solid" : "faded"} disableRipple
         onClick={() => updatePaperState(staveToolState, Paper.A3)} >A3</Button>
       <Button variant={paperSize === Paper.A4 ? "solid" : "faded"} disableRipple

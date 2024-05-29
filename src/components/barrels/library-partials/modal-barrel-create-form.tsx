@@ -25,7 +25,6 @@ export default function ModalBarrelCreateForm() {
   const [isOpen, setIsOpen] = useState(false);
   //const action = actions.createPost.bind(null, bind(null, slug))
 
-
   useEffect(() => {
     /*
     if (formState.errors.firstName) {
