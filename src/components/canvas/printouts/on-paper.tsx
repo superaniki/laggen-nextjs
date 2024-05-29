@@ -5,10 +5,13 @@ import StaveEnds from "./types/stave-end";
 import BarrelSide from "./types/barrel-side";
 import Ruler from "../commons/ruler";
 import useEditStore from "@/store/edit-store";
-import useBarrelStore from "@/store/barrel-store";
+import useBarrelStore, { BarrelStore } from "@/store/barrel-store";
 import usePaperSize from "@/components/hooks/usePaperSize";
 import { StaveTool } from "@/common/enums";
 import { PaperSizes } from "@/common/constants";
+import { StaveCurveConfig } from "@prisma/client";
+import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
+import { getConfigDetails, paperSizeWithRotation } from "@/common/utils";
 
 
 export default function OnPaper({ scale = 2.4 }: { scale?: number }) {
@@ -21,34 +24,10 @@ export default function OnPaper({ scale = 2.4 }: { scale?: number }) {
   if (!barrelDetails || !staveCurveConfig || !staveFrontConfig || !staveEndConfig)
     return <></>
 
-  console.log("usePaperSize, paper:" + paperState);
-
-  let configDetails = null;
-  let configDetailsDataArray = null;
-  switch (tool) {
-    case StaveTool.Curve:
-      configDetailsDataArray = staveCurveConfig.configDetails;
-      configDetails = configDetailsDataArray.find(item => (item.paperType === staveCurveConfig.defaultPaperType));
-      break;
-    case StaveTool.Front:
-      configDetailsDataArray = staveFrontConfig.configDetails;
-      configDetails = configDetailsDataArray.find(item => (item.paperType === staveFrontConfig.defaultPaperType));
-      break;
-    case StaveTool.End:
-      configDetailsDataArray = staveEndConfig.configDetails;
-      configDetails = configDetailsDataArray.find(item => (item.paperType === staveEndConfig.defaultPaperType));
-      break;
-  }
-
+  const configDetails = getConfigDetails(tool, staveCurveConfig, staveFrontConfig, staveEndConfig);
   if (configDetails === undefined)
     return <></>;
-
-  let paperWidth = PaperSizes[paperState].width;
-  let paperHeight = PaperSizes[paperState].height;
-  if (configDetails.rotatePaper) {
-    paperWidth = PaperSizes[paperState].height;
-    paperHeight = PaperSizes[paperState].width;
-  }
+  const { height: paperHeight, width: paperWidth } = paperSizeWithRotation(configDetails.rotatePaper, paperState);
 
   // const scale = 2.4; //f.d printScale 1.8
   const margins = 15;

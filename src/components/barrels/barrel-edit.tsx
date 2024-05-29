@@ -1,7 +1,7 @@
 "use client";
 import BarrelCanvas from "../canvas/barrel-canvas";
-import { useEffect, useState } from "react";
-import { Button, Card, Divider } from "@nextui-org/react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Button, Card, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Radio, RadioGroup, useDisclosure } from "@nextui-org/react";
 import { updateBarrel } from "@/actions";
 import FormButton from "../common/form-button";
 import { useSession } from "next-auth/react";
@@ -19,6 +19,11 @@ import { StaveFrontConfig } from "./edit-partials/stave-front-config";
 import { StaveEndConfig } from "./edit-partials/stave-end-config";
 import { StaveTool, View } from "@/common/enums";
 import { round } from "../canvas/commons/barrel-math";
+import { getConfigDetails, paperSizeWithRotation, pixelsFromCm, saveImageToDisc, staveToolString } from "@/common/utils";
+import FormInput from "../common/form-input";
+import { headers } from "next/headers";
+import usePaperSize from "../hooks/usePaperSize";
+import { PaperSizes } from "@/common/constants";
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails: loadedBarrelDetails, staveEndConfig: loadedStaveEndConfig, staveFrontConfig: loadedStaveFrontConfig, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
@@ -26,10 +31,22 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { setBarrel, details: barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig } = useBarrelStore();
   const session = useSession();
   const [toolScale, setToolScale] = useState(2.4);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [dpi, setDpi] = useState("300");
+  const [outputFormat, setOutputFormat] = useState("Png");
+  const { staveToolState: tool } = useEditStore();
+  const paperState = usePaperSize();
 
   useEffect(() => {
     setBarrel(barrel);
   }, [setBarrel, barrel])
+
+  if (!barrelDetails || !staveCurveConfig || !staveFrontConfig || !staveEndConfig)
+    return <></>
+  const configDetails = getConfigDetails(tool, staveCurveConfig, staveFrontConfig, staveEndConfig);
+  if (configDetails === undefined)
+    return <></>;
+  const { height: paperHeight, width: paperWidth } = paperSizeWithRotation(configDetails.rotatePaper, paperState);
 
   if (barrel === undefined)
     return <LoadingString />;
@@ -67,39 +84,38 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     enableSaveButton = true;
   }
 
-
-  async function savePng() {
+  async function exportTemplateImage() {
     try {
       const jsonData = { staveToolState, staveCurveConfig, staveEndConfig, staveFrontConfig, barrelDetails }; // Your JSON data object
-      /*const response = await fetch('http://localhost:7071/api/BarrelToImage', {
-        method: 'POST'
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-      });*/
-      const scale = 16;
 
       const response = await fetch('/api/barrels/export', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ scale: scale, barrel: jsonData }),
+        body: JSON.stringify({ format: outputFormat, dpi: dpi, barrel: jsonData }),
       });
 
-
-      const imageBuffer = await response.arrayBuffer();
-      const dataUrl = `data:image/png;base64,${Buffer.from(imageBuffer).toString('base64')}`;
-      // Prompt user to save the image to disk
-      const anchor = document.createElement('a');
-      anchor.href = dataUrl;
-      anchor.download = 'toolthing.png';
-      anchor.click();
+      var imageBuffer = await response.arrayBuffer();
+      saveImageToDisc(imageBuffer, outputFormat);
     } catch (error) {
       console.error('Error fetching image:', error);
     }
   };
+
+  function handleExport() {
+    exportTemplateImage();
+  }
+
+  function printPaperSizeInPixels() {
+
+    const pxWidth = Math.floor(pixelsFromCm(Number(dpi), paperWidth * 0.1));
+    const pxHeight = Math.floor(pixelsFromCm(Number(dpi), paperHeight * 0.1));
+
+    return `Pixel size: ${pxWidth} x ${pxHeight}`;
+  };
+
+
 
   return (
     <>
@@ -131,7 +147,35 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
               <div className="mt-4 shadow-medium">
                 <OnPaper scale={toolScale} />
               </div>
-              <Button className="my-4" onClick={() => savePng()}>Save PNG</Button>
+              <Button className="my-4" onClick={onOpen}>Export</Button>
+
+              <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                  {(onClose) => (
+                    <>
+                      <ModalHeader className="flex flex-col gap-1">
+                        {`Export : ${staveToolString(staveToolState)} template`}
+                      </ModalHeader>
+                      <ModalBody>
+                        <FormInput step={100} callback={e => setDpi(e.target.value)} name={"dpi"} value={dpi} type={"number"} />
+                        <div className="text-xs text-gray-500">{`${printPaperSizeInPixels()}`}</div>
+                        <RadioGroup onChange={e => setOutputFormat(e.target.value)} label="Output format" defaultValue={outputFormat}
+                        >
+                          <Radio value="Png">Png</Radio>
+                          <Radio value="Jpeg">Jpeg</Radio>
+                          <Radio isDisabled value="Pdf">Pdf</Radio>
+                        </RadioGroup>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button color="primary" onPress={onClose} onClick={handleExport}>
+                          Export
+                        </Button>
+                      </ModalFooter>
+                    </>
+                  )}
+                </ModalContent>
+              </Modal>
+
               <span className="absolute m-3 right-0">
                 <Button className="shadow-medium min-w-10 rounded-full bg-white text-xl border-solid border-2 border-gray-200 p-0" onClick={() => setToolScale((current) => round(current + 0.2, 2))}>+</Button>
                 <Button className="shadow-medium min-w-10 rounded-full bg-white text-xl border-solid border-2 border-gray-200 p-0" onClick={() => setToolScale((current) => round(current - 0.2, 2))}>-</Button>
