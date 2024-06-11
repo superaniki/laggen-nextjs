@@ -104,8 +104,6 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
 
       var imageBuffer = await response.arrayBuffer();
       if (response.ok) {
-        //saveImageToDisc(imageBuffer, outputFormat);
-        //export function saveImageToDisc(buffer: ArrayBuffer, format: string) {
         const dataUrl = `data:image/${outputFormat.toLowerCase()};base64,${Buffer.from(imageBuffer).toString('base64')}`;
         setDownloadUrl(dataUrl);
         setExportIsAvailable(true);
@@ -179,7 +177,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
                       <ModalBody>
                         <FormInput step={50} callback={e => { setDpi(e.target.value); setExportIsAvailable(false) }} name={"dpi"} value={dpi} type={"number"} />
                         <div className="text-xs text-gray-500">{`${printPaperSizeInPixels()}`}</div>
-                        <RadioGroup onChange={e => setOutputFormat(e.target.value)} label="Output format" defaultValue={outputFormat}
+                        <RadioGroup onChange={e => { setOutputFormat(e.target.value); setExportIsAvailable(false) }} label="Output format" defaultValue={outputFormat}
                         >
                           <Radio value="Png">Png</Radio>
                           <Radio value="Jpeg">Jpeg</Radio>
