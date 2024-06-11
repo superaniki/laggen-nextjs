@@ -24,6 +24,8 @@ import FormInput from "../common/form-input";
 import { headers } from "next/headers";
 import usePaperSize from "../hooks/usePaperSize";
 import { PaperSizes } from "@/common/constants";
+import toast from "react-hot-toast";
+import ExportButton from "../common/export-button";
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails: loadedBarrelDetails, staveEndConfig: loadedStaveEndConfig, staveFrontConfig: loadedStaveFrontConfig, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
@@ -31,11 +33,14 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { setBarrel, details: barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig } = useBarrelStore();
   const session = useSession();
   const [toolScale, setToolScale] = useState(2.4);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [dpi, setDpi] = useState("300");
   const [outputFormat, setOutputFormat] = useState("Png");
   const { staveToolState: tool } = useEditStore();
   const paperState = usePaperSize();
+  const [isPendingGeneration, setIsPendingGeneration] = useState(false);
+  const [exportIsAvailable, setExportIsAvailable] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   useEffect(() => {
     setBarrel(barrel);
@@ -86,6 +91,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
 
   async function exportTemplateImage() {
     try {
+      setIsPendingGeneration(true);
       const jsonData = { staveToolState, staveCurveConfig, staveEndConfig, staveFrontConfig, barrelDetails }; // Your JSON data object
 
       const response = await fetch('/api/barrels/export', {
@@ -97,13 +103,27 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
       });
 
       var imageBuffer = await response.arrayBuffer();
-      saveImageToDisc(imageBuffer, outputFormat);
-    } catch (error) {
+      if (response.ok) {
+        //saveImageToDisc(imageBuffer, outputFormat);
+        //export function saveImageToDisc(buffer: ArrayBuffer, format: string) {
+        const dataUrl = `data:image/${outputFormat.toLowerCase()};base64,${Buffer.from(imageBuffer).toString('base64')}`;
+        setDownloadUrl(dataUrl);
+        setExportIsAvailable(true);
+        toast.success("Export generation complete", { position: 'bottom-center' });
+      } else {
+        response.status
+        toast.error(response.status + ":" + response.statusText
+          , { position: 'bottom-center' });
+      }
+      setIsPendingGeneration(false);
+    }
+    catch (error) {
       console.error('Error fetching image:', error);
+      setIsPendingGeneration(false);
     }
   };
 
-  function handleExport() {
+  function handleGenerate() {
     exportTemplateImage();
   }
 
@@ -149,7 +169,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
               </div>
               <Button className="my-4" onClick={onOpen}>Export</Button>
 
-              <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+              <Modal isOpen={isOpen} onOpenChange={onOpenChange} onClose={() => setExportIsAvailable(false)}>
                 <ModalContent>
                   {(onClose) => (
                     <>
@@ -157,7 +177,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
                         {`Export : ${staveToolString(staveToolState)} template`}
                       </ModalHeader>
                       <ModalBody>
-                        <FormInput step={100} callback={e => setDpi(e.target.value)} name={"dpi"} value={dpi} type={"number"} />
+                        <FormInput step={50} callback={e => { setDpi(e.target.value); setExportIsAvailable(false) }} name={"dpi"} value={dpi} type={"number"} />
                         <div className="text-xs text-gray-500">{`${printPaperSizeInPixels()}`}</div>
                         <RadioGroup onChange={e => setOutputFormat(e.target.value)} label="Output format" defaultValue={outputFormat}
                         >
@@ -167,9 +187,9 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
                         </RadioGroup>
                       </ModalBody>
                       <ModalFooter>
-                        <Button color="primary" onPress={onClose} onClick={handleExport}>
-                          Export
-                        </Button>
+                        <ExportButton exportFunction={handleGenerate} isLoading={isPendingGeneration}
+                          isDownload={exportIsAvailable} downloadURl={downloadUrl} outputFormat={outputFormat} />
+
                       </ModalFooter>
                     </>
                   )}

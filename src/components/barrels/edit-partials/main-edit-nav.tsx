@@ -18,7 +18,7 @@ export default function MainEditNav() {//}: MainEditNavProps) {
 
   return <>
     <ViewButton buttonType={View.Barrel} label="Barrel" />
-    <ViewButton buttonType={View.View3d} label="3dView" />
+    {/*<ViewButton buttonType={View.View3d} label="3dView" />*/}
     <ViewButton buttonType={View.Tools} label="Tools" />
   </>
 
