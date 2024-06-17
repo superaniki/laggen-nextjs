@@ -185,6 +185,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
                         </RadioGroup>
                       </ModalBody>
                       <ModalFooter>
+                        {!isPendingGeneration && <Button onClick={onClose}>Close</Button>}
                         <ExportButton exportFunction={handleGenerate} isLoading={isPendingGeneration}
                           isDownload={exportIsAvailable} downloadURl={downloadUrl} outputFormat={outputFormat} />
 
