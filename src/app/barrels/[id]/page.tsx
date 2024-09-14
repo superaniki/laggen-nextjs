@@ -1,10 +1,9 @@
 
 "use server";
-import BarrelShow from "@/components/barrels/barrel-show";
 import { fetchOneBarrelById } from "@/db/queries/barrels";
-import { Barrel } from "@prisma/client";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 
 
 interface BarrelShowPageProps {
@@ -25,6 +24,10 @@ export async function generateMetadata(
   }
 }
 
+// workaround for Canvas import error
+const BarrelShow = dynamic(() => import("@/components/barrels/barrel-show"), {
+  ssr: false,
+});
 
 export default async function BarrelShowPage({ params }: BarrelShowPageProps) {
   const { id } = params;
@@ -43,57 +46,3 @@ export default async function BarrelShowPage({ params }: BarrelShowPageProps) {
     </div>
   )
 }
-
-
-/*
-
-
-function entries(data: BarrelWithData) {
-    const entries = Object.entries(data);
-    const mappedEntries = entries.map(([key, value]) => {
-      return <li key={key} className="first:font-bold">
-        <span>{key} : </span>
-        <span>{value.toString()}</span>
-      </li>;
-
-    });
-    return mappedEntries;
-  }
-
-
-import Link from "next/link";
-import PostShow from "@/components/posts/post-show";
-import CommentList from "@/components/comments/comment-list";
-import CommentCreateForm from "@/components/comments/comment-create-form";
-import paths from "@/paths";
-import { fetchCommentsByPostId } from "@/db/queries/comments";
-import { Suspense } from "react";
-import PostShowLoading from "@/components/posts/post-show-loading,";
-
-
-interface PostShowPageProps {
-  params: {
-    slug: string;
-    postId: string;
-  };
-}
-
-export default async function PostShowPage({ params }: PostShowPageProps) {
-  const { slug, postId } = params;
-
-  return (
-    <div className="space-y-3">
-      <Link className="underline decoration-solid" href={paths.topicShow(slug)}>
-        {"< "}Back to {slug}
-      </Link>
-      <Suspense fallback={<PostShowLoading />}>
-        <PostShow postId={postId} />
-      </Suspense>
-      <CommentCreateForm postId={postId} startOpen />
-      <CommentList postId={postId} />
-    </div>
-  );
-}
-
-
-*/

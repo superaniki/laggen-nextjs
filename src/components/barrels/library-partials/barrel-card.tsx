@@ -1,6 +1,5 @@
 "use client"
 import { Button, Card, CardBody, CardHeader, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
-import BarrelPreviewCanvas from "../../canvas/barrel-preview-canvas";
 import { BarrelWithData } from "@/db/queries/barrels";
 import paths from "@/paths";
 import Link from "next/link";
@@ -8,6 +7,12 @@ import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { useSession } from "next-auth/react";
 import LoadingString from "../../common/loading-string";
+import dynamic from "next/dynamic";
+
+// Workaround for Canvas import error
+const BarrelPreviewCanvas = dynamic(() => import("../../canvas/barrel-preview-canvas"), {
+  ssr: false,
+});
 
 export enum BarrelType {
   public,
@@ -115,5 +120,3 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
 
   </>
 }
-
-//{session?.data?.user?.id === barrel.userId && <FormButton isDisabled={!enableSaveButton}>Save</FormButton>}

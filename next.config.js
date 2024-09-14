@@ -14,24 +14,9 @@ const nextConfig = {
       }
     ]
   },
-  webpack: (config, { isServer, webpack }) => {
-    /*config.externals = [...config.externals, { canvas: "canvas" }];*/
-    /*config.plugins.push(
-      webpack.IgnorePlugin({
-        resourceRegExp: /canvas|jsdom/,
-        contextRegExp: /konva/,
-      })
-    );
-    return config;*/
-
-    /*
-    config.module.rules.push({
-      test: /\.node/,
-      use: 'raw-loader',
-    });
-
+  webpack: (config) => {
+    config.externals = [...config.externals, { canvas: "canvas" }]; // required to make Konva & react-konva work
     return config;
-    */
   }, experimental: {
     outputFileTracingIncludes: [
       'src/fonts/*']

@@ -1,9 +1,10 @@
 
 "use server";
-import BarrelEdit from "@/components/barrels/barrel-edit";
+//import BarrelEdit from "@/components/barrels/barrel-edit";
 import LoadingString from "@/components/common/loading-string";
 import { BarrelWithData, fetchOneBarrelById } from "@/db/queries/barrels";
 import { Metadata, ResolvingMetadata } from "next";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -25,6 +26,11 @@ export async function generateMetadata(
     title: "Edit barrel " + barrelName,
   }
 }
+
+// workaround for Canvas import error
+const BarrelEdit = dynamic(() => import("@/components/barrels/barrel-edit"), {
+  ssr: false,
+});
 
 export default async function BarrelEditPage({ params }: BarrelEditPageProps) {
   const { id } = params;
