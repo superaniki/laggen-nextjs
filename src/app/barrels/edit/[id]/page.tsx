@@ -1,8 +1,7 @@
 
 "use server";
-//import BarrelEdit from "@/components/barrels/barrel-edit";
-import LoadingString from "@/components/common/loading-string";
-import { BarrelWithData, fetchOneBarrelById } from "@/db/queries/barrels";
+import LoadingString from "@/components/ui/loading-string";
+import { fetchOneBarrelById } from "@/db/queries/barrels";
 import { Metadata, ResolvingMetadata } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";

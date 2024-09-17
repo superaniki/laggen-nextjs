@@ -1,31 +1,33 @@
 "use client";
-import BarrelCanvas from "../canvas/barrel-canvas";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button, Card, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Radio, RadioGroup, useDisclosure } from "@nextui-org/react";
 import { updateBarrel } from "@/actions";
-import FormButton from "../common/form-button";
 import { useSession } from "next-auth/react";
-import { BarrelWithData, } from "@/db/queries/barrels";
-import LoadingString from "../common/loading-string";
-import OnPaper from "../canvas/printouts/on-paper";
-import { StaveCurveConfigDetails, StaveEndConfigDetails, StaveFrontConfigDetails } from "@prisma/client";
+
+import BarrelCanvas from "./canvas/barrel-canvas";
+import OnPaper from "./canvas/printouts/on-paper";
 import { BarrelDetailForm } from "./edit-partials/barrel-detail-form";
 import { StaveCurveConfig } from "./edit-partials/stave-curve-config";
-import useBarrelStore from "@/store/barrel-store";
-import MainEditNav from "./edit-partials/main-edit-nav";
-import StaveToolNav from "./edit-partials/stave-tool-nav";
-import useEditStore from "@/store/edit-store";
 import { StaveFrontConfig } from "./edit-partials/stave-front-config";
 import { StaveEndConfig } from "./edit-partials/stave-end-config";
-import { StaveTool, View } from "@/common/enums";
-import { round } from "../canvas/commons/barrel-math";
-import { getConfigDetails, paperSizeWithRotation, pixelsFromCm, saveImageToDisc, staveToolString } from "@/common/utils";
-import FormInput from "../common/form-input";
-import { headers } from "next/headers";
+import MainEditNav from "./edit-partials/main-edit-nav";
+import StaveToolNav from "./edit-partials/stave-tool-nav";
+import LoadingString from "../ui/loading-string";
+import FormButton from "../ui/form-button";
+import ExportButton from "../ui/export-button";
+import FormInput from "../ui/form-input";
+
+import useBarrelStore from "@/store/barrel-store";
+import useEditStore from "@/store/edit-store";
 import usePaperSize from "../hooks/usePaperSize";
-import { PaperSizes } from "@/common/constants";
-import toast from "react-hot-toast";
-import ExportButton from "../common/export-button";
+import { getConfigDetails, paperSizeWithRotation, pixelsFromCm, saveImageToDisc, staveToolString } from "@/common/utils";
+import { round } from "./canvas/commons/barrel-math";
+import { StaveTool, View } from "@/common/enums";
+import { StaveCurveConfigDetails, StaveFrontConfigDetails, StaveEndConfigDetails } from "@prisma/client";
+import { BarrelWithData } from "@/db/queries/barrels";
+
+import { exportTemplateImage } from "./export-utils"; // Adjust path based on your folder structure
+
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
   const { user, barrelDetails: loadedBarrelDetails, staveEndConfig: loadedStaveEndConfig, staveFrontConfig: loadedStaveFrontConfig, staveCurveConfig: loadedStaveCurveConfig, ...loadedBarrel } = { ...barrel };
@@ -46,6 +48,30 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     setBarrel(barrel);
   }, [setBarrel, barrel])
 
+  const isSaveButtonEnabled = useMemo(() => {
+    const testCurveEquality = (currentValue: StaveCurveConfigDetails, index: number) => {
+      const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveCurveConfig.configDetails[index] });
+      return test;
+    };
+    const testFrontEquality = (currentValue: StaveFrontConfigDetails, index: number) => {
+      const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveFrontConfig.configDetails[index] });
+      return test;
+    };
+    const testEndEquality = (currentValue: StaveEndConfigDetails, index: number) => {
+      const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveEndConfig.configDetails[index] });
+      return test;
+    };
+
+    return (JSON.stringify({ ...barrelDetails }) !== JSON.stringify({ ...loadedBarrelDetails }) ||
+      JSON.stringify({ ...staveCurveConfig }) !== JSON.stringify({ ...loadedStaveCurveConfig }) ||
+      JSON.stringify({ ...staveFrontConfig }) !== JSON.stringify({ ...loadedStaveFrontConfig }) ||
+      JSON.stringify({ ...staveEndConfig }) !== JSON.stringify({ ...loadedStaveEndConfig }) ||
+      staveCurveConfig?.configDetails.every(testCurveEquality) ||
+      staveFrontConfig?.configDetails.every(testFrontEquality) ||
+      staveEndConfig?.configDetails.every(testEndEquality))
+  }, [barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig, loadedBarrelDetails, loadedStaveCurveConfig, loadedStaveFrontConfig, loadedStaveEndConfig]);
+
+
   if (!barrelDetails || !staveCurveConfig || !staveFrontConfig || !staveEndConfig)
     return <></>
   const configDetails = getConfigDetails(tool, staveCurveConfig, staveFrontConfig, staveEndConfig);
@@ -65,75 +91,28 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     return date.getDate() + ' of ' + month + ', ' + date.getFullYear();
   }
 
-  const testCurveEquality = (currentValue: StaveCurveConfigDetails, index: number) => {
-    const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveCurveConfig.configDetails[index] });
-    return test;
-  };
-  const testFrontEquality = (currentValue: StaveFrontConfigDetails, index: number) => {
-    const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveFrontConfig.configDetails[index] });
-    return test;
-  };
-  const testEndEquality = (currentValue: StaveEndConfigDetails, index: number) => {
-    const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveEndConfig.configDetails[index] });
-    return test;
-  };
-
-  let enableSaveButton = false;
-  if (JSON.stringify({ ...barrelDetails }) !== JSON.stringify({ ...loadedBarrelDetails }) ||
-    JSON.stringify({ ...staveCurveConfig }) !== JSON.stringify({ ...loadedStaveCurveConfig }) ||
-    JSON.stringify({ ...staveFrontConfig }) !== JSON.stringify({ ...loadedStaveFrontConfig }) ||
-    JSON.stringify({ ...staveEndConfig }) !== JSON.stringify({ ...loadedStaveEndConfig }) ||
-    !staveCurveConfig.configDetails.every(testCurveEquality) ||
-    !staveFrontConfig.configDetails.every(testFrontEquality) ||
-    !staveEndConfig.configDetails.every(testEndEquality)) {
-    enableSaveButton = true;
-  }
-
-  async function exportTemplateImage() {
-    try {
-      setIsPendingGeneration(true);
-      const jsonData = { staveToolState, staveCurveConfig, staveEndConfig, staveFrontConfig, barrelDetails }; // Your JSON data object
-
-      const response = await fetch('/api/barrels/export', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ format: outputFormat, dpi: dpi, barrel: jsonData }),
-      });
-
-      var imageBuffer = await response.arrayBuffer();
-      if (response.ok) {
-        const dataUrl = `data:image/${outputFormat.toLowerCase()};base64,${Buffer.from(imageBuffer).toString('base64')}`;
-        setDownloadUrl(dataUrl);
-        setExportIsAvailable(true);
-        toast.success("Export generation complete", { position: 'bottom-center' });
-      } else {
-        response.status
-        toast.error(response.status + ":" + response.statusText
-          , { position: 'bottom-center' });
-      }
-      setIsPendingGeneration(false);
-    }
-    catch (error) {
-      console.error('Error fetching image:', error);
-      setIsPendingGeneration(false);
-    }
-  };
-
-  function handleGenerate() {
-    exportTemplateImage();
-  }
-
   function printPaperSizeInPixels() {
-
     const pxWidth = Math.floor(pixelsFromCm(Number(dpi), paperWidth * 0.1));
     const pxHeight = Math.floor(pixelsFromCm(Number(dpi), paperHeight * 0.1));
-
     return `Pixel size: ${pxWidth} x ${pxHeight}`;
   };
 
-
+  function handleGenerate() {
+    if (staveCurveConfig !== null && staveEndConfig !== null && staveFrontConfig !== null && staveEndConfig !== null && barrelDetails !== null) {
+      exportTemplateImage(
+        staveToolState,
+        staveCurveConfig,
+        staveEndConfig,
+        staveFrontConfig,
+        barrelDetails,
+        outputFormat,
+        dpi,
+        setDownloadUrl,
+        setExportIsAvailable,
+        setIsPendingGeneration
+      );
+    }
+  }
 
   return (
     <>
@@ -212,7 +191,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
           <form action={() => updateBarrel(loadedBarrel, barrelDetails, staveCurveConfig,
             staveCurveConfig.configDetails, staveFrontConfig, staveFrontConfig.configDetails,
             staveEndConfig, staveEndConfig.configDetails)}>
-            {session.data?.user?.id === barrel.userId && <FormButton isDisabled={!enableSaveButton}>Save</FormButton>}
+            {session.data?.user?.id === barrel.userId && <FormButton isDisabled={!isSaveButtonEnabled}>Save</FormButton>}
           </form>
           <div className="text-tiny mt-4 text-gray-500">Created : {dateString(barrel.createdAt.getTime())}</div>
           <div className="text-tiny text-gray-500">Last updated : {dateString(barrel.updatedAt.getTime())}</div>
@@ -220,3 +199,4 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
       </div >
     </>)
 }
+

@@ -19,16 +19,7 @@ export default function Header() {
         </Link>
       </NavbarBrand>
 
-
       <NavbarContent justify="end"><HeaderAuth /></NavbarContent>
     </Navbar>
   );
 }
-
-/*
-    <NavbarContent justify="start">
-        <NavbarItem>
-          <Input />
-        </NavbarItem>
-      </NavbarContent>
-*/

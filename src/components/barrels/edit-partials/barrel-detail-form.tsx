@@ -1,6 +1,6 @@
-import FormCheckBox from "@/components/common/form-checkbutton";
-import FormInput from "@/components/common/form-input";
-import LoadingString from "@/components/common/loading-string";
+import FormCheckBox from "@/components/ui/form-checkbutton";
+import FormInput from "@/components/ui/form-input";
+import LoadingString from "@/components/ui/loading-string";
 import { Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { ChangeEvent } from "react";

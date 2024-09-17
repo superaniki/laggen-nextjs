@@ -11,7 +11,7 @@ import {
   PopoverContent,
 } from '@nextui-org/react';
 import * as actions from '@/actions';
-import FormButton from '@/components/common/form-button';
+import FormButton from '@/components/ui/form-button';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
