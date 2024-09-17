@@ -43,7 +43,7 @@ export default function StaveToolNav() {
         onClick={() => updatePaperState(staveToolState, Paper.A4)} >A4</Button>
     </div>
 
-    {viewState !== View.Tools && <div className="absolute inset-0 bg-white opacity-75" onClick={() => setViewState(View.Tools)}></div>}
+    {viewState !== View.Tools && <div className="absolute inset-0 bg-white opacity-75" ></div>}
   </div>
 
 }
