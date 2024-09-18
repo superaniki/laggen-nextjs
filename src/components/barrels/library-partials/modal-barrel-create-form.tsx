@@ -4,35 +4,25 @@
 import { useFormState } from 'react-dom';
 import {
   Input,
-  Button,
   Textarea,
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from '@nextui-org/react';
 import * as actions from '@/actions';
-import FormButton from '@/components/ui/form-button';
+import FormButton from '@/ui/form-button';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-interface PostCreateFormProps {
-  slug: string;
+interface ModalBarrelCreateForm {
+  children: React.ReactNode
 }
 
-export default function ModalBarrelCreateForm() {
-  //const [formState, action] = useFormState(actions.createBarrel.bind(null, slug), {
+export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateForm) {
   const [formState, action] = useFormState(actions.createBarrel, { success: false, errors: {} });
   const [isOpen, setIsOpen] = useState(false);
-  //const action = actions.createPost.bind(null, bind(null, slug))
 
   useEffect(() => {
-    /*
-    if (formState.errors.firstName) {
-      // do the your logic here
-    }
-    */
-    console.log("formstate updated");
-    console.log(JSON.stringify(formState));
     if (formState.success) {
       setIsOpen(false);
       toast.success("Added a new barrel", { position: 'bottom-center' });
@@ -41,8 +31,8 @@ export default function ModalBarrelCreateForm() {
 
   return (
     <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)} placement="left">
-      <PopoverTrigger>
-        <Button className="flex flex-auto" color="default">New Barrel</Button>
+      <PopoverTrigger  >
+        {children}
       </PopoverTrigger>
       <PopoverContent>
         <form action={action}>

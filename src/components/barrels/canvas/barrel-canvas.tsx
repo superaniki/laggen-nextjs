@@ -16,17 +16,12 @@ export default function BarrelCanvas({
 
 	useEffect(() => {
 		const getDimensions = () => {
-			let offset = {
-				width: 0,
-				height: 0,
-			};
-			if (ref.current !== undefined) {
-				console.log('ref.current.offsetWidth :', ref.current?.offsetWidth);
-				if (ref.current)
-					offset = { width: ref.current.offsetWidth, height: ref.current.offsetHeight };
+			if (ref.current) {
+				const { offsetWidth, offsetHeight } = ref.current;
+				console.log('ref.current.offsetWidth :', offsetWidth);
+				return { width: offsetWidth, height: offsetHeight };
 			}
-
-			return offset;
+			return { width: 0, height: 0 };
 		};
 
 		const handleResize = () => {

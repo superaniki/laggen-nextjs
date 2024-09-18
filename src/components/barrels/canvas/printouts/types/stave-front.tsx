@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react';
-import { Group, Line, Rect, Text } from 'react-konva';
+import React, { useRef } from 'react';
+import { Group, Line, Text } from 'react-konva';
 import { BarrelDetails } from '@prisma/client';
 import { ReactElement } from 'react';
 import { StaveFrontConfigWithData } from '@/db/queries/barrels';
-import usePaperSize from '@/components/hooks/usePaperSize';
+import usePaperSize from '@/hooks/usePaperSize';
 import { KonvaEventObject } from 'konva/lib/Node';
 import useBarrelStore from '@/store/barrel-store';
 import { round } from '../../commons/barrel-math';
@@ -35,8 +35,6 @@ type StaveProps = {
 	barrelDetails: BarrelDetails;
 	config: StaveFrontConfigWithData;
 };
-
-
 
 function StaveFront({ x, barrelDetails, config }: StaveProps) {
 	const { bottomDiameter, topDiameter, staveLength } = { ...barrelDetails };

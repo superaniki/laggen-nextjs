@@ -12,14 +12,14 @@ import { StaveFrontConfig } from "./edit-partials/stave-front-config";
 import { StaveEndConfig } from "./edit-partials/stave-end-config";
 import MainEditNav from "./edit-partials/main-edit-nav";
 import StaveToolNav from "./edit-partials/stave-tool-nav";
-import LoadingString from "../ui/loading-string";
-import FormButton from "../ui/form-button";
-import ExportButton from "../ui/export-button";
-import FormInput from "../ui/form-input";
+import LoadingString from "@/ui/loading-string";
+import FormButton from "@/ui/form-button";
+import ExportButton from "@/ui/export-button";
+import FormInput from "@/ui/form-input";
 
 import useBarrelStore from "@/store/barrel-store";
 import useEditStore from "@/store/edit-store";
-import usePaperSize from "../hooks/usePaperSize";
+import usePaperSize from "@/hooks/usePaperSize";
 import { getConfigDetails, paperSizeWithRotation, pixelsFromCm, saveImageToDisc, staveToolString } from "@/common/utils";
 import { round } from "./canvas/commons/barrel-math";
 import { StaveTool, View } from "@/common/enums";
@@ -125,15 +125,9 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
           <div className={`grid gap-2 relative ${viewState !== View.Tools && "opacity-0"}`}>
             <Divider className="box-content my-4 mx-2 w-auto" />
 
-            {staveToolState === StaveTool.Curve && (
-              <StaveCurveConfig />
-            )}
-            {staveToolState === StaveTool.Front && (
-              <StaveFrontConfig />
-            )}
-            {staveToolState === StaveTool.End && (
-              <StaveEndConfig />
-            )}
+            {staveToolState === StaveTool.Curve && <StaveCurveConfig />}
+            {staveToolState === StaveTool.Front && <StaveFrontConfig />}
+            {staveToolState === StaveTool.End && <StaveEndConfig />}
           </div>
         </div>
 

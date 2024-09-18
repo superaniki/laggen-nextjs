@@ -1,7 +1,7 @@
-import FormInput from "@/components/ui/form-input";
+import FormInput from "@/ui/form-input";
 import { ChangeEvent } from "react";
 import useBarrelStore from "@/store/barrel-store";
-import FormCheckBox from "@/components/ui/form-checkbutton";
+import FormCheckBox from "@/ui/form-checkbutton";
 import { StaveTool } from "@/common/enums";
 
 export function StaveFrontConfig() {

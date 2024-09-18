@@ -1,6 +1,5 @@
 
-import { Button, Card, Divider } from "@nextui-org/react";
-import { Dispatch, SetStateAction } from "react";
+import { Button } from "@nextui-org/react";
 import useEditStore from "@/store/edit-store";
 import { View } from "@/common/enums";
 /*

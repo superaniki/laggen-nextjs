@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { useSession } from "next-auth/react";
-import LoadingString from "@/components/ui/loading-string";
+import LoadingString from "@/ui/loading-string";
 import dynamic from "next/dynamic";
 
 // Workaround for Canvas import error

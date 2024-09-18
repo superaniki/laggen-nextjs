@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import Cross from '../../commons/cross';
 import { Group, Line, Rect, Text } from 'react-konva';
 import { findAdjustedDiameter, createCurveForStaveEnds, round } from '../../commons/barrel-math';
-import usePaperSize from '@/components/hooks/usePaperSize';
+import usePaperSize from '@/hooks/usePaperSize';
 import { StaveEndConfigWithData } from '@/db/queries/barrels';
 import { KonvaEventObject } from 'konva/lib/Node';
 import useBarrelStore from '@/store/barrel-store';

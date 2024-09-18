@@ -1,9 +1,11 @@
 "use client"
 import type { BarrelWithData } from "@/db/queries/barrels";
 import BarrelCard, { BarrelType } from "./barrel-card";
-import { Pagination } from "@nextui-org/react";
+import { Button, Card, Pagination } from "@nextui-org/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import AddBarrelCard from "./add-barrel-card";
+import ModalBarrelCreateForm from "./modal-barrel-create-form";
 interface BarrelsListProps {
   publicBarrels: BarrelWithData[],
   privateBarrels: BarrelWithData[]
@@ -14,14 +16,6 @@ export default function BarrelsGrid({ publicBarrels, privateBarrels }: BarrelsLi
   const [privateBarrelsPage, setPrivateBarrelsPage] = useState(1)
 
   const { data: session, status } = useSession()
-  let sessionStatus = "";
-
-  /*
-  if (session.status === "loading") {
-    sessionStatus = "loading";
-  } else if (session.data?.user) {
-    sessionStatus
-  }*/
 
   const ITEMS_PER_ROW = 4;
   const ITEMS_PER_PAGE_PRIVATE = 4;
@@ -97,7 +91,11 @@ export default function BarrelsGrid({ publicBarrels, privateBarrels }: BarrelsLi
   return <>
     {status === "authenticated" && <>
       <div className="mx-5 mb-5 text-xl">Private Barrels</div>
-      <div className="grid gap-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {privateBarrelsPage === 1 && <ModalBarrelCreateForm>
+          <AddBarrelCard />
+        </ModalBarrelCreateForm>}
+
         {getBarrelsForPrivatePage().map((barrel) => (
           <BarrelCard type={BarrelType.private} key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
         ))}

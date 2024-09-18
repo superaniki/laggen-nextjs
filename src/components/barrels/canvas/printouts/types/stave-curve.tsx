@@ -1,12 +1,12 @@
-import React, { MutableRefObject, useRef, useState } from 'react';
-import { Group, Rect, Line, Text, Transformer } from 'react-konva';
+import React, { useRef } from 'react';
+import { Group, Rect, Line, Text } from 'react-konva';
 import Cross from '../../commons/cross';
 import { findAdjustedDiameter, createCurveMaxWidth, round } from '../../commons/barrel-math';
 import { BarrelDetails } from '@prisma/client';
 import { StaveCurveConfigWithData } from '@/db/queries/barrels';
 import { KonvaEventObject } from 'konva/lib/Node';
 import useBarrelStore from '@/store/barrel-store';
-import usePaperSize from '@/components/hooks/usePaperSize';
+import usePaperSize from '@/hooks/usePaperSize';
 import { SelectionRect } from '../../commons/SelectionRect';
 import { StaveTool } from '@/common/enums';
 

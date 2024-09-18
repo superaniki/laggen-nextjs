@@ -1,6 +1,5 @@
-
 "use server";
-import LoadingString from "@/components/ui/loading-string";
+import LoadingString from "@/ui/loading-string";
 import { fetchOneBarrelById } from "@/db/queries/barrels";
 import { Metadata, ResolvingMetadata } from "next";
 import dynamic from "next/dynamic";

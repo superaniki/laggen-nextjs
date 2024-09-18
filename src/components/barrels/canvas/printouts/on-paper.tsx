@@ -5,14 +5,10 @@ import StaveEnds from "./types/stave-end";
 import BarrelSide from "./types/barrel-side";
 import Ruler from "../commons/ruler";
 import useEditStore from "@/store/edit-store";
-import useBarrelStore, { BarrelStore } from "@/store/barrel-store";
-import usePaperSize from "@/components/hooks/usePaperSize";
+import useBarrelStore from "@/store/barrel-store";
+import usePaperSize from "@/hooks/usePaperSize";
 import { StaveTool } from "@/common/enums";
-import { PaperSizes } from "@/common/constants";
-import { StaveCurveConfig } from "@prisma/client";
-import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
 import { getConfigDetails, paperSizeWithRotation } from "@/common/utils";
-
 
 export default function OnPaper({ scale = 2.4 }: { scale?: number }) {
   const { details: barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig } = useBarrelStore()
