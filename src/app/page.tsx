@@ -1,5 +1,3 @@
-
-
 "use server";
 import { auth } from "../auth"
 import { BarrelWithData, fetchBarrelsFromUser, fetchPublicBarrels } from "@/db/queries/barrels";
@@ -19,7 +17,7 @@ export default async function Home() {
 
   return (
     <div className="w-full bg-white pt-5">
-      <div className="container relative border-gray-500 mb-5 mx-auto px-20">
+      <div className="container relative border-gray-500 mb-5 mx-auto px-10">
         <BarrelsLibrary publicBarrels={publicBarrels} privateBarrels={privateBarrels} />
       </div>
     </div >

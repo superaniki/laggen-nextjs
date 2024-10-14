@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import ModalBarrelCreateForm from "./library-partials/modal-barrel-create-form";
 import BarrelsGrid from "./library-partials/barrels-grid";
-import { Button, CircularProgress } from "@nextui-org/react";
+import { CircularProgress } from "@nextui-org/react";
 import { BarrelWithData } from "@/db/queries/barrels";
 
 interface BarrelsLibraryProps {

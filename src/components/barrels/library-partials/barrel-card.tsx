@@ -8,6 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useSession } from "next-auth/react";
 import LoadingString from "@/ui/loading-string";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
 // Workaround for Canvas import error
 const BarrelPreviewCanvas = dynamic(() => import("../canvas/barrel-preview-canvas"), {
@@ -32,6 +33,8 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
   const [isDeleted, setIsDeleted] = useState(false);
   const [isPending, setIsPending] = useState<boolean | string>(false);
   const session = useSession();
+
+  const router = useRouter();
 
   //let author: string | React.ReactNode = <>Loading<span></span></>;
   let isMyBarrel = false;
@@ -62,6 +65,30 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
           toast.success("Barrel " + barrel.barrelDetails.name + "is deleted!", { position: 'bottom-center' })
           setIsPending(false);
           setIsDeleted(true);
+          router.refresh(); // YES
+        })
+        .catch(error => {
+          console.log("Error:", error)
+        });
+    }
+
+    if (key === "duplicate") {
+      const data = { id: barrel.id }
+      fetch(
+        '/api/barrels/duplicate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        }
+      ).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+        .then(data => {
+          toast.success("Barrel " + barrel.barrelDetails.name + "is duplicated!", { position: 'bottom-center' })
         })
         .catch(error => {
           console.log("Error:", error)
@@ -93,7 +120,7 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
           <div className="flex w-full justify-between">
             <div>
-              <h4 className="font-bold text-large overflow-hidden text-ellipsis">{barrel.barrelDetails.name}</h4>
+              <h4 className="font-bold text-large overflow-hidden text-ellipsis">{barrel.barrelDetails?.name}</h4>
               <small className="text-default-500">by {author}</small>
             </div>
             <div>

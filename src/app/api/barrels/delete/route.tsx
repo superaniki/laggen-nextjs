@@ -1,4 +1,5 @@
 import { deleteBarrel } from "@/actions"
+import { revalidatePath } from "next/cache";
 
 export async function DELETE(req: Request, res: Response, context: {}) {
   console.log("Hej DELETE")
@@ -8,7 +9,7 @@ export async function DELETE(req: Request, res: Response, context: {}) {
 
     return Response.json({ success: true }, { status: 200 })
   } catch (e) {
-    console.log('Error occurred trying to delete Work Places');
+    console.log('Error occurred trying to delete barrel');
     console.log(e);
 
     return Response.json({ success: false }, { status: 500 })

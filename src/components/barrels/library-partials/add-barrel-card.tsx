@@ -25,4 +25,5 @@ const AddBarrelCard = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<
   );
 });
 
+AddBarrelCard.displayName = 'AddBarrelCard';
 export default AddBarrelCard;

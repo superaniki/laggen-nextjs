@@ -7,7 +7,17 @@ import { z } from 'zod';
 import paths from '@/paths';
 import { redirect } from 'next/navigation';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { createSlug } from './utils';
+import {
+	createBarrelDetails,
+	createBarrelTemplate,
+	createSlug,
+	createStaveCurveConfig,
+	createStaveCurveConfigDetails,
+	createStaveEndConfig,
+	createStaveEndConfigDetails,
+	createStaveFrontConfig,
+	createStaveFrontConfigDetails,
+} from './utils';
 /*
 model Barrel {
   id                   String   @id @default(cuid())
@@ -36,105 +46,6 @@ model Barrel {
 /*
 Todo : increasing ID on barrels instead of long complex name. yes?
 */
-
-const createBarrelTemplate = (slug: string, userId: string) => {
-	return {
-		slug: slug,
-		userId: userId,
-	};
-};
-
-const createBarrelDetails = (name: string, notes: string, barrelId: string) => {
-	return {
-		// id
-		name: name,
-		notes: notes,
-		height: 200,
-		bottomDiameter: 180,
-		topDiameter: 418,
-		staveLength: 232.73,
-		angle: 30.75,
-		staveBottomThickness: 12,
-		staveTopThickness: 4,
-		bottomThickness: 8,
-		bottomMargin: 2,
-		// createdAt : "", //((new Date()).getTime()),
-		// updatedAt: "", //((new Date()).getTime()),
-		barrelId: barrelId,
-		isPublic: true,
-		isExample: false,
-	};
-};
-
-function createStaveCurveConfig(barrelId: string) {
-	//: StaveCurveConfig {
-	return {
-		//  id:"",
-		defaultPaperType: 'A4',
-		barrelId: barrelId,
-	};
-}
-/// HÄR!!! lägg till editordata tyyyyp
-
-function createStaveCurveConfigDetails(paperType: string, staveCurveConfigId: string) {
-	return {
-		//   id: "",
-		paperType: paperType, // A4 or A3
-		rotatePaper: false,
-		posX: 30,
-		posY: 20,
-		innerTopX: 20.5,
-		innerTopY: 220,
-		outerTopX: 20.5,
-		outerTopY: 180,
-		innerBottomX: 20.5,
-		innerBottomY: 90,
-		outerBottomX: 20.5,
-		outerBottomY: 50,
-		rectX: 0,
-		rectY: 0,
-		rectWidth: 20,
-		rectHeight: 250,
-		staveCurveConfigId: staveCurveConfigId,
-	};
-}
-
-function createStaveFrontConfig(barrelId: string) {
-	return {
-		//  id:"",
-		defaultPaperType: 'A4',
-		barrelId: barrelId,
-	};
-}
-
-function createStaveFrontConfigDetails(paperType: string, staveFrontConfigId: string) {
-	return {
-		paperType: paperType, // A4 or A3
-		rotatePaper: false,
-		posX: 0,
-		posY: 200,
-		spacing: 14, // mm mellan varje stavstorlek
-		staveFrontConfigId: staveFrontConfigId,
-	};
-}
-
-function createStaveEndConfig(barrelId: string) {
-	return {
-		//  id:"",
-		defaultPaperType: 'A4',
-		barrelId: barrelId,
-	};
-}
-
-function createStaveEndConfigDetails(paperType: string, staveEndConfigId: string) {
-	return {
-		paperType: paperType, // A4 or A3
-		rotatePaper: false,
-		topEndY: -100,
-		bottomEndY: -50,
-		staveEndConfigId: staveEndConfigId,
-	};
-}
 
 const createBarrelSchema = z.object({
 	name: z
@@ -277,12 +188,8 @@ export async function createBarrel(
 
 	formState = { errors: {}, success: true };
 
-	//console.log("revalidatePath");
-	revalidatePath('/'); // revalidate!
-	//console.log("redirect");
+	revalidatePath('/');
 	//redirect("/");
-	//console.log("after redirect");
-
 	return formState;
 }
 

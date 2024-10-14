@@ -30,7 +30,7 @@ export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateFor
   }, [formState]); // ✅ 
 
   return (
-    <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)} placement="left">
+    <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)} placement="bottom">
       <PopoverTrigger  >
         {children}
       </PopoverTrigger>
@@ -38,6 +38,8 @@ export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateFor
         <form action={action}>
           <div className="flex flex-col gap-4 p-4 w-80">
             <h3 className="text-lg">New Barrel</h3>
+
+
 
             <Input
               isInvalid={!!formState?.errors.name}
@@ -54,7 +56,11 @@ export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateFor
               label="Notes"
               labelPlacement="outside"
               placeholder="Notes"
+              disableAutosize
+
             />
+
+
 
             {
               formState?.errors._form ?
@@ -67,6 +73,6 @@ export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateFor
           </div>
         </form>
       </PopoverContent>
-    </Popover>
+    </Popover >
   );
 }
