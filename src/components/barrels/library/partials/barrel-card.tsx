@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 
 // Workaround for Canvas import error
-const BarrelPreviewCanvas = dynamic(() => import("../canvas/barrel-preview-canvas"), {
+const BarrelPreviewCanvas = dynamic(() => import("../../canvas/barrel-preview-canvas"), {
   ssr: false,
 });
 

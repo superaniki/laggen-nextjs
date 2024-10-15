@@ -67,6 +67,7 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 	const { height, angle, bottomDiameter, staveBottomThickness, staveTopThickness } = { ...barrelDetails };
 	const { updateToolDetails } = useBarrelStore();
 	const paperState = usePaperSize();
+	console.log("paperState:" + paperState);
 
 	const configDetailsArray = config.configDetails;
 
@@ -98,6 +99,9 @@ function StaveCurve({ barrelDetails, config, scale, cross = false, maxStaveWidth
 		updateToolDetails(StaveTool.Curve, "posX", round(event.target.x(), 2));
 		updateToolDetails(StaveTool.Curve, "posY", round(event.target.y(), 2));
 	}
+
+	console.log("posX:" + posX)
+	console.log("innerTopY:" + innerTopY)
 
 	return (
 		<Group onDragMove={handleOnDragMove} x={posX} y={posY} draggable scale={{ x: scale, y: scale }}>

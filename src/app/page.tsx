@@ -1,7 +1,7 @@
 "use server";
+import { BarrelsLibrary } from "@/components/barrels/library/barrels-library";
 import { auth } from "../auth"
 import { BarrelWithData, fetchBarrelsFromUser, fetchPublicBarrels } from "@/db/queries/barrels";
-import { BarrelsLibrary } from "@/components/barrels/barrels-library";
 
 export default async function Home() {
 

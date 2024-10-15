@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { ChangeEvent } from "react";
 import useBarrelStore from "@/store/barrel-store";
 
-export function BarrelDetailForm() {
+export function BarrelDetailConfig() {
   const session = useSession();
 
   const { loadedBarrel: barrel, details, updateBarrelDetails, updateBarrelDetailsNumber: updateNumber } = useBarrelStore();

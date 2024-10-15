@@ -1,8 +1,8 @@
 import { Stage, Layer } from 'react-konva';
 import { useState, useEffect, useRef } from 'react';
-import SideView from './barrel/sideview';
 import { BarrelDetails } from '@prisma/client';
 import { ErrorBoundary } from "react-error-boundary";
+import SideView from './sideview/sideview';
 
 export default function BarrelCanvas({
 	barrel,

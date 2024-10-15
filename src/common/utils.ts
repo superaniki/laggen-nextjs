@@ -58,7 +58,7 @@ export function getConfigDetails(
 	return configDetails;
 }
 
-export function paperSizeWithRotation(rotate: boolean, paperState: Paper) {
+export function paperSizeWithRotation(rotate: boolean, paperState: Paper | null) {
 	if (paperState == undefined) {
 		return { width: 0, height: 0 };
 	}

@@ -1,6 +1,5 @@
 "use client";
-import { Barrel, BarrelDetails } from "@prisma/client";
-import { useRef, useEffect, useState } from "react";
+import { BarrelDetails } from "@prisma/client";
 import BarrelCanvas from "./canvas/barrel-canvas";
 import Head from "next/head";
 

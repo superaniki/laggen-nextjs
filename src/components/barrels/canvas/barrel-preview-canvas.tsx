@@ -2,9 +2,9 @@
 import React from 'react';
 import { Stage, Layer } from 'react-konva';
 import { useState, useRef, useEffect } from 'react';
-import SideViewPreview from './barrel/sideview-preview';
 import { BarrelDetails } from '@prisma/client';
 import { ErrorBoundary } from 'react-error-boundary';
+import SideViewPreview from './sideview/sideview-preview';
 
 export default function BarrelPreviewCanvas({ barrelDetails, color }: { barrelDetails: BarrelDetails, color?: string; }) {
 	const ref = useRef<HTMLDivElement | null>(null);
@@ -55,18 +55,3 @@ export default function BarrelPreviewCanvas({ barrelDetails, color }: { barrelDe
 		</div>
 	);
 }
-
-
-/*
-
-					<ToolView
-						visible={view === Views.ToolView}
-						{...barrel}
-						worldX={dimensions.width / 2}
-						worldY={dimensions.height * 0.5}
-						dimensions={dimensions}
-						modifyScale={scale}
-						resetModifyScale={resetScale}
-					/>
-
-*/

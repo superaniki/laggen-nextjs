@@ -4,29 +4,29 @@ import { Button, Card, Divider, Input, Modal, ModalBody, ModalContent, ModalFoot
 import { updateBarrel } from "@/actions";
 import { useSession } from "next-auth/react";
 
-import BarrelCanvas from "./canvas/barrel-canvas";
-import OnPaper from "./canvas/printouts/on-paper";
-import { BarrelDetailForm } from "./edit-partials/barrel-detail-form";
-import { StaveCurveConfig } from "./edit-partials/stave-curve-config";
-import { StaveFrontConfig } from "./edit-partials/stave-front-config";
-import { StaveEndConfig } from "./edit-partials/stave-end-config";
-import MainEditNav from "./edit-partials/main-edit-nav";
-import StaveToolNav from "./edit-partials/stave-tool-nav";
+import BarrelCanvas from "../canvas/barrel-canvas";
+import OnPaper from "../canvas/printouts/on-paper";
+
 import LoadingString from "@/ui/loading-string";
 import FormButton from "@/ui/form-button";
-import ExportButton from "@/ui/export-button";
-import FormInput from "@/ui/form-input";
 
 import useBarrelStore from "@/store/barrel-store";
 import useEditStore from "@/store/edit-store";
 import usePaperSize from "@/hooks/usePaperSize";
 import { getConfigDetails, paperSizeWithRotation, pixelsFromCm, saveImageToDisc, staveToolString } from "@/common/utils";
-import { round } from "./canvas/commons/barrel-math";
 import { StaveTool, View } from "@/common/enums";
 import { StaveCurveConfigDetails, StaveFrontConfigDetails, StaveEndConfigDetails } from "@prisma/client";
 import { BarrelWithData } from "@/db/queries/barrels";
 
-import { exportTemplateImage } from "./export-utils"; // Adjust path based on your folder structure
+import { exportTemplateImage } from "../export-utils"; // Adjust path based on your folder structure
+import { ZoomControl } from "../zoom-control";
+import MainEditNav from "./partials/main-edit-nav";
+import StaveToolNav from "./partials/stave-tool-nav";
+import { StaveCurveConfig } from "./partials/stave-curve-config";
+import { StaveFrontConfig } from "./partials/stave-front-config";
+import { StaveEndConfig } from "./partials/stave-end-config";
+import ExportModal from "./partials/export-modal";
+import { BarrelDetailConfig } from "./partials/barrel-detail-config";
 
 
 export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
@@ -79,6 +79,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     return <></>;
   const { height: paperHeight, width: paperWidth } = paperSizeWithRotation(configDetails.rotatePaper, paperState);
 
+  console.log("paperHeight:", paperHeight, "paperWidth:", paperWidth);
   if (barrel === undefined)
     return <LoadingString />;
 
@@ -139,40 +140,24 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
                 <OnPaper scale={toolScale} />
               </div>
               <Button className="my-4" onClick={onOpen}>Export</Button>
+              <ExportModal
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                onClose={onClose}
+                staveToolState={staveToolString(staveToolState)}
+                dpi={dpi}
+                setDpi={setDpi}
+                outputFormat={outputFormat}
+                setOutputFormat={setOutputFormat}
+                printPaperSizeInPixels={printPaperSizeInPixels}
+                handleGenerate={handleGenerate}
+                isPendingGeneration={isPendingGeneration}
+                exportIsAvailable={exportIsAvailable}
+                downloadUrl={downloadUrl}
+                setExportIsAvailable={setExportIsAvailable}
+              />
 
-              <Modal isOpen={isOpen} onOpenChange={onOpenChange} onClose={() => setExportIsAvailable(false)}>
-                <ModalContent>
-                  {(onClose) => (
-                    <>
-                      <ModalHeader className="flex flex-col gap-1">
-                        {`Export : ${staveToolString(staveToolState)} template`}
-                      </ModalHeader>
-                      <ModalBody>
-                        <FormInput step={50} callback={e => { setDpi(e.target.value); setExportIsAvailable(false) }} name={"dpi"} value={dpi} type={"number"} />
-                        <div className="text-xs text-gray-500">{`${printPaperSizeInPixels()}`}</div>
-                        <RadioGroup onChange={e => { setOutputFormat(e.target.value); setExportIsAvailable(false) }} label="Output format" defaultValue={outputFormat}
-                        >
-                          <Radio value="Png">Png</Radio>
-                          <Radio value="Jpeg">Jpeg</Radio>
-                          <Radio isDisabled value="Pdf">Pdf</Radio>
-                        </RadioGroup>
-                      </ModalBody>
-                      <ModalFooter>
-                        {!isPendingGeneration && <Button onClick={onClose}>Close</Button>}
-                        <ExportButton exportFunction={handleGenerate} isLoading={isPendingGeneration}
-                          isDownload={exportIsAvailable} downloadURl={downloadUrl} outputFormat={outputFormat} />
-
-                      </ModalFooter>
-                    </>
-                  )}
-                </ModalContent>
-              </Modal>
-
-              <span className="absolute m-3 right-0">
-                <Button className="shadow-medium min-w-10 rounded-full bg-white text-xl border-solid border-2 border-gray-200 p-0" onClick={() => setToolScale((current) => round(current + 0.2, 2))}>+</Button>
-                <Button className="shadow-medium min-w-10 rounded-full bg-white text-xl border-solid border-2 border-gray-200 p-0" onClick={() => setToolScale((current) => round(current - 0.2, 2))}>-</Button>
-                <div className="text-center">{toolScale}</div>
-              </span>
+              <ZoomControl toolScale={toolScale} setToolScale={setToolScale} />
             </>
             )}
             {viewState === View.View3d && <>3d view</>}
@@ -180,7 +165,7 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
         </div>
 
         <div className="col-span-2">
-          <BarrelDetailForm />
+          <BarrelDetailConfig />
           <Divider className="my-4" />
           <form action={() => updateBarrel(loadedBarrel, barrelDetails, staveCurveConfig,
             staveCurveConfig.configDetails, staveFrontConfig, staveFrontConfig.configDetails,

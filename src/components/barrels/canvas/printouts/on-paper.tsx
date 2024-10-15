@@ -24,12 +24,16 @@ export default function OnPaper({ scale = 2.4 }: { scale?: number }) {
   if (configDetails === undefined)
     return <></>;
   const { height: paperHeight, width: paperWidth } = paperSizeWithRotation(configDetails.rotatePaper, paperState);
+  //console.log("paperheight" + height);
 
   // const scale = 2.4; //f.d printScale 1.8
   const margins = 15;
 
   let staveTemplateInfoText = "Height: " + height + "  Top diameter: " + topDiameter + "  Bottom diameter: " + bottomDiameter +
     "  Stave length: " + staveLength + "  Angle: " + angle;
+
+  if (paperWidth == 0)
+    return
 
   return <Stage width={paperWidth * scale} height={paperHeight * scale} >
     <Layer scale={{ x: scale, y: scale }}>
