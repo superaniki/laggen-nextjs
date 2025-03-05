@@ -1,0 +1,115 @@
+{
+  "staveToolState": 1,
+  "staveCurveConfig": {
+    "id": "cltzljqg8000r57mvbyzqw0ed",
+    "defaultPaperType": "A4",
+    "barrelId": "cltzljqfv000n57mva2iwt3kh",
+    "configDetails": [
+      {
+        "id": "cltzljqge000t57mv2j80kwhc",
+        "paperType": "A4",
+        "rotatePaper": false,
+        "posX": 30,
+        "posY": 20,
+        "innerTopX": 20.5,
+        "innerTopY": 220,
+        "outerTopX": 20.5,
+        "outerTopY": 180,
+        "innerBottomX": 20.5,
+        "innerBottomY": 90,
+        "outerBottomX": 20.5,
+        "outerBottomY": 50,
+        "rectX": 0,
+        "rectY": 0,
+        "rectWidth": 20,
+        "rectHeight": 250,
+        "staveCurveConfigId": "cltzljqg8000r57mvbyzqw0ed"
+      },
+      {
+        "id": "cltzljqgm000v57mv6a83440c",
+        "paperType": "A3",
+        "rotatePaper": false,
+        "posX": 30,
+        "posY": 20,
+        "innerTopX": 20.5,
+        "innerTopY": 220,
+        "outerTopX": 20.5,
+        "outerTopY": 180,
+        "innerBottomX": 20.5,
+        "innerBottomY": 90,
+        "outerBottomX": 20.5,
+        "outerBottomY": 50,
+        "rectX": 0,
+        "rectY": 0,
+        "rectWidth": 20,
+        "rectHeight": 250,
+        "staveCurveConfigId": "cltzljqg8000r57mvbyzqw0ed"
+      }
+    ]
+  },
+  "staveEndConfig": {
+    "id": "cltzljqh8001357mvw2hcupzx",
+    "defaultPaperType": "A4",
+    "barrelId": "cltzljqfv000n57mva2iwt3kh",
+    "configDetails": [
+      {
+        "id": "cltzljqhf001557mvg51iwxtu",
+        "paperType": "A4",
+        "rotatePaper": false,
+        "topEndY": -100,
+        "bottomEndY": -50,
+        "staveEndConfigId": "cltzljqh8001357mvw2hcupzx"
+      },
+      {
+        "id": "cltzljqhl001757mv79p907fw",
+        "paperType": "A3",
+        "rotatePaper": false,
+        "topEndY": -100,
+        "bottomEndY": -50,
+        "staveEndConfigId": "cltzljqh8001357mvw2hcupzx"
+      }
+    ]
+  },
+  "staveFrontConfig": {
+    "id": "cltzljqgs000x57mvjrxrqnyd",
+    "defaultPaperType": "A4",
+    "barrelId": "cltzljqfv000n57mva2iwt3kh",
+    "configDetails": [
+      {
+        "id": "cltzljqgx000z57mvvf9r3eco",
+        "paperType": "A4",
+        "rotatePaper": false,
+        "posX": 0,
+        "posY": 280,
+        "spacing": 14,
+        "staveFrontConfigId": "cltzljqgs000x57mvjrxrqnyd"
+      },
+      {
+        "id": "cltzljqh3001157mvtl1j9h6s",
+        "paperType": "A3",
+        "rotatePaper": false,
+        "posX": 0,
+        "posY": 200,
+        "spacing": 14,
+        "staveFrontConfigId": "cltzljqgs000x57mvjrxrqnyd"
+      }
+    ]
+  },
+  "barrelDetails": {
+    "id": "cltzljqg2000p57mvkq5qhpu4",
+    "name": "Antik spann hittad i djup lera",
+    "notes": "",
+    "height": 200,
+    "bottomDiameter": 180,
+    "topDiameter": 418,
+    "staveLength": 232.73,
+    "angle": 30.75,
+    "staveBottomThickness": 12,
+    "staveTopThickness": 4,
+    "bottomThickness": 8,
+    "bottomMargin": 2,
+    "isPublic": true,
+    "isExample": false,
+    "barrelId": "cltzljqfv000n57mva2iwt3kh"
+  }
+}
