@@ -10,6 +10,9 @@ const paths = {
   },
   barrelCreate(){
     return `/barrels/new`;
+  },
+  export(){
+    return '/api/barrels/export'
   }
 }
 

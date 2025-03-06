@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast';
 import { StaveTool } from '@/common/enums';
 import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from '@/db/queries/barrels';
+import paths from '@/paths';
 
 interface ExportTemplateData {
 	staveToolState: StaveTool;
@@ -32,7 +33,7 @@ export async function exportTemplateImage(
 			barrelDetails,
 		};
 
-		const response = await fetch('/api/barrels/export', {
+		const response = await fetch(paths.export(), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

@@ -15,6 +15,5 @@ docker-compose.yml
 .dockerignore
 netlify.toml
 
-
 # Ignore version control directories
 .git
