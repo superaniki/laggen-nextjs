@@ -38,14 +38,8 @@ export default function BarrelCanvas({
 		};
 	}, [ref]);
 
-
 	const worldX = dimensions.width * 0.5;
 	const worldY = dimensions.height * 0.5;
-
-	console.log("dimx: ", dimensions.width)
-
-
-
 	interface FallbackProps {
 		error: Error;
 		resetErrorBoundary: () => void;
@@ -81,17 +75,3 @@ export default function BarrelCanvas({
 		</div>
 	);
 }
-
-/*
-
-const [scale, setScale] = useState(0);
-
-	function resetScale() {
-		setScale(0);
-	}
-	/*
-	function handleKeyDown(e: KeyboardEvent) {
-		if (e.keyCode == 189) setScale(-0.1);
-		if (e.keyCode == 187) setScale(0.1);
-	}
-	*/

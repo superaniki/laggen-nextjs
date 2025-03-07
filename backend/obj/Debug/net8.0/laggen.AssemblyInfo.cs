@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("laggen")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+70228ea08837a2fd67c188c8869feb4b32e32b30")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18036f99b0046e227bf3db1980c8a92ae2f14784")]
 [assembly: System.Reflection.AssemblyProductAttribute("laggen")]
 [assembly: System.Reflection.AssemblyTitleAttribute("laggen")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

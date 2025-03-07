@@ -73,7 +73,7 @@ const ExportModal: React.FC<ExportModalProps> = ({
               </RadioGroup>
             </ModalBody>
             <ModalFooter>
-              {!isPendingGeneration && <Button onClick={onClose}>Close</Button>}
+              {/* {!isPendingGeneration && <Button onClick={onClose}>Close</Button>} */}
               <ExportButton
                 exportFunction={handleGenerate}
                 isLoading={isPendingGeneration}
@@ -81,6 +81,7 @@ const ExportModal: React.FC<ExportModalProps> = ({
                 downloadURl={downloadUrl}
                 outputFormat={outputFormat}
               />
+             
             </ModalFooter>
           </>
         )}

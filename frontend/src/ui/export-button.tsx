@@ -30,7 +30,7 @@ export default function ExportButton({ exportFunction, isLoading, isDownload, do
       Generating
     </Button>
 
-  return <Button className="bg-black text-white shadow-lg" onClick={exportFunction} type="submit" isLoading={false}>
+  return <Button color={"primary"} className="" onClick={exportFunction} type="submit" isLoading={false}>
     Generate Export
   </Button>
 };

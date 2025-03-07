@@ -34,6 +34,7 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
   const [isPending, setIsPending] = useState<boolean | string>(false);
   const session = useSession();
 
+
   const router = useRouter();
 
   //let author: string | React.ReactNode = <>Loading<span></span></>;
@@ -124,7 +125,7 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
               <small className="text-default-500">by {author}</small>
             </div>
             <div>
-              <Dropdown backdrop="transparent">
+              {isMyBarrel && <Dropdown backdrop="transparent">
                 <DropdownTrigger>
                   <Button isIconOnly variant="bordered" className="">
                     <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -138,7 +139,7 @@ export default function BarrelCard({ barrel, color, type }: BarrelCardProps) {
                   </DropdownItem>
                   {isMyBarrel === true ? <DropdownItem key="delete"> Delete </DropdownItem> : <DropdownItem className="hidden" />}
                 </DropdownMenu>
-              </Dropdown>
+              </Dropdown>}
             </div>
           </div>
         </CardHeader>
