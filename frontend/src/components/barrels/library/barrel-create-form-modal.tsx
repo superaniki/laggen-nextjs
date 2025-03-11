@@ -18,7 +18,7 @@ interface ModalBarrelCreateForm {
   children: React.ReactNode
 }
 
-export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateForm) {
+export default function BarrelCreateFormModal({ children }: ModalBarrelCreateForm) {
   const [formState, action] = useFormState(actions.createBarrel, { success: false, errors: {} });
   const [isOpen, setIsOpen] = useState(false);
 
@@ -39,8 +39,6 @@ export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateFor
           <div className="flex flex-col gap-4 p-4 w-80">
             <h3 className="text-lg">New Barrel</h3>
 
-
-
             <Input
               isInvalid={!!formState?.errors.name}
               errorMessage={formState?.errors.name?.join(', ')}
@@ -57,11 +55,7 @@ export default function ModalBarrelCreateForm({ children }: ModalBarrelCreateFor
               labelPlacement="outside"
               placeholder="Notes"
               disableAutosize
-
             />
-
-
-
             {
               formState?.errors._form ?
                 <div className="rounded p-2 bg-red-200 border border-red-400">

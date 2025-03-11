@@ -1,4 +1,4 @@
-version: "3"
+
 # For development
 services:
   laggen-client-dev:

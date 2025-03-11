@@ -1,4 +1,4 @@
 export default function LoadingString() {
-  return <><span className="loading">Loading<span></span></span>
+  return <><span className="loading"><span></span></span>
   </>;
 }

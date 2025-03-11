@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { CircularProgress } from "@nextui-org/react";
 import { BarrelWithData } from "@/db/queries/barrels";
-import BarrelsGrid from "./partials/barrels-grid";
+import BarrelsGrid from "./barrels-grid";
 
 interface BarrelsLibraryProps {
   publicBarrels: BarrelWithData[],
