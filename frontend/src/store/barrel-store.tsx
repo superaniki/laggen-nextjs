@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import {
   applyBarrelHeight, applyBarrelTopDiameter, applyBarrelAngle,
   applyBarrelBottomDiameter, applyBarrelStaveLength
-} from '@/components/barrels/canvas/commons/barrel-math';
+} from '@/common/barrel-math';
 import { StaveTool } from '@/common/enums';
 
 export type BarrelStore = {

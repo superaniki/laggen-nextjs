@@ -32,6 +32,12 @@ export function pixelsFromDpi(dpi: number, widthInInches: number) {
 	return dpi * widthInInches;
 }
 
+export function dateString(milliSeconds: number) {
+	const date = new Date(milliSeconds);
+	const month = date.toLocaleString('en-us', { month: 'long' });
+	return date.getDate() + ' of ' + month + ', ' + date.getFullYear();
+}
+
 export function getConfigDetails(
 	tool: StaveTool,
 	staveCurveConfig: StaveCurveConfigWithData,

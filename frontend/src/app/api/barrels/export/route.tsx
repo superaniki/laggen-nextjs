@@ -1,15 +1,4 @@
-import { BarrelDetails } from "@prisma/client";
-import { StaveCurveConfigWithData, StaveEndConfigWithData, StaveFrontConfigWithData } from "@/db/queries/barrels";
-import { StaveTool } from "@/common/enums";
-
-export type BarrelExportData = {
-  barrelDetails: BarrelDetails,
-  staveToolState: StaveTool,
-  staveCurveConfig: StaveCurveConfigWithData
-  staveEndConfig: StaveEndConfigWithData
-  staveFrontConfig: StaveFrontConfigWithData
-}
-
+import { BarrelExportData } from "@/common/types";
 
 // save button triggering this function accessible from barrel-edit.tsx
 export async function POST(request: Request) {

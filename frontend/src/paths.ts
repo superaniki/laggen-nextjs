@@ -3,13 +3,13 @@ const paths = {
     return '/'; // libraryview
   },
   barrelShow(id : string) {
-    return `/barrels/${id}`;
+    return `/${id}`;
   },
   barrelEdit(barrelId : string) {
-    return `/barrels/edit/${barrelId}`;
+    return `/edit/${barrelId}`;
   },
   barrelCreate(){
-    return `/barrels/new`;
+    return `/new`;
   },
   export(){
     return '/api/barrels/export'
