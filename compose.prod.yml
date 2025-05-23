@@ -1,0 +1,34 @@
+services:
+  laggen-client-prod:
+    build: 
+      context: ./frontend
+      dockerfile: prod.Dockerfile
+      args: 
+        SQLITE_LOCAL_DATABASE_URL: ${SQLITE_LOCAL_DATABASE_URL} 
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+        AUTH_SECRET: ${AUTH_SECRET}
+        NEXTAUTH_URL: ${NEXTAUTH_URL}
+        LAGGEN_SERVER_FUNC: ${LAGGEN_SERVER_FUNC}
+    image: laggen-client-prod
+    container_name: laggen
+    ports:
+      - 3000:3000
+    depends_on:
+      - imagefunc-backend-prod
+    volumes:
+      - ./frontend/prisma:/app/prisma
+    env_file: 
+      - ./frontend/.env.production
+    # command: sh -c 'echo "Testing env vars:" && printenv && npm run dev'
+
+      # prisma db gets saved + for dev
+  imagefunc-backend-prod:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    image: imagefunc-backend-prod
+    container_name: imagefunc-prod
+    expose:
+      - 8080:80
+    restart: unless-stopped

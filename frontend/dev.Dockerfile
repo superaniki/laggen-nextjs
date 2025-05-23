@@ -1,4 +1,4 @@
- # Use the official Node.js 16 image.
+ # Use the official Node.js 19 image.
  FROM node:19
 
  # Create and change to the app directory.
@@ -10,15 +10,21 @@
  # Install production dependencies.
  RUN npm install
 
+ # Install next globally to ensure it's available in PATH
+ RUN npm install -g next
+
  # Copy local code to the container image.
  COPY . .
 
- # Kolla, bra hjälp
- # https://github.com/vercel/next.js/blob/canary/examples/with-docker-multi-env/docker/production/Dockerfile#L22
+ # Copy the appropriate env file based on the build argument
+ # COPY .env.local .env.local
 
  # Generate the DB files
  RUN npx prisma generate
- RUN npx prisma db push --accept-data-loss
+ # RUN npx prisma db push --accept-data-loss
+
+ # Set the environment variable
+ ENV NODE_ENV=${NODE_ENV}
 
  # Run the web service on container startup.
- CMD ["npm", "run", "dev"]
+ CMD ["npx", "next", "dev"]

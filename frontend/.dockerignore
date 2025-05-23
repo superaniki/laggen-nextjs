@@ -4,6 +4,11 @@ node_modules
 # Ignore local build artifacts
 .next
 .qodo
+out
+
+# Environment files
+.env*
+!.env.example
 
 # Ignore logs and temporary files
 *.log
