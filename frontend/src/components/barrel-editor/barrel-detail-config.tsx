@@ -1,5 +1,6 @@
 import FormCheckBox from "@/ui/form-checkbutton";
 import FormInput from "@/ui/form-input";
+import NumberSlider from "@/ui/number-slider";
 import LoadingString from "@/ui/loading-string";
 import { Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
@@ -30,6 +31,10 @@ export function BarrelDetailConfig() {
     updateNumber(name, numberValue);
   }
 
+  function handleBlenderNumberInput(name: string, value: number) {
+    updateNumber(name, value);
+  }
+
   function handleStringInput(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
     updateBarrelDetails(name, value);
@@ -45,16 +50,16 @@ export function BarrelDetailConfig() {
     <FormInput callback={handleStringInput} name={"notes"} value={notes} type={"string"} />
     <div className="text-tiny mt-4 text-gray-500">Author: {author}</div>
     <Divider className="my-4" />
-    <FormInput callback={handleNumberInput} name={"height"} value={height.toString()} type={"number"} />
-    <FormInput callback={handleNumberInput} name={"bottomDiameter"} value={bottomDiameter.toString()} type={"number"} />
-    <FormInput callback={handleNumberInput} name={"topDiameter"} value={topDiameter.toString()} type={"number"} />
-    <FormInput callback={handleNumberInput} name={"staveLength"} value={staveLength.toString()} type={"number"} />
-    <FormInput step={1} callback={handleNumberInput} name={"angle"} value={angle.toString()} type={"number"} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"height"} value={height} step={5} min={0}/>
+    <NumberSlider onChange={handleBlenderNumberInput} name={"bottomDiameter"} value={bottomDiameter} step={5} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"topDiameter"} value={topDiameter} step={5} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"staveLength"} value={staveLength} step={5} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"angle"} value={angle} step={1} min={0} max={90} />
     <Divider className="my-4" />
-    <FormInput step={1} callback={handleNumberInput} name={"staveBottomThickness"} value={staveBottomThickness.toString()} type={"number"} />
-    <FormInput step={1} callback={handleNumberInput} name={"staveTopThickness"} value={staveTopThickness.toString()} type={"number"} />
-    <FormInput step={1} callback={handleNumberInput} name={"bottomThickness"} value={bottomThickness.toString()} type={"number"} />
-    <FormInput step={1} callback={handleNumberInput} name={"bottomMargin"} value={bottomMargin.toString()} type={"number"} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"staveBottomThickness"} value={staveBottomThickness} step={1} min={0} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"staveTopThickness"} value={staveTopThickness} step={1} min={0} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"bottomThickness"} value={bottomThickness} step={1} min={0} />
+    <NumberSlider onChange={handleBlenderNumberInput} name={"bottomMargin"} value={bottomMargin} step={1} min={0} />
     <Divider className="my-4" />
     <FormCheckBox callback={handleCheckMark} name={"isPublic"} value={isPublic} />
     <FormCheckBox callback={handleCheckMark} name={"isExample"} value={isExample} />

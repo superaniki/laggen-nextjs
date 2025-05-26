@@ -1,4 +1,5 @@
 import FormInput from "@/ui/form-input";
+import NumberSlider from "@/ui/number-slider";
 import { ChangeEvent } from "react";
 import useBarrelStore from "@/store/barrel-store";
 import FormCheckBox from "@/ui/form-checkbutton";
@@ -22,6 +23,10 @@ export function StaveCurveConfig() {
     updateToolDetails(StaveTool.Curve, name, numberValue);
   }
 
+  function handleBlenderUpdate(name: string, value: number) {
+    updateToolDetails(StaveTool.Curve, name, value);
+  }
+
   function handleCheckMark(event: ChangeEvent<HTMLInputElement>) {
     const { checked, name } = event.target;
     updateToolDetails(StaveTool.Curve, name, checked);
@@ -29,14 +34,13 @@ export function StaveCurveConfig() {
 
   return <>
     <FormCheckBox callback={handleCheckMark} name={"rotatePaper"} value={configDetails.rotatePaper} />
-    <FormInput callback={handleUpdate} name={"posX"} value={configDetails.posX.toString()} type={"number"} />
-    <FormInput callback={handleUpdate} name={"posY"} value={configDetails.posY.toString()} type={"number"} />
-    <FormInput callback={handleUpdate} name={"innerTopY"} value={configDetails.innerTopY.toString()} type={"number"} />
-    <FormInput callback={handleUpdate} name={"outerTopY"} value={configDetails.outerTopY.toString()} type={"number"} />
-    <FormInput callback={handleUpdate} name={"innerBottomY"} value={configDetails.innerBottomY.toString()} type={"number"} />
-    <FormInput callback={handleUpdate} name={"outerBottomY"} value={configDetails.outerBottomY.toString()} type={"number"} />
-    <FormInput callback={handleUpdate} name={"rectHeight"} value={configDetails.rectHeight.toString()} type={"number"} />
-    <FormInput callback={handleUpdate} name={"rectWidth"} value={configDetails.rectWidth.toString()} type={"number"} />
-
+    <NumberSlider onChange={handleBlenderUpdate} name={"posX"} value={configDetails.posX} step={5} />
+    <NumberSlider onChange={handleBlenderUpdate} name={"posY"} value={configDetails.posY} step={5} />
+    <NumberSlider onChange={handleBlenderUpdate} name={"innerTopY"} value={configDetails.innerTopY} step={2} />
+    <NumberSlider onChange={handleBlenderUpdate} name={"outerTopY"} value={configDetails.outerTopY} step={2} />
+    <NumberSlider onChange={handleBlenderUpdate} name={"innerBottomY"} value={configDetails.innerBottomY} step={2} />
+    <NumberSlider onChange={handleBlenderUpdate} name={"outerBottomY"} value={configDetails.outerBottomY} step={2} />
+    <NumberSlider onChange={handleBlenderUpdate} name={"rectHeight"} value={configDetails.rectHeight} step={5} />
+    <NumberSlider onChange={handleBlenderUpdate} name={"rectWidth"} value={configDetails.rectWidth} step={5} />
   </>
 }
