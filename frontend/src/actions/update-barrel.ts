@@ -79,22 +79,6 @@ export async function updateBarrel(barrel: Barrel, barrelDetails: BarrelDetails,
     })
   }
 
-  revalidatePath(`/barrels/edit/${barrel.id}`);
-  redirect(`/barrels/edit/${currentSlug}`);
+  revalidatePath(`/edit/${barrel.id}`);
+  redirect(`/edit/${currentSlug}`);
 }
-
-
-
-/*
-export async function editSnippet(id: number, code: string) {
-  await db.snippet.update({
-    where: { id },
-    data: { code },
-  });
-  revalidatePath(`/snippets/${id}`);
-  redirect(`/snippets/${id}`);
-}
-*/
-
-// revalidate homepage(with the library) after editing a barrel
-// revalidate show barrel page
