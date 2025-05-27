@@ -1,4 +1,9 @@
 export default function LoadingString() {
-  return <><span className="loading"><span></span></span>
-  </>;
+  return (
+    <div className="loading-container">
+      <div className="loading">
+        <span></span>
+      </div>
+    </div>
+  );
 }

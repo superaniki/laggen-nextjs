@@ -4,20 +4,25 @@ import { useEffect, useState } from "react";
 
 export default function useUsersBarrel(barrel: BarrelWithData): [string | React.ReactNode, boolean, boolean] {
   const [isUsersBarrel, setIsUserBarrel] = useState<boolean>(false);
-  const [author, setAuthor] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Set a default author name to avoid loading flicker
+  const [author, setAuthor] = useState<string>(barrel.user?.name || "Unknown");
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Start with false to avoid loading indicator
   const session = useSession();
 
   useEffect(() => {
-    if (session.status !== "loading") {
-      setIsLoading(false);
+    // Only set loading to true if session is actually loading
+    if (session.status === "loading") {
+      setIsLoading(true);
+    } else {
+      // Session data is available
       if (session.data?.user?.id === barrel.userId) {
         setAuthor("You");
         setIsUserBarrel(true);
       } else {
-        setAuthor(barrel.user?.name || "");
+        setAuthor(barrel.user?.name || "Unknown");
         setIsUserBarrel(false);
       }
+      setIsLoading(false);
     }
   }, [session, barrel]);
 

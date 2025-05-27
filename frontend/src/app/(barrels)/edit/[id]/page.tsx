@@ -31,8 +31,7 @@ const BarrelEdit = dynamic(() => import("@/components/barrel-editor/barrel-edito
 
 export default async function BarrelEditPage({ params }: BarrelEditPageProps) {
   const { id } = params;
-  ////await new Promise(resolve => setTimeout(resolve, 2500));
-
+  
   let barrel = await fetchOneBarrelById(id);
 
   if (!barrel)
@@ -42,7 +41,11 @@ export default async function BarrelEditPage({ params }: BarrelEditPageProps) {
     <>
       <div className="w-full bg-white pt-5">
         <div className="container relative min-h-[600px] border-gray-500 mx-auto">
-          <Suspense fallback={<LoadingString />}>
+          <Suspense fallback={
+            <div className="flex items-center justify-center w-full h-[600px]">
+              <LoadingString />
+            </div>
+          }>
             <BarrelEdit barrel={barrel} />
           </Suspense>
         </div>

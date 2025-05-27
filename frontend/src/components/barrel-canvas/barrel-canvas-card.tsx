@@ -6,7 +6,8 @@ import { BarrelDetails } from '@prisma/client';
 import { ErrorBoundary } from 'react-error-boundary';
 import BarrelSideviewCard from './barrel-sideview-card';
 
-export default function BarrelPreviewCanvas({ barrelDetails, color }: { barrelDetails: BarrelDetails, color?: string; }) {
+// Use React.memo to prevent unnecessary re-renders
+function BarrelPreviewCanvas({ barrelDetails, color, onLoad }: { barrelDetails: BarrelDetails, color?: string, onLoad?: () => void }) {
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [dimensions, setDimensions] = useState({ width: 2, height: 2 });
 
@@ -35,6 +36,13 @@ export default function BarrelPreviewCanvas({ barrelDetails, color }: { barrelDe
 		};
 	}, [ref]);
 
+	// Notify parent when canvas is ready
+	useEffect(() => {
+		if (dimensions.width > 2 && dimensions.height > 2 && onLoad) {
+			onLoad();
+		}
+	}, [dimensions, onLoad]);
+
 	return (
 		<div className="h-full" ref={ref}>
 			<ErrorBoundary fallback={<div> Error rendering canvas.. </div>}>
@@ -55,3 +63,6 @@ export default function BarrelPreviewCanvas({ barrelDetails, color }: { barrelDe
 		</div>
 	);
 }
+
+// Export as memoized component to prevent unnecessary re-renders
+export default BarrelPreviewCanvas;
