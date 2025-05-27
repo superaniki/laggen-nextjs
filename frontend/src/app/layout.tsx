@@ -7,9 +7,11 @@ import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: 'Laggen',
-  description: 'Plan editor for handcrafted barrels.',
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Laggen',
+    description: 'Plan editor for handcrafted barrels.',
+  };
 }
 
 export default function RootLayout({

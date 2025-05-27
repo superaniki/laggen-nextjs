@@ -3,7 +3,7 @@ import LoadingString from "@/ui/loading-string";
 import { fetchOneBarrelById } from "@/db/queries/barrels";
 import { Metadata, ResolvingMetadata } from "next";
 import dynamic from "next/dynamic";
-import Head from "next/head";
+
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -41,8 +41,6 @@ export default async function BarrelEditPage({ params }: BarrelEditPageProps) {
 
   return (
     <>
-      <Head><title>Edit barrel : {barrel.barrelDetails.name}</title></Head>
-
       <div className="w-full bg-white pt-5">
         <div className="container relative min-h-[600px] border-gray-500 mx-auto">
           <Suspense fallback={<LoadingString />}>
