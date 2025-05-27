@@ -13,66 +13,106 @@ type RulerProps = {
 };
 
 function generateHorizontalCentimeters(x: number, y: number, number: number, length: number, scale: number, margin: number) {
-	const elements = Array.from(Array(number)).map((val, index) => {
-		const extraLength = Number.isInteger(index / 5) ? 6 : 0;
-		return (
-			<Group key={'h-' + index}>
+	// Calculate how many millimeters we need to represent
+	const totalMillimeters = number * 10; // Convert to mm (1cm = 10mm)
+	
+	// Create array for all millimeter marks
+	const elements = [];
+	
+	// Generate millimeter marks (thin lines)
+	for (let i = 0; i < totalMillimeters; i++) {
+		// Only show cm marks (every 10mm)
+		const isCentimeter = i % 10 === 0;
+		const isHalfCentimeter = i % 5 === 0;
+		
+		// Determine line length - longer for cm, medium for half-cm, short for mm
+		let markLength = length;
+		if (isCentimeter) {
+			markLength += 6; // Longer mark for cm
+		} else if (isHalfCentimeter) {
+			markLength += 3; // Medium mark for half-cm
+		}
+		
+		// Calculate position - convert mm to screen units
+		const position = (i / 10) * scale;
+		
+		elements.push(
+			<Group key={'h-' + i}>
 				<Line
-					strokeWidth={0.5}
+					strokeWidth={isCentimeter ? 0.7 : 0.5}
 					x={x}
 					y={y}
 					fill={'white'}
-					points={[index * scale, -margin, index * scale, -margin + length + extraLength]}
+					points={[position, -margin, position, -margin + markLength]}
 					stroke={'black'}
-				></Line>
-				{extraLength ? (
+				/>
+				{isCentimeter && (
 					<Text
-						key={'text' + index}
-						x={x + 2 + index * scale}
+						key={'text' + i}
+						x={x + 2 + position}
 						y={y - 10}
 						fontSize={5}
-						text={String(index)}
+						text={String(i / 10)} // Convert mm index to cm
 						align="left"
 						width={700}
 					/>
-				) : (
-					<></>
 				)}
 			</Group>
 		);
-	});
+	}
+	
 	return elements;
 }
-function generateVerticalCentimeters(x: number, y: number, number: number, length: number, scale: number, margin: number) {
-	const elements = Array.from(Array(number)).map((val, index) => {
-		const extraLength = Number.isInteger(index / 5) ? 4 : 0;
 
-		return (
-			<Group key={'v-' + index}>
+function generateVerticalCentimeters(x: number, y: number, number: number, length: number, scale: number, margin: number) {
+	// Calculate how many millimeters we need to represent
+	const totalMillimeters = number * 10; // Convert to mm (1cm = 10mm)
+	
+	// Create array for all millimeter marks
+	const elements = [];
+	
+	// Generate millimeter marks (thin lines)
+	for (let i = 0; i < totalMillimeters; i++) {
+		// Only show cm marks (every 10mm)
+		const isCentimeter = i % 10 === 0;
+		const isHalfCentimeter = i % 5 === 0;
+		
+		// Determine line length - longer for cm, medium for half-cm, short for mm
+		let markLength = length;
+		if (isCentimeter) {
+			markLength += 4; // Longer mark for cm
+		} else if (isHalfCentimeter) {
+			markLength += 2; // Medium mark for half-cm
+		}
+		
+		// Calculate position - convert mm to screen units
+		const position = (i / 10) * scale;
+		
+		elements.push(
+			<Group key={'v-' + i}>
 				<Line
-					strokeWidth={0.5}
+					strokeWidth={isCentimeter ? 0.7 : 0.5}
 					x={x}
 					y={y}
 					fill={'white'}
-					points={[margin - length - extraLength, -index * scale, margin, -index * scale]}
+					points={[margin - markLength, -position, margin, -position]}
 					stroke={'black'}
-				></Line>
-				{extraLength ? (
+				/>
+				{isCentimeter && (
 					<Text
-						key={'text' + index}
+						key={'text' + i}
 						x={x + margin - 15}
-						y={y - index * scale - 10}
+						y={y - position - 10}
 						fontSize={5}
-						text={String(index)}
+						text={String(i / 10)} // Convert mm index to cm
 						align="left"
 						width={700}
 					/>
-				) : (
-					<></>
 				)}
 			</Group>
 		);
-	});
+	}
+	
 	return elements;
 }
 

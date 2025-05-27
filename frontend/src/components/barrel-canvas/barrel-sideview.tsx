@@ -28,8 +28,9 @@ function BarrelSideview({
 	useCross = false,
 	thickStroke = false,
 }: BarrelSideviewProps) {
-	const pixelsPerCm = 40;
-	const pixelsPerMm = pixelsPerCm * 0.1;
+	// Define pixels per cm - this is the base scale for rendering
+	const pixelsPerCm = 40; // 40 pixels = 1 cm
+	const pixelsPerMm = pixelsPerCm * 0.1; // 4 pixels = 1 mm
 	const barrelColor = '#F4D279';
 
 	const {
@@ -45,7 +46,21 @@ function BarrelSideview({
 	} = { ...barrel };
 
 	const width = bottomDiameter > topDiameter ? bottomDiameter : topDiameter;
-	let scale = findScaleToFit(dimensions, { width: width, height: height }, 0.8); // 20% margin
+	// Calculate the barrel dimensions in pixels
+	const barrelWidthInPixels = width * pixelsPerMm;
+	const barrelHeightInPixels = height * pixelsPerMm;
+	
+	// Calculate how much we need to scale the barrel to fit in the view with padding
+	let scale = findScaleToFit(
+		dimensions, 
+		{ 
+			width: barrelWidthInPixels,
+			height: barrelHeightInPixels
+		}, 
+		0.8 // 20% margin (80% of the view)
+	);
+	
+	// Limit maximum scale
 	scale = Math.min(3, scale);
 	const url = '/apple.png';
 	// Use the global image cache hook
@@ -134,7 +149,8 @@ function BarrelSideview({
 			<Group draggable>
 				{useGrid && <Grid pixelsPerCm={pixelsPerCm} scale={scale} x={0} y={0} />}
 
-				<Group scaleX={scale} scaleY={scale}>
+				{/* Apply scale to barrel group - this scales the barrel to fit the view */}
+				<Group scaleX={scale * pixelsPerMm} scaleY={scale * pixelsPerMm}>
 					<Apple
 						visible={imageStatus === 'loaded' ? true : false}
 						x={-bottomDiameter * 0.8}
@@ -157,7 +173,9 @@ function BarrelSideview({
 					x={-dimensions.width * 0.5 + 20.5}
 					y={dimensions.height * 0.5 - 20.5}
 					margin={25}
-					scale={scale * pixelsPerMm}
+					// Scale the ruler to match the barrel's scale
+					// This ensures the ruler follows zoom changes
+					scale={scale * pixelsPerCm}
 					width={dimensions.width - 40}
 					height={dimensions.height - 40}
 					xLength={10}
