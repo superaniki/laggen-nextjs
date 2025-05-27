@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global scaling - reduces overall application size to 90% */
 
 
 @layer components {

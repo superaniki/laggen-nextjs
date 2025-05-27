@@ -25,7 +25,6 @@ export async function generateMetadata(
   }
 }
 
-// workaround for Canvas import error
 const BarrelEdit = dynamic(() => import("@/components/barrel-editor/barrel-editor"), {
   ssr: false,
 });

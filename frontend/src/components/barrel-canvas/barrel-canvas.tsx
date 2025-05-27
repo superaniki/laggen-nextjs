@@ -71,7 +71,7 @@ const BarrelCanvas = React.memo(function BarrelCanvas({
 	};
 
 	return (
-		<div ref={ref} className="h-[800px] w-full" tabIndex={0}>
+		<div ref={ref} className="h-[700px] w-full" tabIndex={0}>
 			<ErrorBoundary FallbackComponent={MyFallbackComponent}>
 				<Stage width={dimensions.width} height={dimensions.height}>
 					<Layer>
