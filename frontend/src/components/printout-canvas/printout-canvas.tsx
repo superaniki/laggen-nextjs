@@ -9,7 +9,7 @@ import StaveCurve from "./stave-curve";
 import StaveFront from "./stave-front";
 import StaveEnds from "./stave-end";
 import BarrelSide from "./barrel-side";
-import Ruler from "../../canvas/ruler";
+import { SimpleRuler } from "../../canvas";
 
 
 type FetchState =
@@ -56,7 +56,7 @@ export default function PrintoutsCanvas({ scale = 2.4 }: { scale?: number }) {
 
       <BarrelSide inColor={false} x={paperWidth * 1 - margins * 1} y={paperHeight * 1 - margins * 1}
         barrelDetails={barrelDetails} thickStroke={true} scale={0.07} />
-      <Ruler scale={10} y={paperHeight - margins + 5} x={margins - 15} xLength={6} yLength={0} margin={10} />
+      <SimpleRuler scale={10} y={paperHeight - margins + 5} x={margins - 15} xLength={6} yLength={0} margin={10} />
       <Text x={margins} rotation={270} y={paperHeight - 25} text={staveTemplateInfoText} fontFamily="courier" fontSize={3} fill={"black"} />
       <Text direction="ltr" x={10} y={10} text={barrelDetails.name} fontFamily="courier" fontSize={4} fill={"black"} align="left" />
 

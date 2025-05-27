@@ -123,18 +123,18 @@ function BarrelSideview({
 		);
 	}
 
-	function Apple({ x, y, visible, sizeMm }: { x: number; y: number; visible: boolean; sizeMm: number }) {
+	function Apple({ visible, sizeMm }: { visible: boolean; sizeMm: number }) {
 		const size = sizeMm;
 		return (
 			<Image
 				alt="apple"
 				visible={visible}
 				opacity={0.3}
-				x={x - (size * 0.5) - size}
-				y={y - size + 4}
 				image={image}
 				width={size}
 				height={size}
+				// Position by bottom-left corner
+				offsetY={size}
 				// Add caching properties to improve performance
 				listening={false}
 				perfectDrawEnabled={false}
@@ -151,12 +151,6 @@ function BarrelSideview({
 
 				{/* Apply scale to barrel group - this scales the barrel to fit the view */}
 				<Group scaleX={scale * pixelsPerMm} scaleY={scale * pixelsPerMm}>
-					<Apple
-						visible={imageStatus === 'loaded' ? true : false}
-						x={-bottomDiameter * 0.8}
-						y={height * 0.5}
-						sizeMm={80}
-					/>
 					<Group x={-bottomDiameter * 0.5} y={height * 0.5}>
 						<Outline points={outlinePoints} />
 						<LeftStave points={leftStavePoints} angle={angle} />
@@ -166,6 +160,19 @@ function BarrelSideview({
 
 					{useCross && <Cross color="green" />}
 				</Group>
+			</Group>
+			
+			{/* Apple positioned at a static place in the lower left corner, just above the ruler */}
+			<Group
+				x={-dimensions.width * 0.5 + 50} // Position at the left edge with small margin
+				y={dimensions.height * 0.5 - 60} // Position just above the ruler
+				scaleX={scale * pixelsPerMm} // Apply the same scale as the barrel
+				scaleY={scale * pixelsPerMm} // Apply the same scale as the barrel
+			>
+				<Apple
+					visible={imageStatus === 'loaded' ? true : false}
+					sizeMm={80} // Fixed size in mm, will be scaled by parent group
+				/>
 			</Group>
 
 			{useRuler && (
@@ -178,7 +185,7 @@ function BarrelSideview({
 					scale={scale * pixelsPerCm}
 					width={dimensions.width - 40}
 					height={dimensions.height - 40}
-					xLength={10}
+					xLength={'max'} // Use max to let the ruler determine the appropriate length
 					yLength={0}
 				/>
 			)}
