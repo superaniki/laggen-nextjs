@@ -3,6 +3,7 @@ import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, M
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from 'react-hot-toast';
 import { useState } from "react";
+import paths from "@/paths";
 
 interface BarrelActionsDropdownProps {
   barrel: BarrelWithData,
@@ -17,6 +18,11 @@ export default function BarrelActionsDropdown({ barrel, deleteEnabled, handleDel
   const [isDeleting, setIsDeleting] = useState(false);
 
   function actionHandler(key: React.Key) {
+    if (key === "edit") {
+      // Navigate to the barrel edit page
+      router.push(paths.barrelEdit(barrel.slug));
+    }
+    
     if (key === "delete") {
       // Open confirmation modal instead of immediately deleting
       onOpen();
@@ -98,6 +104,9 @@ export default function BarrelActionsDropdown({ barrel, deleteEnabled, handleDel
           </Button>
         </DropdownTrigger>
         <DropdownMenu onAction={actionHandler} aria-label="Link Actions">
+          <DropdownItem key="edit">
+            Edit
+          </DropdownItem>
           <DropdownItem key="duplicate">
             Duplicate
           </DropdownItem>
