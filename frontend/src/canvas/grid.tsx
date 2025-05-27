@@ -13,12 +13,12 @@ function Grid({ pixelsPerCm, scale, x, y }: GridProps) {
 	const areaLength = Number(10000 * scale);
 	const bgColor = '#EEE';
 	const lineColor = '#C7C7C7';
+	const spaceWidth = pixelsPerCm * scale;
 
 	function horizontalLines(x: number, y: number, spaceWidth: number, areaLength: number) {
 		const elements = Array.from(Array(10000))
 			.filter((item, index) => index * spaceWidth < areaLength)
 			.map((val, index) => {
-				//const lineY = Math.floor(-width * (index - numberOfLines * 0.5));
 				const lineY = index * spaceWidth;
 
 				return (
@@ -34,11 +34,10 @@ function Grid({ pixelsPerCm, scale, x, y }: GridProps) {
 		const elements = Array.from(Array(10000))
 			.filter((item, index) => index * spaceWidth < areaLength)
 			.map((val, index) => {
-				//const lineX = Math.floor(width * (index - numberOfLines * 0.5));
 				const lineX = index * spaceWidth;
 
 				return (
-					<Group key={'h-' + index}>
+					<Group key={'v-' + index}>
 						<Line strokeWidth={1} x={x} y={y} points={[lineX, 0, lineX, areaLength]} stroke={lineColor}></Line>
 					</Group>
 				);

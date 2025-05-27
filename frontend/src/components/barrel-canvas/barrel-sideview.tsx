@@ -1,10 +1,10 @@
 import React from 'react';
 import { Line, Group, Rect } from 'react-konva';
 import { Image } from 'react-konva';
-import useImage from 'use-image';
 import { BarrelDetails } from '@prisma/client';
 import { findScaleToFit } from '@/common/barrel-math';
 import { Cross, Grid, Ruler } from '@/canvas';
+import { useImageCache } from '@/hooks/useImageCache';
 
 type BarrelSideviewProps = {
 	worldX: number;
@@ -45,13 +45,11 @@ function BarrelSideview({
 	} = { ...barrel };
 
 	const width = bottomDiameter > topDiameter ? bottomDiameter : topDiameter;
-	//console.log('width : ' + width, 'height: ' + height);
-	console.log('dimensions : ' + JSON.stringify(dimensions));
-
 	let scale = findScaleToFit(dimensions, { width: width, height: height }, 0.8); // 20% margin
 	scale = Math.min(3, scale);
 	const url = '/apple.png';
-	const [image, imageStatus] = useImage(url);
+	// Use the global image cache hook
+	const [image, imageStatus] = useImageCache(url);
 
 	const stroke = thickStroke ? 4 : 1;
 
@@ -122,16 +120,19 @@ function BarrelSideview({
 				image={image}
 				width={size}
 				height={size}
+				// Add caching properties to improve performance
+				listening={false}
+				perfectDrawEnabled={false}
 			/>
 		);
 	}
 
-	console.log("appleLoaded: " + imageStatus)
+	// Image status is now handled by the cached hook
 
 	return (
-		<Group x={worldX} y={worldY} /*onWheel={onWheel}*/>
+		<Group x={worldX} y={worldY}>
 			<Group draggable>
-				{useGrid && <Grid pixelsPerCm={pixelsPerCm} scale={scale} x={worldX} y={worldY} />}
+				{useGrid && <Grid pixelsPerCm={pixelsPerCm} scale={scale} x={0} y={0} />}
 
 				<Group scaleX={scale} scaleY={scale}>
 					<Apple

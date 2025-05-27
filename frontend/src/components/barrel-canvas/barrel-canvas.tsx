@@ -1,10 +1,20 @@
 import { Stage, Layer } from 'react-konva';
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BarrelDetails } from '@prisma/client';
 import { ErrorBoundary } from "react-error-boundary";
 import BarrelSideview from './barrel-sideview';
 
-export default function BarrelCanvas({
+// Simple debounce function to limit resize events
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+	let timeout: NodeJS.Timeout | null = null;
+	return function(...args: Parameters<T>) {
+		if (timeout) clearTimeout(timeout);
+		timeout = setTimeout(() => func(...args), wait);
+	};
+}
+
+// Use React.memo to prevent unnecessary re-renders
+const BarrelCanvas = React.memo(function BarrelCanvas({
 	barrel,
 	useGrid = true
 }: {
@@ -14,29 +24,34 @@ export default function BarrelCanvas({
 	const ref = useRef<HTMLDivElement>(null);
 	const [dimensions, setDimensions] = useState({ width: 2, height: 2 });
 
-	useEffect(() => {
-		const getDimensions = () => {
-			if (ref.current) {
-				const { offsetWidth, offsetHeight } = ref.current;
-				console.log('ref.current.offsetWidth :', offsetWidth);
-				return { width: offsetWidth, height: offsetHeight };
-			}
-			return { width: 0, height: 0 };
-		};
+	const getDimensions = useCallback(() => {
+		if (ref.current) {
+			const { offsetWidth, offsetHeight } = ref.current;
+			return { width: offsetWidth, height: offsetHeight };
+		}
+		return { width: 0, height: 0 };
+	}, []);
 
-		const handleResize = () => {
+	// Create a debounced resize handler to improve performance
+	const handleResize = useCallback(
+		debounce(() => {
 			setDimensions(getDimensions());
-		};
+		}, 100), // 100ms debounce
+		[getDimensions]
+	);
 
+	useEffect(() => {
+		// Set initial dimensions
 		if (ref.current) {
 			setDimensions(getDimensions());
 		}
 
+		// Add debounced resize listener
 		window.addEventListener('resize', handleResize);
 		return () => {
 			window.removeEventListener('resize', handleResize);
 		};
-	}, [ref]);
+	}, [getDimensions, handleResize]);
 
 	const worldX = dimensions.width * 0.5;
 	const worldY = dimensions.height * 0.5;
@@ -74,4 +89,6 @@ export default function BarrelCanvas({
 			</ErrorBoundary>
 		</div>
 	);
-}
+});
+
+export default BarrelCanvas;
