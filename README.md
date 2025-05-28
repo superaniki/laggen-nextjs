@@ -82,6 +82,7 @@ docker compose -f compose.prod.yml down
 When using the `start-docker.sh` script, it will display the correct URL to access the application.
 
 
+
 ### Startup locally with minicube, using Kubernetes config files
 
 ```bash

@@ -126,7 +126,6 @@ export default function BarrelActionsDropdown({ barrel, deleteEnabled, handleDel
               <ModalHeader className="flex flex-col gap-1">Confirm Deletion</ModalHeader>
               <ModalBody>
                 <p>Are you sure you want to delete barrel <strong>"{barrel.barrelDetails.name}"</strong>?</p>
-                <p className="text-danger">This action cannot be undone.</p>
               </ModalBody>
               <ModalFooter>
                 <Button variant="light" onPress={onClose}>
