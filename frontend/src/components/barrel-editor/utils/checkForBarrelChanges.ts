@@ -24,16 +24,46 @@ export const checkForBarrelChanges = (
   staveEndConfig: any,
   loadedStaveEndConfig: any
 ) => {
-  return (
-    JSON.stringify({ ...barrelDetails }) !== JSON.stringify({ ...loadedBarrelDetails }) ||
-    JSON.stringify({ ...staveCurveConfig }) !== JSON.stringify({ ...loadedStaveCurveConfig }) ||
-    JSON.stringify({ ...staveFrontConfig }) !== JSON.stringify({ ...loadedStaveFrontConfig }) ||
-    JSON.stringify({ ...staveEndConfig }) !== JSON.stringify({ ...loadedStaveEndConfig }) ||
-    staveCurveConfig?.configDetails.every((val: any, idx: number) => 
-      checkConfigEquality.curve(val, loadedStaveCurveConfig.configDetails[idx])) ||
-    staveFrontConfig?.configDetails.every((val: any, idx: number) => 
-      checkConfigEquality.front(val, loadedStaveFrontConfig.configDetails[idx])) ||
-    staveEndConfig?.configDetails.every((val: any, idx: number) => 
-      checkConfigEquality.end(val, loadedStaveEndConfig.configDetails[idx]))
-  );
+  // Check if barrel details have changed
+  const detailsChanged = JSON.stringify({ ...barrelDetails }) !== JSON.stringify({ ...loadedBarrelDetails });
+  
+  // Check if config objects have changed (excluding configDetails arrays)
+  const curveConfigChanged = JSON.stringify({
+    ...staveCurveConfig,
+    configDetails: undefined
+  }) !== JSON.stringify({
+    ...loadedStaveCurveConfig,
+    configDetails: undefined
+  });
+  
+  const frontConfigChanged = JSON.stringify({
+    ...staveFrontConfig,
+    configDetails: undefined
+  }) !== JSON.stringify({
+    ...loadedStaveFrontConfig,
+    configDetails: undefined
+  });
+  
+  const endConfigChanged = JSON.stringify({
+    ...staveEndConfig,
+    configDetails: undefined
+  }) !== JSON.stringify({
+    ...loadedStaveEndConfig,
+    configDetails: undefined
+  });
+  
+  // Check if any configDetails have changed
+  const curveDetailsChanged = staveCurveConfig?.configDetails?.some((val: any, idx: number) => 
+    !checkConfigEquality.curve(val, loadedStaveCurveConfig.configDetails[idx]));
+  
+  const frontDetailsChanged = staveFrontConfig?.configDetails?.some((val: any, idx: number) => 
+    !checkConfigEquality.front(val, loadedStaveFrontConfig.configDetails[idx]));
+  
+  const endDetailsChanged = staveEndConfig?.configDetails?.some((val: any, idx: number) => 
+    !checkConfigEquality.end(val, loadedStaveEndConfig.configDetails[idx]));
+  
+  // Return true if any part has changed
+  return detailsChanged || 
+         curveConfigChanged || frontConfigChanged || endConfigChanged ||
+         curveDetailsChanged || frontDetailsChanged || endDetailsChanged;
 };
