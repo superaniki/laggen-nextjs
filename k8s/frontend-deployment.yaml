@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laggen-frontend
+  labels:
+    app: laggen-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laggen-frontend
+  template:
+    metadata:
+      labels:
+        app: laggen-frontend
+    spec:
+      containers:
+      - name: laggen-frontend
+        image: laggen-frontend:dev
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: SQLITE_LOCAL_DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: laggen-secrets
+              key: SQLITE_LOCAL_DATABASE_URL
+        - name: NEXTAUTH_URL
+          valueFrom:
+            secretKeyRef:
+              name: laggen-secrets
+              key: NEXTAUTH_URL
+        - name: NEXTAUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: laggen-secrets
+              key: AUTH_SECRET
+        - name: GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: laggen-secrets
+              key: GOOGLE_CLIENT_ID
+        - name: GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: laggen-secrets
+              key: GOOGLE_CLIENT_SECRET
+        - name: LAGGEN_SERVER_FUNC
+          valueFrom:
+            secretKeyRef:
+              name: laggen-secrets
+              key: LAGGEN_SERVER_FUNC

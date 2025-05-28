@@ -19,7 +19,7 @@ services:
     volumes:
       - ./frontend/prisma:/app/prisma
     env_file: 
-      - ./frontend/.env.production
+      - ./frontend/.env.local
     # command: sh -c 'echo "Testing env vars:" && printenv && npm run dev'
 
       # prisma db gets saved + for dev

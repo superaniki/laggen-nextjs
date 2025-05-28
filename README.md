@@ -80,3 +80,73 @@ docker compose -f compose.prod.yml down
 - Backend API: http://localhost:8080
 
 When using the `start-docker.sh` script, it will display the correct URL to access the application.
+
+
+### Startup locally with minicube, using Kubernetes config files
+
+```bash
+./deploy-to-minikube.sh
+```
+
+### Prerequisites
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your system
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed on your system
+- Docker installed on your system
+
+### Environment Setup
+Before deploying to Kubernetes, you need to set up your environment variables:
+
+1. Create a `.env.k8s` file in the root directory with the following variables:
+   ```
+   SQLITE_LOCAL_DATABASE_URL="file:./dev.db"
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   AUTH_SECRET="your-auth-secret"
+   NEXTAUTH_URL="http://localhost:3000"
+   LAGGEN_SERVER_FUNC="http://laggen-backend-service:7071/api/BarrelToImage"
+   ```
+
+### Deployment Steps
+
+1. Start Minikube:
+   ```bash
+   minikube start
+   ```
+
+2. Set Docker to use Minikube's Docker daemon:
+   ```bash
+   eval $(minikube docker-env)
+   ```
+
+3. Deploy the application using the provided script:
+   ```bash
+   ./deploy-to-minikube.sh
+   ```
+
+   This script will:
+   - Build Docker images for the frontend and backend
+   - Create Kubernetes secrets from your `.env.k8s` file
+   - Apply Kubernetes configurations for deployments and services
+   - Wait for deployments to be ready
+
+4. Access the application:
+   ```bash
+   minikube service laggen-frontend-service
+   ```
+
+### Important Notes
+
+- Environment variables are stored as Kubernetes secrets
+
+### Troubleshooting
+
+- If pods fail to start, check the logs:
+  ```bash
+  kubectl logs deployment/laggen-frontend
+  kubectl logs deployment/laggen-backend
+  ```
+
+- To restart deployments after making changes:
+  ```bash
+  kubectl rollout restart deployment/laggen-frontend deployment/laggen-backend
+  ```

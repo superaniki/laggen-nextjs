@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laggen-backend
+  labels:
+    app: laggen-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laggen-backend
+  template:
+    metadata:
+      labels:
+        app: laggen-backend
+    spec:
+      containers:
+      - name: laggen-backend
+        image: laggen-backend:dev
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 7071
+        env:
+        - name: AzureWebJobsStorage
+          value: "UseDevelopmentStorage=true"
+        - name: FUNCTIONS_WORKER_RUNTIME
+          value: "dotnet-isolated"
