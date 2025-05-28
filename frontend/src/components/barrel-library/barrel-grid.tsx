@@ -13,15 +13,19 @@ interface BarrelsListProps {
 
 export default function BarrelGrid({ publicBarrels, privateBarrels }: BarrelsListProps) {
   const [publicBarrelsPage, setPublicBarrelsPage] = useState(1);
-  const [privateBarrelsPage, setPrivateBarrelsPage] = useState(1)
+  const [privateBarrelsPage, setPrivateBarrelsPage] = useState(1);
 
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession();
 
-  const ITEMS_PER_ROW = 4;
-  const ITEMS_PER_PAGE_PRIVATE = 4;
+  const ITEMS_PER_ROW = 5; // Match xl:grid-cols-5
+  const ITEMS_PER_PAGE_PRIVATE = 5; // Show 5 items per page (including Add New Barrel card)
   const ITEMS_PER_PAGE_PUBLIC = 8;
 
-  const numPrivateBarrelPages = Math.ceil(privateBarrels.length / ITEMS_PER_PAGE_PRIVATE);
+  // Calculate total pages
+  const numPrivateBarrelPages = Math.max(
+    1, 
+    Math.ceil(privateBarrels.length / ITEMS_PER_PAGE_PRIVATE)
+  );
   const numPublicBarrelPages = Math.ceil(publicBarrels.length / ITEMS_PER_PAGE_PUBLIC);
 
   const handlePrivatePageChange = (newPage: number) => {
@@ -39,8 +43,20 @@ export default function BarrelGrid({ publicBarrels, privateBarrels }: BarrelsLis
   }
 
   function barrelsForPrivatePage() {
-    const startItem = ((privateBarrelsPage - 1) * ITEMS_PER_PAGE_PRIVATE);
-    const pageBarrels = privateBarrels.slice(startItem, startItem + ITEMS_PER_PAGE_PRIVATE);
+    // Calculate which barrels to show on the current page
+    let startItem = 0;
+    let itemsToTake = ITEMS_PER_PAGE_PRIVATE;
+    
+    if (privateBarrelsPage === 1) {
+      // On first page, account for the create card
+      itemsToTake = ITEMS_PER_PAGE_PRIVATE - 1;
+    } else {
+      // For subsequent pages
+      const firstPageItems = ITEMS_PER_PAGE_PRIVATE - 1;
+      startItem = firstPageItems + ((privateBarrelsPage - 2) * ITEMS_PER_PAGE_PRIVATE);
+    }
+    
+    const pageBarrels = privateBarrels.slice(startItem, startItem + itemsToTake);
     return pageBarrels;
   }
 
@@ -48,12 +64,19 @@ export default function BarrelGrid({ publicBarrels, privateBarrels }: BarrelsLis
     {status === "authenticated" && <>
       <div className="mx-5 mb-5 text-xl">Private Barrels</div>
       <div className="grid gap-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {privateBarrelsPage === 1 && <BarrelCreateFormModal>
-          <AddBarrelCard />
-        </BarrelCreateFormModal>}
-
+        {privateBarrelsPage === 1 && (
+          <BarrelCreateFormModal>
+            <AddBarrelCard />
+          </BarrelCreateFormModal>
+        )}
+        
         {barrelsForPrivatePage().map((barrel) => (
-          <BarrelCard type={BarrelType.private} key={"card" + barrel.id} barrel={barrel} color={"#BBBBEE"} />
+          <BarrelCard 
+            type={BarrelType.private} 
+            key={"card" + barrel.id} 
+            barrel={barrel} 
+            color={"#BBBBEE"} 
+          />
         ))}
       </div>
 

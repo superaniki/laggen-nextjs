@@ -109,6 +109,21 @@
   .fadeIn-animation {
     animation: 0.4s fadeIn;
   }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      scale: 1;
+    }
+    100% {
+      opacity: 0;
+      scale: 0.95;
+    }
+  }
+  
+  .fadeOut-animation {
+    animation: 0.5s fadeOut forwards;
+  }
 
   .loading span:before {
     animation: dots 1s linear infinite;

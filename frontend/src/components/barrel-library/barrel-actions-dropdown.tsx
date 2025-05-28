@@ -30,6 +30,10 @@ export default function BarrelActionsDropdown({ barrel, deleteEnabled, handleDel
 
     if (key === "duplicate") {
       const data = { id: barrel.id }
+      
+      // Show a simple toast notification
+      const toastId = toast.loading(`Duplicating "${barrel.barrelDetails.name}"...`, { position: 'bottom-center' });
+      
       fetch(
         '/api/barrels/duplicate',
         {
@@ -44,10 +48,21 @@ export default function BarrelActionsDropdown({ barrel, deleteEnabled, handleDel
         return response.json();
       })
         .then(data => {
-          toast.success(`Barrel "${barrel.barrelDetails.name}" was duplicated!`, { position: 'bottom-center' })
+          // Update the toast to success
+          toast.success(`Barrel "${barrel.barrelDetails.name}" was duplicated!`, { 
+            id: toastId,
+            position: 'bottom-center'
+          });
+          
+          // Refresh the page without animation
+          router.refresh();
         })
         .catch(error => {
-          console.log("Error:", error)
+          console.log("Error:", error);
+          toast.error(`Failed to duplicate barrel: ${error.message}`, { 
+            id: toastId,
+            position: 'bottom-center'
+          });
         });
     }
   }
