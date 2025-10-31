@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global scaling - reduces overall application size to 90% */
+
+/* Loading animation styles */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 50;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Custom black spinner styles */
+.black-spinner {
+  border-color: black !important;
+}
+
+/* Spin animation for loading spinner */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.loading span {
+  position: relative;
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+}
+
+.loading span::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  animation: spinner 0.8s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .card:hover {
+      box-shadow: 0 0 15px #b8b8b8;
+  }
+}
+
+@layer utilities {
+
+  @keyframes fadeAndRoll {
+    0% {
+      transform: translateY(-200%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+  }
+  
+  .fadeAndRoll-animation {
+    animation: 0.5s fadeAndRoll;
+  }
+    
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      scale: 0.9;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+  
+  .fadeIn-animation {
+    animation: 0.4s fadeIn;
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      scale: 1;
+    }
+    100% {
+      opacity: 0;
+      scale: 0.95;
+    }
+  }
+  
+  .fadeOut-animation {
+    animation: 0.5s fadeOut forwards;
+  }
+
+  .loading span:before {
+    animation: dots 1s linear infinite;
+    content: '';
+  }
+
+  @keyframes dots {
+    0% {
+      content: '.';
+    }
+    33.3% {
+      content: '..';
+    }
+    66.6% {
+      content: '...';
+    }
+    100% {
+      content: '.';
+    }
+  }
+}

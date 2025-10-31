@@ -1,0 +1,24 @@
+# Ignore node_modules directory
+node_modules
+
+# Ignore local build artifacts
+.next
+.qodo
+out
+
+# Environment files
+.env*
+!.env.example
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+.dockerignore
+netlify.toml
+
+# Ignore version control directories
+.git
