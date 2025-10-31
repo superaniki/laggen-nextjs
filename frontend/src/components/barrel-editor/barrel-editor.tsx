@@ -43,32 +43,6 @@ export default function BarrelEdit({ barrel }: { barrel: BarrelWithData }) {
     setBarrel(barrel);
   }, [setBarrel, barrel])
 
-  /*
-  const isSaveButtonEnabled = useMemo(() => {
-    const testCurveEquality = (currentValue: StaveCurveConfigDetails, index: number) => {
-      const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveCurveConfig.configDetails[index] });
-      return test;
-    };
-    const testFrontEquality = (currentValue: StaveFrontConfigDetails, index: number) => {
-      const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveFrontConfig.configDetails[index] });
-      return test;
-    };
-    const testEndEquality = (currentValue: StaveEndConfigDetails, index: number) => {
-      const test = JSON.stringify({ ...currentValue }) === JSON.stringify({ ...loadedStaveEndConfig.configDetails[index] });
-      return test;
-    };
-
-    return (JSON.stringify({ ...barrelDetails }) !== JSON.stringify({ ...loadedBarrelDetails }) ||
-      JSON.stringify({ ...staveCurveConfig }) !== JSON.stringify({ ...loadedStaveCurveConfig }) ||
-      JSON.stringify({ ...staveFrontConfig }) !== JSON.stringify({ ...loadedStaveFrontConfig }) ||
-      JSON.stringify({ ...staveEndConfig }) !== JSON.stringify({ ...loadedStaveEndConfig }) ||
-      staveCurveConfig?.configDetails.every(testCurveEquality) ||
-      staveFrontConfig?.configDetails.every(testFrontEquality) ||
-      staveEndConfig?.configDetails.every(testEndEquality))
-  }, [barrelDetails, staveCurveConfig, staveFrontConfig, staveEndConfig, loadedBarrelDetails, loadedStaveCurveConfig, loadedStaveFrontConfig, loadedStaveEndConfig]);
-*/
-
-
 const isSaveButtonEnabled = useMemo(() => 
   checkForBarrelChanges(
     barrelDetails,
