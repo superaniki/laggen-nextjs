@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Group, Line, Rect, Text } from 'react-konva';
 

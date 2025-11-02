@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Rect, Line, Group } from 'react-konva';
 import Cross from './cross';

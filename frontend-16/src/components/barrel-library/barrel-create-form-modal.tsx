@@ -1,7 +1,7 @@
 'use client';
 
 
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import {
   Input,
   Textarea,
@@ -19,7 +19,7 @@ interface ModalBarrelCreateForm {
 }
 
 export default function BarrelCreateFormModal({ children }: ModalBarrelCreateForm) {
-  const [formState, action] = useFormState(actions.createBarrel, { success: false, errors: {} });
+  const [formState, action] = useActionState(actions.createBarrel, { success: false, errors: {} });
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef } from 'react';
 import { Group, Line, Rect, Text } from 'react-konva';
 import usePaperSize from '@/hooks/usePaperSize';
@@ -19,7 +21,7 @@ type ToolCurveProps = {
 };
 
 function ToolCurve({ id, x = 0, y, points, title, closed }: ToolCurveProps) {
-	const curveRef = useRef<any>();
+	const curveRef = useRef<any>(null);
 	const { updateToolDetails } = useBarrelStore();
 
 	const linePoints = [];

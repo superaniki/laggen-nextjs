@@ -1,7 +1,7 @@
 import { deleteBarrel } from "@/actions"
 import { revalidatePath } from "next/cache";
 
-export async function DELETE(req: Request, res: Response, context: {}) {
+export async function DELETE(req: Request) {
   console.log("Hej DELETE")
   try {
     const body: any = await req.json()

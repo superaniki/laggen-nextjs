@@ -1,3 +1,5 @@
+'use client';
+
 import useImage from "use-image";
 import { Line, Image, Group } from "react-konva";
 import { BarrelDetails } from "@prisma/client";

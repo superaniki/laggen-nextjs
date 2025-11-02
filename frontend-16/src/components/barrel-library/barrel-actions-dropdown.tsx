@@ -125,7 +125,7 @@ export default function BarrelActionsDropdown({ barrel, deleteEnabled, handleDel
           <DropdownItem key="duplicate">
             Duplicate
           </DropdownItem>
-          {deleteEnabled === true ? <DropdownItem key="delete"> Delete </DropdownItem> : <DropdownItem className="hidden" />}
+          {deleteEnabled === true ? <DropdownItem key="delete"> Delete </DropdownItem> : <DropdownItem key="hidden" className="hidden" />}
         </DropdownMenu>
       </Dropdown>
 

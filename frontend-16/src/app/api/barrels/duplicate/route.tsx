@@ -1,6 +1,6 @@
 import { duplicateBarrel } from "@/actions"
 
-export async function POST(req: Request, res: Response, context: {}) {
+export async function POST(req: Request) {
   console.log("Hej Duplicate")
   try {
     const body: any = await req.json()

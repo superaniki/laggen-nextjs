@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef } from 'react';
 import { Group, Line, Text } from 'react-konva';
 import { BarrelDetails } from '@prisma/client';
@@ -39,7 +41,7 @@ type StaveProps = {
 function StaveFront({ x, barrelDetails, config }: StaveProps) {
 	const { bottomDiameter, topDiameter, staveLength } = { ...barrelDetails };
 	const { updateToolDetails } = useBarrelStore();
-	const curveRef = useRef<any>();
+	const curveRef = useRef<any>(null);
 
 	const paperState = usePaperSize();
 	const configDetailsArray = config.configDetails;

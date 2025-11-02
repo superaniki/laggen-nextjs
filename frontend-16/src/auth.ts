@@ -21,7 +21,7 @@ if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
   throw new Error("Missing google oauth credentials");
 }
 
-export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth({
+const nextAuthConfig = {
   adapter: PrismaAdapter(db),
   providers: [
     GoogleProvider({
@@ -62,7 +62,9 @@ export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth({
     },
   },
   */
-})
+};
+
+export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth(nextAuthConfig)
 
 
 

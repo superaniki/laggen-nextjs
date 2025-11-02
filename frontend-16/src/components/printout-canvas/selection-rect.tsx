@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from "react";
 import { Rect } from "react-konva";
 import { round } from "../../common/barrel-math";

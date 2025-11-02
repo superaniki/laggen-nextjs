@@ -16,17 +16,19 @@ const nextConfig = {
       }
     ]
   },
-  // Webpack configuration
-  webpack: (config) => {
-    config.externals = [...config.externals, { canvas: 'canvas' }];
+  // Server-side component configuration
+  serverExternalPackages: ['canvas', 'react-konva', 'konva'],
+  // Webpack configuration (forces webpack when TURBOPACK=0)
+  webpack: (config, { isServer }) => {
+    // Externalize packages on server-side
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'canvas', 'react-konva', 'konva'];
+    }
     return config;
   },
-  // Experimental features
-  experimental: {
-    // Include additional files in the standalone build
-    outputFileTracingIncludes: {
-      '/**/*': ['src/fonts/*']
-    }
+  // Include additional files in the standalone build (moved from experimental in Next.js 16)
+  outputFileTracingIncludes: {
+    '/**/*': ['src/fonts/*']
   }
 }
 

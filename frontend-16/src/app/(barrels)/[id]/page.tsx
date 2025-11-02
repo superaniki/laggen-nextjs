@@ -1,22 +1,21 @@
 
-"use server";
 import { fetchOneBarrelById } from "@/db/queries/barrels";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
+import BarrelViewer from "@/components/barrel-viewer/barrel-viewer-client";
 
 
 interface BarrelShowPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function generateMetadata(
   { params }: BarrelShowPageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { id } = params;
+  const { id } = await params;
   const barrelName = await fetchOneBarrelById(id).then(barrel => barrel !== null && barrel);
 
   return {
@@ -24,13 +23,8 @@ export async function generateMetadata(
   }
 }
 
-// workaround for Canvas import error
-const BarrelViewer = dynamic(() => import("@/components/barrel-viewer/barrel-viewer"), {
-  ssr: false,
-});
-
 export default async function BarrelShowPage({ params }: BarrelShowPageProps) {
-  const { id } = params;
+  const { id } = await params;
   ////await new Promise(resolve => setTimeout(resolve, 2500));
 
   let barrel = await fetchOneBarrelById(id);

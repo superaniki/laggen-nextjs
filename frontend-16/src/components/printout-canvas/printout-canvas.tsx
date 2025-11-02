@@ -1,3 +1,5 @@
+'use client';
+
 import { Layer, Rect, Stage, Text } from "react-konva";
 
 import useEditStore from "@/store/edit-store";

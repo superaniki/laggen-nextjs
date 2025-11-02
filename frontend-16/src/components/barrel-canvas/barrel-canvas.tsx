@@ -1,3 +1,5 @@
+'use client';
+
 import { Stage, Layer } from 'react-konva';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BarrelDetails } from '@prisma/client';

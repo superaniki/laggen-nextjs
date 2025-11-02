@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef } from 'react';
 import { Group, Rect, Line, Text } from 'react-konva';
 import { BarrelDetails } from '@prisma/client';
@@ -20,7 +22,7 @@ type ToolCurveProps = {
 };
 
 function Curve({ id, x, y, points, title, closed = false }: ToolCurveProps) {
-	const curveRef = useRef<any>();
+	const curveRef = useRef<any>(null);
 	const { updateToolDetails } = useBarrelStore();
 	const selMargin = 5;
 

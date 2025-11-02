@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Line, Group, Rect } from 'react-konva';
 import { Image } from 'react-konva';

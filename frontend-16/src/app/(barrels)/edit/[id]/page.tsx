@@ -1,23 +1,22 @@
-"use server";
 import LoadingString from "@/ui/loading-string";
 import { fetchOneBarrelById } from "@/db/queries/barrels";
 import { Metadata, ResolvingMetadata } from "next";
-import dynamic from "next/dynamic";
+import BarrelEdit from "@/components/barrel-editor/barrel-editor-client";
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 interface BarrelEditPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function generateMetadata(
   { params }: BarrelEditPageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { id } = params;
+  const { id } = await params;
   const barrelName = await fetchOneBarrelById(id).then(barrel => barrel !== null && barrel.barrelDetails.name);
 
   return {
@@ -25,12 +24,8 @@ export async function generateMetadata(
   }
 }
 
-const BarrelEdit = dynamic(() => import("@/components/barrel-editor/barrel-editor"), {
-  ssr: false,
-});
-
 export default async function BarrelEditPage({ params }: BarrelEditPageProps) {
-  const { id } = params;
+  const { id } = await params;
   
   let barrel = await fetchOneBarrelById(id);
 
